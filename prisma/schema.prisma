@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model ShopSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  updatedAt DateTime @updatedAt
+}
+
+model ShopCategory {
+  id          String @id @default(cuid())
+  name        String
+  slug        String @unique
+  description String?
+  imageUrl    String?
+  sortOrder   Int    @default(0)
+  isVisible   Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FrontpageSlider {
+  id          String   @id @default(cuid())
+  title       String
+  linkUrl     String?  
+  sortOrder   Int      @default(0)
+  isVisible   Boolean  @default(true)
+  
+  filterType  String   @default("LATEST") 
+  filterValue String?  
+  limit       Int      @default(15)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  wooId       Int?     @unique
+  sku         String?
+  title       String
+  slug        String   @unique
+  category    String   @default("Noten") // Hauptkategorie: Noten, CDs, Bücher, Merch, Tickets
+  price       String   @default("0,00 €")
+  description String?
+  imageUrl    String?
+  galleryImages String?
+  badge       String?
+  stockStatus String   @default("instock")
+  sizes       String?
+  colors      String?
+  detailsJson String?
+  
+  hasDigitalDownload Boolean @default(false)
+  digitalPrice       Float?
+  
+  // Specific metadata (often extracted from Woo attributes)
+  composer    String?
+  grade       String?
+  genre       String?
+  duration    String?
+  audioPreview String?
+  pdfPreview  String?
+  youtubeUrl  String?
+
+  artist      String?
+  author      String?
+  medium      String? 
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  orderNumber     String   @unique
+  status          String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, CANCELLED
+  
+  // Billing Address
+  firstName       String
+  lastName        String
+  companyName     String?
+  address         String
+  zipCode         String
+  city            String
+  email           String
+  
+  // Payment & Totals
+  paymentMethod   String
+  subtotal        Float
+  shippingCost    Float
+  total           Float
+  
+  items           OrderItem[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model OrderItem {
+  id              String   @id @default(cuid())
+  orderId         String
+  productId       String?
+  
+  title           String
+  variant         String?
+  price           Float
+  quantity        Int
+  
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product         Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+}

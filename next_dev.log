@@ -1,0 +1,160 @@
+
+> donauton-shop@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.10.141:3000
+✓ Ready in 256ms
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/lukasbruckmeyer/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/lukasbruckmeyer/Documents/donauton-shop/package-lock.json
+
+
+ HEAD / 200 in 964ms (next.js: 770ms, application-code: 194ms)
+ GET / 200 in 46ms (next.js: 2ms, application-code: 44ms)
+ GET /apple-touch-icon-precomposed.png 404 in 195ms (next.js: 154ms, application-code: 41ms)
+ GET /apple-touch-icon.png 404 in 26ms (next.js: 1802µs, application-code: 24ms)
+ GET /audio 404 in 17ms (next.js: 3ms, application-code: 14ms)
+ GET /audio 404 in 32ms (next.js: 2ms, application-code: 29ms)
+ GET /merch 404 in 11ms (next.js: 5ms, application-code: 7ms)
+ GET /merch 404 in 38ms (next.js: 3ms, application-code: 36ms)
+ GET /buecher 404 in 11ms (next.js: 4ms, application-code: 7ms)
+ GET /buecher 404 in 38ms (next.js: 3ms, application-code: 35ms)
+ GET /tickets 404 in 11ms (next.js: 4ms, application-code: 6ms)
+ GET /tickets 404 in 38ms (next.js: 3ms, application-code: 35ms)
+ GET /noten 404 in 5ms (next.js: 1815µs, application-code: 3ms)
+ GET /noten 404 in 27ms (next.js: 1359µs, application-code: 25ms)
+ GET / 200 in 14ms (next.js: 1956µs, application-code: 12ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+✓ Compiled in 6ms
+ GET / 200 in 53ms (next.js: 6ms, application-code: 47ms)
+ GET /noten 404 in 25ms (next.js: 6ms, application-code: 19ms)
+ GET /noten 404 in 36ms (next.js: 1657µs, application-code: 35ms)
+ GET /audio 404 in 11ms (next.js: 4ms, application-code: 6ms)
+ GET /audio 404 in 41ms (next.js: 4ms, application-code: 37ms)
+ GET / 200 in 31ms (next.js: 6ms, application-code: 24ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /noten/kleine-besetzung 404 in 16ms (next.js: 4ms, application-code: 12ms)
+ GET /noten/kleine-besetzung 404 in 38ms (next.js: 1885µs, application-code: 37ms)
+✓ Compiled in 9ms
+ GET / 200 in 164ms (next.js: 43ms, application-code: 121ms)
+ GET / 200 in 164ms (next.js: 92ms, application-code: 72ms)
+ GET / 200 in 45ms (next.js: 15ms, application-code: 30ms)
+ GET / 200 in 77ms (next.js: 15ms, application-code: 62ms)
+ GET / 200 in 50ms (next.js: 15ms, application-code: 34ms)
+ GET / 200 in 79ms (next.js: 16ms, application-code: 63ms)
+ GET / 200 in 34ms (next.js: 4ms, application-code: 30ms)
+ GET / 200 in 34ms (next.js: 19ms, application-code: 15ms)
+⨯ Error: Event handlers cannot be passed to Client Component props.
+  <button className="btn-add" aria-label=... onClick={function onClick} children=...>
+                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>) {
+  digest: '130174295'
+}
+⨯ Error: Event handlers cannot be passed to Client Component props.
+  <button className="btn-add" aria-label=... onClick={function onClick} children=...>
+                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>) {
+  digest: '130174295'
+}
+⨯ Error: Event handlers cannot be passed to Client Component props.
+  <button className="btn-add" aria-label=... onClick={function onClick} children=...>
+                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>) {
+  digest: '130174295'
+}
+⨯ Error: Event handlers cannot be passed to Client Component props.
+  <button className="btn-add" aria-label=... onClick={function onClick} children=...>
+                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>) {
+  digest: '130174295'
+}
+⨯ Error: Event handlers cannot be passed to Client Component props.
+  <button className="btn-add" aria-label=... onClick={function onClick} children=...>
+                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>) {
+  digest: '130174295'
+}
+⨯ Error: Event handlers cannot be passed to Client Component props.
+  <button className="btn-add" aria-label=... onClick={function onClick} children=...>
+                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>) {
+  digest: '130174295'
+}
+ GET /noten 500 in 1126ms (next.js: 168ms, application-code: 959ms)
+[browser] Uncaught Error: Event handlers cannot be passed to Client Component props.
+  <button className="btn-add" aria-label=... onClick={function onClick} children=...>
+                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+ GET / 200 in 30ms (next.js: 3ms, application-code: 26ms)
+ GET /noten 200 in 99ms (next.js: 3ms, application-code: 95ms)
+ GET / 200 in 21ms (next.js: 3ms, application-code: 18ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /noten 200 in 27ms (next.js: 2ms, application-code: 25ms)
+ GET /audio 404 in 46ms (next.js: 20ms, application-code: 26ms)
+ GET /audio 404 in 33ms (next.js: 1632µs, application-code: 31ms)
+ GET /noten 200 in 33ms (next.js: 5ms, application-code: 28ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET / 200 in 26ms (next.js: 3ms, application-code: 22ms)
+ GET /noten 200 in 23ms (next.js: 1660µs, application-code: 22ms)
+✓ Compiled in 15ms
+ GET / 200 in 21ms (next.js: 1174µs, application-code: 20ms)
+ GET /noten 200 in 45ms (next.js: 2ms, application-code: 43ms)
+ GET /noten 200 in 63ms (next.js: 2ms, application-code: 61ms)
+ GET / 200 in 22ms (next.js: 3ms, application-code: 18ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /noten 200 in 33ms (next.js: 3ms, application-code: 30ms)
+✓ Compiled in 7ms
+ GET /noten 200 in 193ms (next.js: 48ms, application-code: 145ms)
+ GET /noten 200 in 193ms (next.js: 88ms, application-code: 104ms)
+ GET /noten 200 in 78ms (next.js: 1825µs, application-code: 76ms)
+ GET /noten 200 in 77ms (next.js: 18ms, application-code: 59ms)
+ GET /noten 200 in 42ms (next.js: 1643µs, application-code: 40ms)
+ GET /noten 200 in 41ms (next.js: 18ms, application-code: 23ms)
+ GET / 200 in 81ms (next.js: 48ms, application-code: 34ms)
+ GET / 200 in 82ms (next.js: 66ms, application-code: 16ms)
+ GET /noten 200 in 151ms (next.js: 19ms, application-code: 132ms)
+ GET /noten 200 in 114ms (next.js: 1852µs, application-code: 112ms)
+ GET /noten 200 in 152ms (next.js: 1107µs, application-code: 151ms)
+ GET /noten 200 in 114ms (next.js: 18ms, application-code: 96ms)
+ GET / 200 in 95ms (next.js: 1133µs, application-code: 94ms)
+ GET / 200 in 96ms (next.js: 15ms, application-code: 81ms)
+ GET / 200 in 96ms (next.js: 19ms, application-code: 77ms)
+ GET / 200 in 96ms (next.js: 33ms, application-code: 64ms)
+ GET / 200 in 98ms (next.js: 2ms, application-code: 96ms)
+ GET / 200 in 79ms (next.js: 30ms, application-code: 49ms)
+ GET / 200 in 21ms (next.js: 1176µs, application-code: 20ms)
+ GET / 200 in 36ms (next.js: 1282µs, application-code: 34ms)
+ GET /noten/1 200 in 497ms (next.js: 406ms, application-code: 91ms)
+ GET /noten 200 in 35ms (next.js: 3ms, application-code: 31ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /noten/1 200 in 49ms (next.js: 3ms, application-code: 47ms)
+ GET /noten 200 in 37ms (next.js: 4ms, application-code: 33ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /noten/2 200 in 45ms (next.js: 3ms, application-code: 42ms)
+ GET /noten 200 in 40ms (next.js: 5ms, application-code: 34ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /noten/3 200 in 53ms (next.js: 6ms, application-code: 47ms)
+ GET /noten 200 in 36ms (next.js: 4ms, application-code: 31ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+ GET /noten/3 200 in 54ms (next.js: 4ms, application-code: 50ms)
+ GET /noten 200 in 31ms (next.js: 4ms, application-code: 27ms)
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+✓ Compiled in 12ms
+ GET / 200 in 18ms (next.js: 2ms, application-code: 16ms)
+ GET /noten 200 in 50ms (next.js: 1466µs, application-code: 48ms)
+✓ Compiled in 4ms
+ GET /noten/1 200 in 123ms (next.js: 5ms, application-code: 118ms)
+ GET /noten/1 200 in 41ms (next.js: 4ms, application-code: 37ms)
+ GET /noten/1 200 in 47ms (next.js: 6ms, application-code: 41ms)
+ GET /noten/1 200 in 57ms (next.js: 6ms, application-code: 51ms)
