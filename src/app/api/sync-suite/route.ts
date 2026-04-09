@@ -44,9 +44,8 @@ export async function GET() {
 
       // Assets
       const workAssets = work.assets || [];
-      // Pick assets that are NOT marked as shop download for previews
-      const pdfPreview = workAssets.find((a: any) => !a.is_shop_download && (a.file_type?.toLowerCase().includes('pdf') || a.filename?.toLowerCase().includes('.pdf')))?.file_path || null;
-      const audioPreview = workAssets.find((a: any) => !a.is_shop_download && (a.file_type?.toLowerCase().includes('audio') || a.filename?.toLowerCase().includes('.mp3')))?.file_path || null;
+      const pdfPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('pdf') || a.filename?.toLowerCase().includes('.pdf'))?.file_path || null;
+      const audioPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('audio') || a.filename?.toLowerCase().includes('.mp3'))?.file_path || null;
 
       // duration formatting (from seconds to mm:ss)
       let formattedDuration = null;
@@ -56,23 +55,18 @@ export async function GET() {
         formattedDuration = `${mins}:${secs}`;
       }
 
-      // Metadata details for ProductDetailsList
-      const details = [];
-      details.push({ label: "Kategorie", value: category + (work.genre ? ` - ${work.genre}` : '') });
-      if (work.sku) details.push({ label: "Artikelnummer", value: work.sku });
-      if (work.instrumentation) details.push({ label: "Besetzung", value: work.instrumentation });
-      if (formattedDuration) details.push({ label: "Dauer", value: `${formattedDuration} min` });
-      
-      // Difficulty mapping
-      if (work.difficulty_min) {
-        let diffLabel = String(work.difficulty_min);
-        if (work.difficulty_max && work.difficulty_max !== work.difficulty_min) {
-          diffLabel += ` - ${work.difficulty_max}`;
-        }
-        details.push({ label: "Schwierigkeit", value: `Grad ${diffLabel}` });
-      }
+      // Build detailed technical specs for the frontend
+      const detailsList = [];
+      if (category) detailsList.push({ label: 'Kategorie', value: category + (work.genre ? ` - ${work.genre}` : '') });
+      if (work.sku) detailsList.push({ label: 'Artikelnummer', value: work.sku });
+      if (work.instrumentation) detailsList.push({ label: 'Besetzung', value: work.instrumentation });
+      if (work.difficulty_min) detailsList.push({ label: 'Schwierigkeit', value: `Grad ${work.difficulty_min}${work.difficulty_max ? ' - ' + work.difficulty_max : ''}` });
+      if (formattedDuration) detailsList.push({ label: 'Dauer', value: formattedDuration });
+      if (work.page_count_score || work.page_count) detailsList.push({ label: 'Seiten', value: (work.page_count_score || work.page_count).toString() });
+      if (work.key_signature) detailsList.push({ label: 'Tonart', value: work.key_signature });
+      if (work.meter_time_signature) detailsList.push({ label: 'Taktart', value: work.meter_time_signature });
 
-      const detailsJson = JSON.stringify(details);
+      const detailsJson = JSON.stringify(detailsList);
 
       await prisma.product.upsert({
         where: { slug: safeSlug }, // Using slug as unique key

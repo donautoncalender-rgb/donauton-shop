@@ -9,7 +9,8 @@ interface ScorePreviewModalProps {
 
 export default function ScorePreviewModal({ pdfUrl, title }: ScorePreviewModalProps) {
   const openPdfWindow = () => {
-    window.open(pdfUrl, 'PdfPreviewWindow', 'width=1000,height=800,resizable=yes,scrollbars=yes');
+    const url = `/pdf-preview?url=${encodeURIComponent(pdfUrl)}&title=${encodeURIComponent(title)}`;
+    window.open(url, 'PdfPreviewWindow', 'width=1000,height=800,resizable=yes,scrollbars=yes');
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
