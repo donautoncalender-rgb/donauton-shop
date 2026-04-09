@@ -47,6 +47,32 @@ export async function GET() {
       const pdfPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('pdf') || a.filename?.toLowerCase().includes('.pdf'))?.file_path || null;
       const audioPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('audio') || a.filename?.toLowerCase().includes('.mp3'))?.file_path || null;
 
+      // duration formatting (from seconds to mm:ss)
+      let formattedDuration = null;
+      if (work.duration_seconds) {
+        const mins = Math.floor(work.duration_seconds / 60);
+        const secs = String(work.duration_seconds % 60).padStart(2, '0');
+        formattedDuration = `${mins}:${secs}`;
+      }
+
+      // Metadata details for ProductDetailsList
+      const details = [];
+      details.push({ label: "Kategorie", value: category + (work.genre ? ` - ${work.genre}` : '') });
+      if (work.sku) details.push({ label: "Artikelnummer", value: work.sku });
+      if (work.instrumentation) details.push({ label: "Besetzung", value: work.instrumentation });
+      if (formattedDuration) details.push({ label: "Dauer", value: `${formattedDuration} min` });
+      
+      // Difficulty mapping
+      if (work.difficulty_min) {
+        let diffLabel = String(work.difficulty_min);
+        if (work.difficulty_max && work.difficulty_max !== work.difficulty_min) {
+          diffLabel += ` - ${work.difficulty_max}`;
+        }
+        details.push({ label: "Schwierigkeit", value: `Grad ${diffLabel}` });
+      }
+
+      const detailsJson = JSON.stringify(details);
+
       await prisma.product.upsert({
         where: { slug: safeSlug }, // Using slug as unique key
         update: {
@@ -60,12 +86,13 @@ export async function GET() {
           stockStatus: work.availability === 'IN_STOCK' ? 'instock' : 'outofstock',
           composer: composerName,
           genre: work.genre || null,
-          duration: work.duration_seconds ? String(work.duration_seconds) : null,
+          duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,
           audioPreview: audioPreview,
           pdfPreview: pdfPreview,
           hasDigitalDownload: Boolean(work.has_digital_download),
           digitalPrice: work.digital_price_gross ? parseFloat(work.digital_price_gross) : null,
+          detailsJson: detailsJson
         },
         create: {
           title: work.title,
@@ -79,12 +106,13 @@ export async function GET() {
           stockStatus: work.availability === 'IN_STOCK' ? 'instock' : 'outofstock',
           composer: composerName,
           genre: work.genre || null,
-          duration: work.duration_seconds ? String(work.duration_seconds) : null,
+          duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,
           audioPreview: audioPreview,
           pdfPreview: pdfPreview,
           hasDigitalDownload: Boolean(work.has_digital_download),
           digitalPrice: work.digital_price_gross ? parseFloat(work.digital_price_gross) : null,
+          detailsJson: detailsJson
         }
       });
       syncedCount++;

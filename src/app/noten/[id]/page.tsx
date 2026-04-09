@@ -24,8 +24,39 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
   return (
     <div className="container page-container">
+      {/* -----------------------------
+          PRINT-ONLY, DEDICATED LAYOUT 
+         ----------------------------- */}
+      <div className="print-only">
+        <div style={{ padding: '0', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+          <div style={{ borderBottom: '2px solid #000', paddingBottom: '10px', marginBottom: '15px' }}>
+            <h1 style={{ fontSize: '24pt', fontWeight: 'bold', margin: '0 0 5px 0' }}>{title}</h1>
+            {(product.composer || product.artist || product.author) && (
+              <div style={{ fontSize: '12pt', color: '#444' }}>von <strong>{product.composer || product.artist || product.author}</strong></div>
+            )}
+            <div style={{ fontSize: '16pt', fontWeight: 'bold', marginTop: '10px' }}>Preis: {product.price}</div>
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+             <ProductDetailsList detailsJson={product.detailsJson} category={product.category} genre={product.genre} sku={product.sku} />
+          </div>
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+            <div style={{ width: '250px', flexShrink: 0 }}>
+              <img src={image} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} alt={title} />
+            </div>
+            <div style={{ flexGrow: 1 }}>
+              <h3 style={{ fontSize: '14pt', margin: '0 0 10px 0', fontWeight: 'bold' }}>Informationen zum Produkt</h3>
+              <div style={{ fontSize: '10pt', lineHeight: '1.4' }} dangerouslySetInnerHTML={{ __html: product.description || 'Keine Beschreibung verfügbar.' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* -----------------------------
+          SCREEN-ONLY LAYOUT 
+         ----------------------------- */}
+      <div className="screen-only">
       {/* Breadcrumb */}
-      <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
+      <div className="breadcrumb-container no-print" style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
         <Link href="/">Startseite</Link> &rsaquo; <Link href={`/${product.category.toLowerCase()}`}>{product.category}</Link> &rsaquo; <span style={{ color: 'var(--text)', fontWeight: 600 }}>{title}</span>
       </div>
 
@@ -48,7 +79,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           </div>
 
           {(product.audioPreview || product.pdfPreview || product.category === 'Noten') && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '0.6rem', marginTop: '-1rem' }}>
+            <div className="action-buttons-container no-print" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '0.6rem', marginTop: '-1rem' }}>
                {product.audioPreview && <AudioPreviewModal title={title} audioUrl={product.audioPreview} />}
                {product.pdfPreview && <ScorePreviewModal title={title} pdfUrl={product.pdfPreview} />}
                <ActionButtons 
@@ -96,6 +127,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               </div>
             )}
             
+            <div className="product-price-print" style={{ display: 'none' }}>
+              <strong>Preis: {product.price}</strong>
+            </div>
+
             {/* Dynamic Product Details */}
             <ProductDetailsList 
               detailsJson={product.detailsJson} 
@@ -105,17 +140,20 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             />
           </div>
 
-          <ProductBuyBox product={{
-            id: product.id.toString(),
-            title: product.title,
-            price: product.price,
-            image: image,
-            stockStatus: product.stockStatus,
-            hasDigitalDownload: product.hasDigitalDownload,
-            digitalPrice: product.digitalPrice
-          }} />
+          <div className="buy-box-container no-print">
+            <ProductBuyBox product={{
+              id: product.id.toString(),
+              title: product.title,
+              price: product.price,
+              image: image,
+              stockStatus: product.stockStatus,
+              hasDigitalDownload: product.hasDigitalDownload,
+              digitalPrice: product.digitalPrice
+            }} />
+          </div>
 
         </div>
+      </div>
       </div>
     </div>
   );

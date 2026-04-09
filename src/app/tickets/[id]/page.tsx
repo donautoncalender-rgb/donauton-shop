@@ -22,7 +22,41 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
   return (
     <div className="container page-container">
-      {/* Breadcrumb */}
+      {/* -----------------------------
+          PRINT-ONLY, DEDICATED LAYOUT 
+         ----------------------------- */}
+      <div className="print-only">
+        <div style={{ padding: '0', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+          <div style={{ borderBottom: '2px solid #000', paddingBottom: '10px', marginBottom: '15px' }}>
+            <h1 style={{ fontSize: '24pt', fontWeight: 'bold', margin: '0 0 5px 0' }}>{title}</h1>
+            {(product.composer || product.artist || product.author) && (
+              <div style={{ fontSize: '12pt', color: '#444' }}>von <strong>{product.composer || product.artist || product.author}</strong></div>
+            )}
+            <div style={{ fontSize: '16pt', fontWeight: 'bold', marginTop: '10px' }}>Preis: {product.price}</div>
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '10pt', color: '#333' }}>
+              <li><strong>Kategorie:</strong> {product.category} {product.genre ? `- ${product.genre}` : ''}</li>
+              {product.sku && <li><strong>Artikelnummer:</strong> {product.sku}</li>}
+            </ul>
+          </div>
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+            <div style={{ width: '250px', flexShrink: 0 }}>
+              <img src={image} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} alt={title} />
+            </div>
+            <div style={{ flexGrow: 1 }}>
+              <h3 style={{ fontSize: '14pt', margin: '0 0 10px 0', fontWeight: 'bold' }}>Informationen zum Produkt</h3>
+              <div style={{ fontSize: '10pt', lineHeight: '1.4' }} dangerouslySetInnerHTML={{ __html: product.description || 'Keine Beschreibung verfügbar.' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* -----------------------------
+          SCREEN-ONLY LAYOUT 
+         ----------------------------- */}
+      <div className="screen-only">
+        {/* Breadcrumb */}
       <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
         <Link href="/">Startseite</Link> &rsaquo; <Link href={`/${product.category.toLowerCase()}`}>{product.category}</Link> &rsaquo; <span style={{ color: 'var(--text)', fontWeight: 600 }}>{title}</span>
       </div>
@@ -168,6 +202,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
         </div>
       </div>
+     </div>
     </div>
   );
 }

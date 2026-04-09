@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './donauton.css';
+import './print.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CartProvider } from '../context/CartContext';
@@ -9,10 +10,25 @@ import CookieBanner from '../components/CookieBanner';
 import { prisma } from '../lib/prisma';
 import { Toaster } from 'react-hot-toast';
 
-export const metadata: Metadata = {
-  title: 'DONAUTON Shop - Premium Noten & Musik',
-  description: 'Entdecken Sie hochwertige Noten für Blasmusik, CDs, Merchandise und mehr – direkt vom DONAUTON Verlag.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let faviconUrl = '/favicon.ico';
+  try {
+    const setting = await prisma.shopSetting.findUnique({ where: { key: 'logo_url' } });
+    if (setting && setting.value) {
+      faviconUrl = setting.value;
+    }
+  } catch (e) {
+    // Falls Datenbank noch nicht läuft
+  }
+
+  return {
+    title: 'DONAUTON Shop - Premium Noten & Musik',
+    description: 'Entdecken Sie hochwertige Noten für Blasmusik, CDs, Merchandise und mehr – direkt vom DONAUTON Verlag.',
+    icons: {
+      icon: `${faviconUrl}?v=${new Date().getTime()}`,
+    }
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -44,7 +60,7 @@ export default async function RootLayout({
         <WishlistProvider>
           <CartProvider>
             {topBanner && (
-              <div style={{ backgroundColor: 'var(--primary)', color: 'white', textAlign: 'center', padding: '0.5rem', fontSize: '0.9rem', fontWeight: 600 }}>
+              <div className="announcement-banner">
                 {topBanner}
               </div>
             )}

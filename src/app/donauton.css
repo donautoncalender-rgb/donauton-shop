@@ -46,6 +46,11 @@ body {
   overflow-x: hidden;
 }
 
+/* Visibility Utilities */
+.print-only {
+  display: none;
+}
+
 /* Base Utilities */
 .container {
   width: 100%;
@@ -141,6 +146,15 @@ ul {
   border-bottom: 1px solid var(--border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+}
+
+.announcement-banner {
+  background-color: var(--primary);
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .header-content {
@@ -1052,108 +1066,3 @@ ul {
   text-align: justify;
 }
 
-/* -----------------------------
-   PRINT MEDIA STYLES 
-   ----------------------------- */
-@media print {
-  /* Hide UI elements that shouldn't be printed */
-  .header, 
-  header,
-  .footer,
-  footer,
-  nav,
-  button,
-  .btn,
-  .cart-drawer,
-  .icon-btn,
-  .toolbar,
-  .product-gallery-wrapper .thumbnails-sidebar {
-    display: none !important;
-  }
-  
-  body {
-    padding: 0 !important;
-    margin: 0px !important;
-    background: transparent !important;
-    color: #000 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .page-container {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-    max-width: 100% !important;
-  }
-
-  .product-detail-layout {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 3rem !important;
-    page-break-inside: avoid;
-    align-items: flex-start !important;
-  }
-
-  /* Make sure columns flex properly */
-  .product-detail-layout > div {
-    flex: 1 !important;
-    max-width: 50% !important;
-  }
-
-  /* Right column Box without background/border */
-  .product-detail-layout > div:last-child > div:last-child {
-    border: none !important;
-    background: transparent !important;
-    padding: 0 !important;
-    margin-top: 1rem !important;
-  }
-  
-  .main-image-container {
-    page-break-inside: avoid;
-    height: auto !important;
-    min-height: 500px;
-  }
-  
-  .main-image-container img {
-    max-height: 800px !important;
-    object-position: top center !important;
-    filter: none !important; /* Remove dropshadows for print */
-    box-shadow: none !important;
-  }
-
-  /* Fix Title Size for Print */
-  h1, h2, h3 {
-    page-break-after: avoid;
-    color: #000 !important;
-  }
-  
-  h1 span svg {
-    /* The underline decoration - disable or fix */
-    display: none !important;
-  }
-  
-  p, div, li, span {
-    text-shadow: none !important;
-    box-shadow: none !important;
-  }
-  
-  /* Link colors in print */
-  a {
-    color: #000 !important;
-    text-decoration: none !important;
-  }
-  
-  /* Guarantee elements like product price have no ugly grey box */
-  .product-header {
-    border-bottom: 2px solid #000 !important;
-    padding-bottom: 1rem !important;
-    margin-bottom: 1rem !important;
-  }
-  
-  /* Keep background colors if they are meaningful, like stock status circles */
-  div[style*="background: #00a651"],
-  div[style*="background: #eab308"] {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}

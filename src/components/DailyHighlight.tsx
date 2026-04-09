@@ -253,7 +253,13 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
               <a 
-                href={`/${product.category.toLowerCase().replace('ü', 'ue')}/${product.slug}`} 
+                href={`/${
+                  product.category === 'Bücher' ? 'buecher' : 
+                  product.category === 'Noten' ? 'noten' : 
+                  product.category === 'Tickets' ? 'tickets' : 
+                  product.category === 'Merch' ? 'merch' : 
+                  product.category?.toLowerCase()
+                }/${product.id}`} 
                 className="btn btn-primary highlight-btn" 
                 style={{ 
                    padding: '1rem 2.8rem', 
