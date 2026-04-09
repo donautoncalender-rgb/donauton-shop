@@ -51,12 +51,18 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
 
   const togglePlayPause = () => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !src || src.includes('REDACTED')) {
+      console.warn("Audio source not available or redacted");
+      return;
+    }
 
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play();
+      audio.play().catch(e => {
+        console.error("Playback failed:", e);
+        setIsPlaying(false);
+      });
     }
     setIsPlaying(!isPlaying);
   };

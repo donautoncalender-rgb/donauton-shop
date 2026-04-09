@@ -44,8 +44,9 @@ export async function GET() {
 
       // Assets
       const workAssets = work.assets || [];
-      const pdfPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('pdf') || a.filename?.toLowerCase().includes('.pdf'))?.file_path || null;
-      const audioPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('audio') || a.filename?.toLowerCase().includes('.mp3'))?.file_path || null;
+      // Pick assets that are NOT marked as shop download for previews
+      const pdfPreview = workAssets.find((a: any) => !a.is_shop_download && (a.file_type?.toLowerCase().includes('pdf') || a.filename?.toLowerCase().includes('.pdf')))?.file_path || null;
+      const audioPreview = workAssets.find((a: any) => !a.is_shop_download && (a.file_type?.toLowerCase().includes('audio') || a.filename?.toLowerCase().includes('.mp3')))?.file_path || null;
 
       // duration formatting (from seconds to mm:ss)
       let formattedDuration = null;
