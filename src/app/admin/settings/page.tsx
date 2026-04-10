@@ -1,9 +1,7 @@
 import { prisma } from '../../../lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-
+import { put } from '@vercel/blob';
 // Server Action for saving settings
 async function saveSettings(formData: FormData) {
   'use server';
@@ -17,20 +15,15 @@ async function saveSettings(formData: FormData) {
   if (logoFile && logoFile.size > 0) {
     const bytes = await logoFile.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const extMatch = logoFile.name.match(/\.[0-9a-z]+$/i);
+    const ext = extMatch ? extMatch[0] : '.png';
+    const filename = `logo-${Date.now()}${ext}`;
     
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
     try {
-      await mkdir(uploadDir, { recursive: true });
-      // clean filename and add timestamp to avoid caching issues
-      const extMatch = logoFile.name.match(/\.[0-9a-z]+$/i);
-      const ext = extMatch ? extMatch[0] : '.png';
-      const filename = `logo-${Date.now()}${ext}`;
-      const path = join(uploadDir, filename);
-      
-      await writeFile(path, buffer);
-      logoUrl = `/uploads/${filename}`;
+      const blob = await put(filename, logoFile, { access: 'public' });
+      logoUrl = blob.url;
     } catch(e) {
-      console.log('File upload ignored because environment is Read-Only (Vercel). User must provide URL.');
+      console.log('Blob upload failed. Did you configure Vercel Blob?', e);
     }
   }
 
