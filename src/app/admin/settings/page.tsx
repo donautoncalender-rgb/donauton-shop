@@ -21,16 +21,17 @@ async function saveSettings(formData: FormData) {
     const uploadDir = join(process.cwd(), 'public', 'uploads');
     try {
       await mkdir(uploadDir, { recursive: true });
-    } catch(e) {}
-    
-    // clean filename and add timestamp to avoid caching issues
-    const extMatch = logoFile.name.match(/\.[0-9a-z]+$/i);
-    const ext = extMatch ? extMatch[0] : '.png';
-    const filename = `logo-${Date.now()}${ext}`;
-    const path = join(uploadDir, filename);
-    
-    await writeFile(path, buffer);
-    logoUrl = `/uploads/${filename}`;
+      // clean filename and add timestamp to avoid caching issues
+      const extMatch = logoFile.name.match(/\.[0-9a-z]+$/i);
+      const ext = extMatch ? extMatch[0] : '.png';
+      const filename = `logo-${Date.now()}${ext}`;
+      const path = join(uploadDir, filename);
+      
+      await writeFile(path, buffer);
+      logoUrl = `/uploads/${filename}`;
+    } catch(e) {
+      console.log('File upload ignored because environment is Read-Only (Vercel). User must provide URL.');
+    }
   }
 
   // Upsert settings
