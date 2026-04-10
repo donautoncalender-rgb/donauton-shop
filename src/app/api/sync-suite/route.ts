@@ -3,7 +3,7 @@ import { prisma } from '../../../lib/prisma';
 
 export async function GET() {
   try {
-    const SUITE_URL = 'http://localhost:3001';
+    const SUITE_URL = 'https://donauton-suite.de';
     
     // Wir nutzen die offizielle, freigegebene Schnittstelle der Suite (api/shop-sync)
     const response = await fetch(`${SUITE_URL}/api/shop-sync?secret=DONAUTON_SHOP_SECRET_123`, {
@@ -42,10 +42,10 @@ export async function GET() {
 
       const safeSlug = (work.title || `work-${work.id}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-      // Assets
+      // Assets - Specifically look for the new shop_usage categories
       const workAssets = work.assets || [];
-      const pdfPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('pdf') || a.filename?.toLowerCase().includes('.pdf'))?.file_path || null;
-      const audioPreview = workAssets.find((a: any) => a.file_type?.toLowerCase().includes('audio') || a.filename?.toLowerCase().includes('.mp3'))?.file_path || null;
+      const pdfPreview = workAssets.find((a: any) => a.shop_usage === 'PREVIEW')?.file_path || null;
+      const audioPreview = workAssets.find((a: any) => a.shop_usage === 'AUDIO')?.file_path || null;
 
       // duration formatting (from seconds to mm:ss)
       let formattedDuration = null;
