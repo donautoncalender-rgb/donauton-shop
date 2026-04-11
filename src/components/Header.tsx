@@ -23,6 +23,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy }: H
     }
   }, []);
 
+  return (
     <>
       <style dangerouslySetInnerHTML={{__html: `
         .nav-item-dropdown {
