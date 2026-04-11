@@ -103,7 +103,9 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
 
         <div className="toolbar animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <div style={{ color: 'var(--text-light)' }}>
-            Zeige {filteredProducts.length} von {initialProducts.length} Alben
+            {filteredProducts.length === 0 ? "Keine Ergebnisse gefunden" : 
+             filteredProducts.length === 1 ? "1 Ergebnis gefunden" : 
+             `${filteredProducts.length} Ergebnisse gefunden`}
           </div>
           <div className="toolbar-sort" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ display: 'flex', background: '#f5f7fa', borderRadius: '4px', padding: '0.2rem' }}>
