@@ -2,6 +2,9 @@ import { prisma } from '../../../lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { put } from '@vercel/blob';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 // Server Action for saving settings
 async function saveSettings(formData: FormData) {
   'use server';
