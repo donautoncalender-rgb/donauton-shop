@@ -35,10 +35,10 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey }: { p
         firstName: data.first_name || prev.firstName,
         lastName: data.last_name || prev.lastName,
         email: data.email || prev.email,
-        companyName: data.shipping_company || data.billing_company || prev.companyName,
-        address: data.shipping_street || data.billing_street || prev.address,
-        zip: data.shipping_zip || data.billing_zip || prev.zip,
-        city: data.shipping_city || data.billing_city || prev.city
+        companyName: data.billing_company || data.shipping_company || prev.companyName,
+        address: data.billing_street || data.shipping_street || prev.address,
+        zip: data.billing_zip || data.shipping_zip || prev.zip,
+        city: data.billing_city || data.shipping_city || prev.city
       }));
       setIsLoggedIn(true);
     }

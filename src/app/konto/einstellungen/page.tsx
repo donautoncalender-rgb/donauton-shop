@@ -33,10 +33,10 @@ export default function SettingsPage() {
       first_name: localCustomer.first_name || '',
       last_name: localCustomer.last_name || '',
       email: localCustomer.email || '',
-      company: localCustomer.shipping_company || '',
-      street: localCustomer.shipping_street || '',
-      zip: localCustomer.shipping_zip || '',
-      city: localCustomer.shipping_city || '',
+      company: localCustomer.billing_company || localCustomer.shipping_company || '',
+      street: localCustomer.billing_street || localCustomer.shipping_street || '',
+      zip: localCustomer.billing_zip || localCustomer.shipping_zip || '',
+      city: localCustomer.billing_city || localCustomer.shipping_city || '',
     }));
 
     // Im Hintergrund frische Daten aus der Suite abfragen
@@ -53,10 +53,10 @@ export default function SettingsPage() {
             ...prev,
             first_name: freshCustomer.first_name || '',
             last_name: freshCustomer.last_name || '',
-            company: freshCustomer.shipping_company || '',
-            street: freshCustomer.shipping_street || '',
-            zip: freshCustomer.shipping_zip || '',
-            city: freshCustomer.shipping_city || '',
+            company: freshCustomer.billing_company || freshCustomer.shipping_company || '',
+            street: freshCustomer.billing_street || freshCustomer.shipping_street || '',
+            zip: freshCustomer.billing_zip || freshCustomer.shipping_zip || '',
+            city: freshCustomer.billing_city || freshCustomer.shipping_city || '',
           }));
         }
       } catch (e) {
