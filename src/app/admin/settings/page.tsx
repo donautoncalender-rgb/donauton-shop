@@ -153,7 +153,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <div className="admin-card">
         <h3 className="admin-card-title">Shop Basisdaten</h3>
         
-        <form action={saveSettings}>
+        <form action={saveSettings} encType="multipart/form-data">
           <div className="admin-form-group">
             <label className="admin-label">Shop Titel</label>
             <input 
