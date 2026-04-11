@@ -31,7 +31,7 @@ async function saveSettings(formData: FormData) {
   }
 
   // Upsert settings
-  if (logoUrl != null) {
+  if (logoUrl != null && logoUrl !== "") {
     await prisma.shopSetting.upsert({
       where: { key: 'logo_url' },
       update: { value: logoUrl },
