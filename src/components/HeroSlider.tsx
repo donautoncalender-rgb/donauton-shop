@@ -19,7 +19,6 @@ export default function HeroSlider({ slides }: { slides: any[] }) {
       position: 'relative', 
       width: '100%', 
       height: '450px', 
-      marginTop: '80px',
       backgroundColor: '#111',
       overflow: 'hidden'
     }}>
