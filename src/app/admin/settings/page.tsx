@@ -23,7 +23,10 @@ async function saveSettings(formData: FormData) {
     const filename = `logo-${Date.now()}${ext}`;
     
     try {
-      const blob = await put(filename, logoFile, { access: 'public' });
+      const blob = await put(filename, buffer, { 
+        access: 'public',
+        contentType: logoFile.type
+      });
       logoUrl = blob.url;
     } catch(e) {
       console.log('Blob upload failed. Did you configure Vercel Blob?', e);
