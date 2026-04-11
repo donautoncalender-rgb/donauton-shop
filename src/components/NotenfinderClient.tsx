@@ -25,7 +25,9 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       setSelectedBesetzungen([]);
       setSelectedGenres([]);
       setSelectedGrades([]);
-      router.replace('/noten', { scroll: false });
+      
+      // Clean up the URL silently without triggering a Next.js router transition race condition
+      window.history.replaceState(null, '', '/noten');
       return; 
     }
 
