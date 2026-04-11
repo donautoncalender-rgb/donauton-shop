@@ -4,6 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import AudioPreviewModal from './AudioPreviewModal';
+import ScorePreviewModal from './ScorePreviewModal';
+import ActionButtons from './ActionButtons';
 
 interface ProductCardProps {
   product: any;
@@ -75,7 +78,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
           flexShrink: 0
         }}>
           {product.badge && <span className="product-badge">{product.badge}</span>}
-          <img src={product.image} alt={product.title} className="product-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={product.image} alt={product.title} className="product-image" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         
         {/* INFO */}
@@ -134,6 +137,26 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         borderLeft: isList ? '1px solid var(--border)' : 'none',
         minWidth: isList ? '250px' : 'auto'
       }}>
+        {/* INJECTED ACTION BUTTONS FOR LIST VIEW */}
+        {(isList && (product.audioPreview || product.pdfPreview || product.category === 'Noten')) && (
+          <div className="action-buttons-container no-print" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '0.5rem', marginBottom: '1.5rem', width: '100%' }}>
+             {product.audioPreview && <AudioPreviewModal title={product.title} audioUrl={product.audioPreview} />}
+             {product.pdfPreview && <ScorePreviewModal title={product.title} pdfUrl={product.pdfPreview} />}
+             <ActionButtons 
+               youtubeUrl={product.youtubeUrl} 
+               product={{ 
+                 id: product.id.toString(), 
+                 title: product.title, 
+                 price: product.price, 
+                 image: product.image, 
+                 slug: product.slug, 
+                 composer: product.composer, 
+                 category: product.category || 'Noten' 
+               }} 
+             />
+          </div>
+        )}
+
         <div className="product-price">{product.price}</div>
         <button 
           style={{ 

@@ -22,8 +22,12 @@ export default async function Notenfinder() {
     price: p.price,
     badge: p.badge || '',
     description: p.description || '',
+    audioPreview: p.audioPreview || null,
+    pdfPreview: p.pdfPreview || null,
+    youtubeUrl: p.youtubeUrl || null,
     image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=565&fit=crop&q=80',
-    slug: p.slug
+    slug: p.slug,
+    category: p.category
   }));
 
   return (
