@@ -92,9 +92,14 @@ export default function OrdersPage() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '1rem' }}>
-                  <button className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', background: '#fff', border: '1px solid #cbd5e0', color: '#4a5568' }} disabled>
-                    (PDF später)
-                  </button>
+                  <a 
+                    href={`/api/customer/invoice?email=${encodeURIComponent(localCustomer.email)}&orderId=${order.real_id}`}
+                    download
+                    className="btn btn-secondary" 
+                    style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', background: '#fff', border: '1px solid #cbd5e0', color: '#4a5568', textDecoration: 'none', cursor: 'pointer' }}
+                  >
+                    Rechnung downloaden
+                  </a>
                   <Link href={`/konto/bestellungen/${order.real_id}`} className="btn btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', background: 'var(--accent)', color: 'white', textDecoration: 'none', textAlign: 'center', borderRadius: '4px' }}>
                     Details
                   </Link>
