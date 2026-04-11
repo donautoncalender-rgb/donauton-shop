@@ -22,6 +22,7 @@ export default async function Notenfinder() {
     price: p.price,
     badge: p.badge || '',
     description: p.description || '',
+    sku: p.sku || '',
     audioPreview: p.audioPreview || null,
     pdfPreview: p.pdfPreview || null,
     youtubeUrl: p.youtubeUrl || null,

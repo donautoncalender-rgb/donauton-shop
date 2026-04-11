@@ -4,9 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import AudioPreviewModal from './AudioPreviewModal';
-import ScorePreviewModal from './ScorePreviewModal';
-import ActionButtons from './ActionButtons';
 
 interface ProductCardProps {
   product: any;
@@ -18,33 +15,244 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const { toggleWishlist, isInWishlist } = useWishlist();
   
   const isList = viewMode === 'list';
+  const isMerked = isInWishlist(product.id.toString());
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({
+      id: product.id.toString(),
+      title: product.title,
+      price: parseFloat(product.price.replace(',', '.')),
+      quantity: 1,
+      variant: 'Gedruckte Ausgabe',
+      image: product.image
+    });
+    toggleCart();
+  };
+
+  const handleWatchlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist({
+      id: product.id.toString(),
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      slug: product.slug,
+      composer: product.composer,
+      category: product.category || 'Noten'
+    });
+  };
+
+  // Helper functions for action buttons (bypassing modals for direct native windows)
+  const openAudioPlayer = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    if (!product.audioPreview) return;
+    const url = `/player?url=${encodeURIComponent(product.audioPreview)}&title=${encodeURIComponent(product.title)}`;
+    window.open(url, 'AudioPlayerWindow', 'width=450,height=300,resizable=yes,scrollbars=no,status=no,menubar=no');
+  };
+
+  const openPdfViewer = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    if (!product.pdfPreview) return;
+    const url = `/pdf-preview?url=${encodeURIComponent(product.pdfPreview)}&title=${encodeURIComponent(product.title)}`;
+    window.open(url, 'PdfPreviewWindow', 'width=1000,height=800,resizable=yes,scrollbars=yes');
+  };
+
+  const openYoutube = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    if (product.youtubeUrl) window.open(product.youtubeUrl, '_blank');
+  };
+
+  const shareProduct = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: `DONAUTON - ${product.title}`,
+        url: `${window.location.origin}/${product.category?.toLowerCase() || 'noten'}/${product.id}`,
+      }).catch(console.error);
+    } else {
+      alert('Teilen wird in diesem Browser nicht unterstützt. Kopiere einfach die URL!');
+    }
+  };
+
+  const printSheet = (e: React.MouseEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    window.print();
+  };
+
+
+  // --------------------------------------------------------------------------------
+  // LIST VIEW LAYOUT (RUNDEL STYLE)
+  // --------------------------------------------------------------------------------
+  if (isList) {
+    const RundelButton = ({ icon, label, onClick }: any) => (
+      <button 
+        onClick={onClick}
+        className="rundel-btn"
+        style={{
+          width: '100%',
+          backgroundColor: '#eaeaea',
+          color: 'var(--accent)',
+          border: 'none',
+          padding: '0.8rem 1.2rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '15px',
+          cursor: 'pointer',
+          fontWeight: 700,
+          fontSize: '0.95rem',
+          transition: 'background-color 0.2s',
+          fontFamily: 'inherit'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d8d8d8'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#eaeaea'}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
+          {icon}
+        </div>
+        <span>{label}</span>
+      </button>
+    );
+
+    return (
+      <Link href={`/${product.category?.toLowerCase() === 'bücher' ? 'buecher' : product.category?.toLowerCase() === 'cds' ? 'cds' : 'noten'}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div 
+          className="product-card-list RundelLayout"
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            gap: '2rem',
+            padding: '1.5rem',
+            backgroundColor: 'white',
+            border: '1px solid #eee',
+            borderTop: '3px solid transparent',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+            transition: 'border-color 0.3s, box-shadow 0.3s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderTopColor = 'var(--accent)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.08)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderTopColor = 'transparent';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.03)';
+          }}
+        >
+          {/* LEFT: IMAGE */}
+          <div style={{ width: '180px', flexShrink: 0, position: 'relative', minHeight: '220px', display: 'flex', alignItems: 'flex-start' }}>
+            {product.badge && <span className="product-badge" style={{ position: 'absolute', top: 0, left: 0, zIndex: 2 }}>{product.badge}</span>}
+            <img src={product.image} alt={product.title} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+          </div>
+
+          {/* MIDDLE: INFO */}
+          <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1rem', marginBottom: '0.3rem' }}>
+              {product.composer || product.author}
+            </div>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#111', margin: '0 0 1rem 0' }}>
+              {product.title}
+            </h3>
+            
+            {product.description && (
+              <div style={{ 
+                fontSize: '0.95rem', 
+                color: '#555', 
+                lineHeight: '1.6', 
+                display: '-webkit-box', 
+                WebkitLineClamp: 3, 
+                WebkitBoxOrient: 'vertical', 
+                overflow: 'hidden', 
+                marginBottom: '1.5rem' 
+              }}>
+                {product.description.replace(/<[^>]*>?/gm, '')}
+              </div>
+            )}
+
+            <div style={{ fontSize: '0.9rem', color: '#444', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: 'auto' }}>
+              <div style={{ fontWeight: 600 }}>{product.genre || product.category || 'Blasorchester'}</div>
+              {product.grade && <div>Stufe {product.grade}</div>}
+              {product.sku && <div style={{ color: '#888' }}>{product.sku}</div>}
+            </div>
+          </div>
+
+          {/* RIGHT: BUTTONS */}
+          <div style={{ width: '220px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {/* Main Buy Button */}
+            <button 
+              onClick={handleAddToCart}
+              style={{
+                width: '100%',
+                backgroundColor: 'var(--accent)',
+                color: 'white',
+                border: 'none',
+                padding: '1rem 1.2rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '15px',
+                cursor: 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent)'}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1.5"></circle><circle cx="20" cy="21" r="1.5"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span style={{ fontSize: '1.15rem', fontWeight: 800 }}>{product.price}</span>
+            </button>
+
+            {/* Secondary Buttons stacked tight */}
+            <RundelButton 
+              label={isMerked ? 'Gemerkt' : 'Merken'} 
+              onClick={handleWatchlist} 
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill={isMerked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>} 
+            />
+            {product.audioPreview && (
+              <RundelButton 
+                label="Hören" 
+                onClick={openAudioPlayer} 
+                icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>} 
+              />
+            )}
+            {product.pdfPreview && (
+              <RundelButton 
+                label="Lesen" 
+                onClick={openPdfViewer} 
+                icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>} 
+              />
+            )}
+            {product.youtubeUrl && (
+              <RundelButton 
+                label="YouTube" 
+                onClick={openYoutube} 
+                icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>} 
+              />
+            )}
+            <RundelButton 
+              label="Teilen" 
+              onClick={shareProduct} 
+              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>} 
+            />
+          </div>
+        </div>
+      </Link>
+    );
+  }
+
+
+  // --------------------------------------------------------------------------------
+  // GRID VIEW LAYOUT (STANDARD)
+  // --------------------------------------------------------------------------------
   return (
-    <div 
-      className={`product-card ${isList ? 'product-card-list' : ''}`} 
-      style={{ 
-        display: 'flex', 
-        flexDirection: isList ? 'row' : 'column',
-        alignItems: isList ? 'stretch' : 'normal',
-        gap: isList ? '2rem' : '0'
-      }}
-    >
-      {/* Absolute Wishlist Button - Adjusted for List View if necessary */}
+    <div className="product-card" style={{ display: 'flex', flexDirection: 'column' }}>
+      {/* Absolute Wishlist Button */}
       <button 
         aria-label="Zur Merkliste"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleWishlist({
-            id: product.id.toString(),
-            title: product.title,
-            price: product.price,
-            image: product.image,
-            slug: product.slug,
-            composer: product.composer,
-            category: 'Noten'
-          });
-        }}
+        onClick={handleWatchlist}
         style={{
           position: 'absolute',
           top: '10px',
@@ -58,37 +266,25 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
-          color: isInWishlist(product.id.toString()) ? 'var(--accent)' : 'var(--text-light)',
+          color: isMerked ? 'var(--accent)' : 'var(--text-light)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
           zIndex: 3,
           transition: 'all 0.2s ease'
         }}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill={isInWishlist(product.id.toString()) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill={isMerked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
       </button>
 
-      <Link href={`/${product.category === 'Bücher' ? 'buecher' : product.category === 'CDs' ? 'cds' : 'noten'}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: isList ? 'row' : 'column', flexGrow: 1, gap: isList ? '2rem' : '0' }}>
-        
-        {/* IMAGE */}
-        <div className="product-image-container" style={{ 
-          position: 'relative', 
-          width: isList ? '200px' : '100%', 
-          flexShrink: 0
-        }}>
+      <Link href={`/${product.category?.toLowerCase() === 'bücher' ? 'buecher' : product.category?.toLowerCase() === 'cds' ? 'cds' : 'noten'}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <div className="product-image-container">
           {product.badge && <span className="product-badge">{product.badge}</span>}
           <img src={product.image} alt={product.title} className="product-image" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         
-        {/* INFO */}
-        <div className="product-info" style={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          justifyContent: 'center',
-          flex: 1
-        }}>
-          <div className="product-genre">{product.genre}</div>
+        <div className="product-info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+          <div className="product-genre">{product.genre || 'Ohne Genre'}</div>
           <h3 className="product-title">{product.title}</h3>
           <div className="product-composer">{product.composer || product.author}</div>
           
@@ -106,59 +302,13 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
               </span>
             )}
           </div>
-          
-          {/* THE NEW SHORT DESCRIPTION FOR LIST VIEW */}
-          {isList && product.description && (
-            <div style={{
-              marginTop: '1.2rem',
-              color: 'var(--text-light)',
-              fontSize: '0.9rem',
-              lineHeight: 1.5,
-              display: '-webkit-box',
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden'
-            }}>
-              {/* Strip HTML tags if description is stored as HTML */}
-              {product.description.replace(/<[^>]*>?/gm, '')}
-            </div>
-          )}
         </div>
       </Link>
       
-      {/* BOTTOM / ACTION ITEMS */}
-      <div className="product-bottom" style={{ 
-        padding: isList ? '2rem' : '0 1.5rem 1.5rem', 
-        marginTop: isList ? '0' : 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: isList ? 'flex-end' : 'flex-start',
-        justifyContent: isList ? 'center' : 'flex-start',
-        borderLeft: isList ? '1px solid var(--border)' : 'none',
-        minWidth: isList ? '250px' : 'auto'
-      }}>
-        {/* INJECTED ACTION BUTTONS FOR LIST VIEW */}
-        {(isList && (product.audioPreview || product.pdfPreview || product.category === 'Noten')) && (
-          <div className="action-buttons-container no-print" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '0.5rem', marginBottom: '1.5rem', width: '100%' }}>
-             {product.audioPreview && <AudioPreviewModal title={product.title} audioUrl={product.audioPreview} />}
-             {product.pdfPreview && <ScorePreviewModal title={product.title} pdfUrl={product.pdfPreview} />}
-             <ActionButtons 
-               youtubeUrl={product.youtubeUrl} 
-               product={{ 
-                 id: product.id.toString(), 
-                 title: product.title, 
-                 price: product.price, 
-                 image: product.image, 
-                 slug: product.slug, 
-                 composer: product.composer, 
-                 category: product.category || 'Noten' 
-               }} 
-             />
-          </div>
-        )}
-
+      <div className="product-bottom" style={{ padding: '0 1.5rem 1.5rem', marginTop: 'auto' }}>
         <div className="product-price">{product.price}</div>
         <button 
+          onClick={handleAddToCart}
           style={{ 
             background: 'var(--accent)', 
             color: 'white', 
@@ -177,23 +327,9 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent-hover)'}
           onMouseLeave={(e) => e.currentTarget.style.background = 'var(--accent)'}
           aria-label="In den Warenkorb"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            addToCart({
-              id: product.id.toString(),
-              title: product.title,
-              price: parseFloat(product.price.replace(',', '.')),
-              quantity: 1,
-              variant: 'Gedruckte Ausgabe', // Default variant
-              image: product.image
-            });
-            toggleCart();
-          }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
+            <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
           </svg>
           In den Warenkorb
