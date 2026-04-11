@@ -20,19 +20,31 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
   useEffect(() => {
     const bParams = searchParams.getAll('besetzung');
     const gParams = searchParams.getAll('genre');
+    const qParam = searchParams.get('q') || '';
     
-    // If exact query strings exist, initialize from query params:
-    if (bParams.length > 0) setSelectedBesetzungen(bParams);
-    else {
+    // Strict Synchronization with URL Parameters
+    setSearchQuery(qParam);
+
+    if (bParams.length > 0) {
+      setSelectedBesetzungen(bParams);
+    } else {
       const singleB = searchParams.get('besetzung');
-      if (singleB) setSelectedBesetzungen([singleB]);
+      setSelectedBesetzungen(singleB ? [singleB] : []);
     }
     
-    if (gParams.length > 0) setSelectedGenres(gParams);
-    else {
+    if (gParams.length > 0) {
+      setSelectedGenres(gParams);
+    } else {
       const singleG = searchParams.get('genre');
-      if (singleG) setSelectedGenres([singleG]);
+      setSelectedGenres(singleG ? [singleG] : []);
     }
+    
+    // Note: Grades currently have no URL parameter equivalent in the taxonomy dropdown.
+    // If a mega menu link is navigated to, it should reset the local grade filters to show all.
+    if (bParams.length > 0 || gParams.length > 0 || searchParams.has('besetzung') || searchParams.has('genre')) {
+      setSelectedGrades([]);
+    }
+
   }, [searchParams]);
 
   const availableBesetzungen = useMemo(() => {
