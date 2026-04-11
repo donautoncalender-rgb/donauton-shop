@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { prisma } from '../../lib/prisma';
 import NotenfinderClient from '../../components/NotenfinderClient';
 
@@ -11,7 +12,17 @@ export default async function Notenfinder() {
     where: { category: 'Noten' }
   });
   
-  const products = dbProducts.map(p => ({
+  const products = dbProducts.map(p => {
+    let besetzung = 'Sonstige Noten';
+    if (p.detailsJson) {
+      try {
+        const details = JSON.parse(p.detailsJson);
+        const bMatch = details.find((d: any) => d.label === 'Besetzung');
+        if (bMatch && bMatch.value) besetzung = bMatch.value.trim();
+      } catch (e) {}
+    }
+
+    return {
     id: p.id,
     wooId: p.wooId,
     genre: p.genre || 'Ohne Genre',
@@ -28,8 +39,10 @@ export default async function Notenfinder() {
     youtubeUrl: p.youtubeUrl || null,
     image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=565&fit=crop&q=80',
     slug: p.slug,
-    category: p.category
-  }));
+    category: p.category || 'Noten',
+    besetzung
+  };
+});
 
   return (
     <div className="container page-container">
@@ -40,7 +53,9 @@ export default async function Notenfinder() {
         </p>
       </div>
 
-      <NotenfinderClient categories={categories} initialProducts={products} />
+      <Suspense fallback={<div className="animate-pulse" style={{ padding: '2rem', textAlign: 'center' }}>Lädt Katalog...</div>}>
+        <NotenfinderClient categories={categories} initialProducts={products} />
+      </Suspense>
     </div>
   );
 }

@@ -35,10 +35,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Fetch global shop settings
   let shopTitle = "DONAUTON.";
   let logoUrl = null;
   let topBanner = null;
+  let notenTaxonomy: { besetzung: string; genres: string[] }[] = [];
 
   try {
     const settings = await prisma.shopSetting.findMany();
@@ -50,6 +50,36 @@ export default async function RootLayout({
     if (settingsMap['shop_title']) shopTitle = settingsMap['shop_title'];
     if (settingsMap['logo_url']) logoUrl = settingsMap['logo_url'];
     if (settingsMap['announcement_text']) topBanner = settingsMap['announcement_text'];
+
+    // Fetch taxonomy for dropdown
+    const notenProducts = await prisma.product.findMany({
+      where: { category: 'Noten' },
+      select: { genre: true, detailsJson: true }
+    });
+
+    const taxonomyMap = new Map<string, Set<string>>();
+    notenProducts.forEach((p: any) => {
+      let besetzung = 'Sonstige Noten';
+      if (p.detailsJson) {
+        try {
+          const details = JSON.parse(p.detailsJson);
+          const bMatch = details.find((d: any) => d.label === 'Besetzung');
+          if (bMatch && bMatch.value) besetzung = bMatch.value.trim();
+        } catch(e) {}
+      }
+      
+      const genre = p.genre ? p.genre.trim() : 'Ohne Genre';
+      if (genre !== 'Ohne Genre') {
+        if (!taxonomyMap.has(besetzung)) taxonomyMap.set(besetzung, new Set());
+        taxonomyMap.get(besetzung)!.add(genre);
+      }
+    });
+
+    notenTaxonomy = Array.from(taxonomyMap.entries()).map(([besetzung, genres]) => ({
+      besetzung,
+      genres: Array.from(genres).sort()
+    })).sort((a,b) => a.besetzung.localeCompare(b.besetzung));
+
   } catch (e) {
     console.log("Database not initialized yet", e);
   }
@@ -64,7 +94,7 @@ export default async function RootLayout({
                 {topBanner}
               </div>
             )}
-            <Header shopTitle={shopTitle} logoUrl={logoUrl} />
+            <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} />
             <CartDrawer />
             <main style={{ minHeight: '100vh' }}>
               {children}

@@ -1,18 +1,49 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from './ProductCard';
 
 export default function NotenfinderClient({ categories, initialProducts }: { categories: any[], initialProducts: any[] }) {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBesetzungen, setSelectedBesetzungen] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+
+  useEffect(() => {
+    const bParams = searchParams.getAll('besetzung');
+    const gParams = searchParams.getAll('genre');
+    
+    // If exact query strings exist, initialize from query params:
+    if (bParams.length > 0) setSelectedBesetzungen(bParams);
+    else {
+      const singleB = searchParams.get('besetzung');
+      if (singleB) setSelectedBesetzungen([singleB]);
+    }
+    
+    if (gParams.length > 0) setSelectedGenres(gParams);
+    else {
+      const singleG = searchParams.get('genre');
+      if (singleG) setSelectedGenres([singleG]);
+    }
+  }, [searchParams]);
+
+  const availableBesetzungen = useMemo(() => {
+    const list = new Set<string>();
+    initialProducts.forEach(p => {
+      if (p.besetzung && p.besetzung.trim() !== '') {
+        list.add(p.besetzung.trim());
+      }
+    });
+    return Array.from(list).sort();
+  }, [initialProducts]);
 
   // Dynamically extract unique genres and grades from the synced products
   const availableGenres = useMemo(() => {
@@ -40,6 +71,12 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     });
   }, [initialProducts]);
 
+  const toggleBesetzung = (b: string) => {
+    setSelectedBesetzungen(prev => 
+      prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]
+    );
+  };
+
   // Handle genre toggle
   const toggleGenre = (genre: string) => {
     setSelectedGenres(prev => 
@@ -63,6 +100,9 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
         product.composer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.genre.toLowerCase().includes(searchQuery.toLowerCase());
       
+      const matchesBesetzung = selectedBesetzungen.length === 0 ||
+        selectedBesetzungen.includes(product.besetzung?.trim());
+        
       // 2. Genre filter (Exact mapping from Suite)
       const matchesGenre = selectedGenres.length === 0 || 
         selectedGenres.includes(product.genre.trim());
@@ -71,15 +111,34 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       const matchesGrade = selectedGrades.length === 0 || 
         selectedGrades.includes(product.grade.trim());
 
-      return matchesSearch && matchesGenre && matchesGrade;
+      return matchesSearch && matchesBesetzung && matchesGenre && matchesGrade;
     });
-  }, [searchQuery, selectedGenres, selectedGrades, initialProducts]);
+  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, initialProducts]);
 
   return (
     <div className="shop-layout">
       {/* Sidebar */}
       <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
         
+        {availableBesetzungen.length > 0 && (
+          <div className="filter-group">
+            <h3 className="filter-title">Besetzung</h3>
+            <div className="filter-list">
+              {availableBesetzungen.map((b) => (
+                <label className="filter-label" key={b}>
+                  <input 
+                    type="checkbox" 
+                    className="filter-checkbox" 
+                    checked={selectedBesetzungen.includes(b)}
+                    onChange={() => toggleBesetzung(b)}
+                  /> 
+                  {b}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
         {availableGenres.length > 0 && (
           <div className="filter-group">
             <h3 className="filter-title">Genre</h3>
