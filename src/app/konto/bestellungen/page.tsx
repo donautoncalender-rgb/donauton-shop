@@ -7,6 +7,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
 
   useEffect(() => {
     const dataStr = localStorage.getItem('donauton_customer');
@@ -15,6 +16,7 @@ export default function OrdersPage() {
       return;
     }
     const localCustomer = JSON.parse(dataStr);
+    setCustomerEmail(localCustomer.email || '');
 
     const fetchOrders = async () => {
       try {
@@ -93,7 +95,7 @@ export default function OrdersPage() {
 
                 <div style={{ display: 'flex', gap: '1rem' }}>
                   <a 
-                    href={`/api/customer/invoice?email=${encodeURIComponent(localCustomer.email)}&orderId=${order.real_id}`}
+                    href={`/api/customer/invoice?email=${encodeURIComponent(customerEmail)}&orderId=${order.real_id}`}
                     download
                     className="btn btn-secondary" 
                     style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', background: '#fff', border: '1px solid #cbd5e0', color: '#4a5568', textDecoration: 'none', cursor: 'pointer' }}
