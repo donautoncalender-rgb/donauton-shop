@@ -14,9 +14,15 @@ export default async function MerchPage() {
     title: p.title,
     price: p.price,
     badge: p.badge || '',
+    description: p.description || '',
+    sku: p.sku || '',
+    audioPreview: p.audioPreview || null,
+    pdfPreview: p.pdfPreview || null,
+    youtubeUrl: p.youtubeUrl || null,
     sizes: p.sizes ? JSON.parse(p.sizes) : [],
     image: p.imageUrl || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=565&fit=crop&q=80',
-    slug: p.slug
+    slug: p.slug,
+    category: p.category || 'Merch'
   }));
 
   return (

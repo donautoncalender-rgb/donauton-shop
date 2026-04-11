@@ -15,8 +15,15 @@ export default async function TicketsPage() {
     date: 'Demnächst',
     price: p.price,
     badge: p.badge || '',
+    description: p.description || '',
+    sku: p.sku || '',
+    audioPreview: p.audioPreview || null,
+    pdfPreview: p.pdfPreview || null,
+    youtubeUrl: p.youtubeUrl || null,
     image: p.imageUrl || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=565&fit=crop&q=80',
-    slug: p.slug
+    slug: p.slug,
+    category: p.category || 'Tickets',
+    composer: p.author || 'Event'
   }));
 
   return (

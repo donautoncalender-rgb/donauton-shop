@@ -14,8 +14,14 @@ export default async function BuecherPage() {
     author: p.author || p.composer || '',
     price: p.price,
     badge: p.badge || '',
+    description: p.description || '',
+    sku: p.sku || '',
+    audioPreview: p.audioPreview || null,
+    pdfPreview: p.pdfPreview || null,
+    youtubeUrl: p.youtubeUrl || null,
     image: p.imageUrl || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=565&fit=crop&q=80',
-    slug: p.slug
+    slug: p.slug,
+    category: p.category || 'Bücher'
   }));
 
   return (

@@ -20,8 +20,15 @@ export default async function CDsShop() {
     artist: p.artist || p.composer || '',
     price: p.price,
     badge: p.badge || '',
+    description: p.description || '',
+    sku: p.sku || '',
+    audioPreview: p.audioPreview || null,
+    pdfPreview: p.pdfPreview || null,
+    youtubeUrl: p.youtubeUrl || null,
     image: p.imageUrl || 'https://images.unsplash.com/photo-1619983081563-430f63602796?w=400&h=565&fit=crop&q=80',
-    slug: p.slug
+    slug: p.slug,
+    category: p.category || 'CDs',
+    composer: p.artist || p.composer || ''
   }));
 
   return (
