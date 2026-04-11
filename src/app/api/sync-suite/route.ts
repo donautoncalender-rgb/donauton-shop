@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function GET() {
   try {
@@ -60,7 +61,12 @@ export async function GET() {
       if (category) detailsList.push({ label: 'Kategorie', value: category + (work.genre ? ` - ${work.genre}` : '') });
       if (work.sku) detailsList.push({ label: 'Artikelnummer', value: work.sku });
       if (work.instrumentation) detailsList.push({ label: 'Besetzung', value: work.instrumentation });
-      if (work.difficulty_min) detailsList.push({ label: 'Schwierigkeit', value: `Grad ${work.difficulty_min}${work.difficulty_max ? ' - ' + work.difficulty_max : ''}` });
+      
+      const parsedGrade = work.difficulty_min 
+        ? `${work.difficulty_min}${work.difficulty_max && work.difficulty_max != work.difficulty_min ? ' - ' + work.difficulty_max : ''}` 
+        : null;
+        
+      if (parsedGrade) detailsList.push({ label: 'Schwierigkeit', value: `Grad ${parsedGrade}` });
       if (formattedDuration) detailsList.push({ label: 'Dauer', value: formattedDuration });
       if (work.page_count_score || work.page_count) detailsList.push({ label: 'Seiten', value: (work.page_count_score || work.page_count).toString() });
       if (work.key_signature) detailsList.push({ label: 'Tonart', value: work.key_signature });
@@ -81,6 +87,7 @@ export async function GET() {
           stockStatus: work.availability === 'IN_STOCK' ? 'instock' : 'outofstock',
           composer: composerName,
           genre: work.genre || null,
+          grade: parsedGrade,
           duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,
           audioPreview: audioPreview,
@@ -101,6 +108,7 @@ export async function GET() {
           stockStatus: work.availability === 'IN_STOCK' ? 'instock' : 'outofstock',
           composer: composerName,
           genre: work.genre || null,
+          grade: parsedGrade,
           duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,
           audioPreview: audioPreview,
@@ -112,6 +120,9 @@ export async function GET() {
       });
       syncedCount++;
     }
+
+    // Flush the global Next.js cache so the Storefront updates instantly
+    revalidatePath('/', 'layout');
 
     return NextResponse.json({
       success: true,
