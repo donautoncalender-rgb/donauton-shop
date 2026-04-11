@@ -1,7 +1,7 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 async function main() {
-  const settings = await prisma.shopSetting.findMany()
-  console.log(settings)
+  const url = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_url' }});
+  console.log("ERP URL SETTING:", url);
 }
-main()
+main().catch(console.error).finally(() => prisma.$disconnect());
