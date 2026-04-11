@@ -28,7 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/categories" className="admin-link">Kategorien</Link>
           <Link href="/admin/settings" className="admin-link">Einstellungen</Link>
           <hr style={{ margin: '1rem 0', borderColor: 'rgba(255,255,255,0.1)' }} />
-          <Link href="/" className="admin-link" style={{ color: 'var(--primary)' }}>← Zurück zum Shop</Link>
+          <Link href="/" className="admin-link" style={{ color: '#f87171', fontWeight: 'bold' }}>← Zurück zum Shop</Link>
         </nav>
       </aside>
 
