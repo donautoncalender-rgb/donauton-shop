@@ -28,8 +28,9 @@ async function saveSettings(formData: FormData) {
         contentType: logoFile.type
       });
       logoUrl = blob.url;
-    } catch(e) {
+    } catch(e: any) {
       console.log('Blob upload failed. Did you configure Vercel Blob?', e);
+      redirect(`/admin/settings?error=${encodeURIComponent(e.message || 'Blob upload failed')}`);
     }
   }
 
@@ -131,7 +132,7 @@ async function saveSettings(formData: FormData) {
   redirect('/admin/settings?success=1');
 }
 
-export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ success?: string }> }) {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ success?: string, error?: string }> }) {
   const resolvedSearchParams = await searchParams;
   // Load current settings
   const settingsRecords = await prisma.shopSetting.findMany();
@@ -150,6 +151,13 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <div style={{ background: '#ecfdf5', border: '1px solid #10b981', color: '#047857', padding: '1rem', borderRadius: '8px', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           <strong>Erfolgreich gespeichert!</strong> Die Einstellungen wurden übernommen.
+        </div>
+      )}
+
+      {resolvedSearchParams.error && (
+        <div style={{ padding: '1rem', backgroundColor: '#fef2f2', color: '#b91c1c', borderRadius: '8px', marginBottom: '2rem', border: '1px solid #f87171', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <strong>Fehler beim Upload:</strong> {decodeURIComponent(resolvedSearchParams.error)}
         </div>
       )}
 
