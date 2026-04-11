@@ -4,11 +4,13 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import ProductCard from './ProductCard';
 
 export default function NotenfinderClient({ categories, initialProducts }: { categories: any[], initialProducts: any[] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -137,7 +139,61 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
           <div style={{ color: 'var(--text-light)' }}>
             Zeige {filteredProducts.length} von {initialProducts.length} Ergebnissen
           </div>
-          <div className="toolbar-sort">
+          <div className="toolbar-sort" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', background: '#f5f7fa', borderRadius: '4px', padding: '0.2rem' }}>
+              <button 
+                onClick={() => setViewMode('grid')}
+                className={`view-toggle ${viewMode === 'grid' ? 'active' : ''}`}
+                style={{ 
+                  background: viewMode === 'grid' ? 'white' : 'transparent', 
+                  border: viewMode === 'grid' ? '1px solid #e2e8f0' : '1px solid transparent', 
+                  boxShadow: viewMode === 'grid' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  color: viewMode === 'grid' ? 'var(--accent)' : '#a0aec0',
+                  padding: '0.3rem', 
+                  borderRadius: '3px', 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                aria-label="Rasteransicht"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </button>
+              <button 
+                onClick={() => setViewMode('list')}
+                className={`view-toggle ${viewMode === 'list' ? 'active' : ''}`}
+                style={{ 
+                  background: viewMode === 'list' ? 'white' : 'transparent', 
+                  border: viewMode === 'list' ? '1px solid #e2e8f0' : '1px solid transparent', 
+                  boxShadow: viewMode === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  color: viewMode === 'list' ? 'var(--accent)' : '#a0aec0',
+                  padding: '0.3rem', 
+                  borderRadius: '3px', 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                aria-label="Listenansicht"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+              </button>
+            </div>
             <select defaultValue="newest">
               <option value="newest">Neueste zuerst</option>
               <option value="title-asc">Titel (A-Z)</option>
@@ -159,100 +215,19 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
             </button>
           </div>
         ) : (
-          <div className="product-grid animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <div 
+            className={viewMode === 'grid' ? "product-grid animate-fade-in" : "animate-fade-in"} 
+            style={{ 
+              animationDelay: '0.4s',
+              ...(viewMode === 'list' && {
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2rem'
+              })
+            }}
+          >
             {filteredProducts.map((product) => (
-              <div className="product-card" key={product.id} style={{ display: 'flex', flexDirection: 'column' }}>
-                <button 
-                  aria-label="Zur Merkliste"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleWishlist({
-                      id: product.id.toString(),
-                      title: product.title,
-                      price: product.price,
-                      image: product.image,
-                      slug: product.slug,
-                      composer: product.composer,
-                      category: 'Noten'
-                    });
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    background: 'white',
-                    border: '1px solid var(--border)',
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    color: isInWishlist(product.id.toString()) ? 'var(--accent)' : 'var(--text-light)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    zIndex: 3,
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill={isInWishlist(product.id.toString()) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </button>
-                <Link href={`/noten/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
-                  <div className="product-image-container" style={{ position: 'relative' }}>
-                    {product.badge && <span className="product-badge">{product.badge}</span>}
-                    <img src={product.image} alt={product.title} className="product-image" />
-                  </div>
-                  <div className="product-info">
-                    <div className="product-genre">{product.genre}</div>
-                    <h3 className="product-title">{product.title}</h3>
-                    <div className="product-composer">{product.composer}</div>
-                    
-                    <div className="product-meta">
-                      <span title="Schwierigkeitsgrad">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        Stufe {product.grade}
-                      </span>
-                      <span title="Dauer">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        {product.duration}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-                
-                <div className="product-bottom" style={{ padding: '0 1.5rem 1.5rem', marginTop: 'auto' }}>
-                  <div className="product-price">{product.price}</div>
-                  <button 
-                    style={{ background: 'var(--accent)', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '30px', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.3s', textTransform: 'uppercase' }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent-hover)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'var(--accent)'}
-                    aria-label="In den Warenkorb"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      addToCart({
-                        id: product.id.toString(),
-                        title: product.title,
-                        price: parseFloat(product.price.replace(',', '.')),
-                        quantity: 1,
-                        variant: 'Gedruckte Ausgabe', // Default variant
-                        image: product.image
-                      });
-                      toggleCart();
-                    }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="9" cy="21" r="1"></circle>
-                      <circle cx="20" cy="21" r="1"></circle>
-                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                    In den Warenkorb
-                  </button>
-                </div>
-              </div>
+              <ProductCard key={product.id} product={product} viewMode={viewMode} />
             ))}
           </div>
         )}

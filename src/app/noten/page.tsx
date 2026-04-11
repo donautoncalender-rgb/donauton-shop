@@ -21,6 +21,7 @@ export default async function Notenfinder() {
     duration: p.duration || '',
     price: p.price,
     badge: p.badge || '',
+    description: p.description || '',
     image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=565&fit=crop&q=80',
     slug: p.slug
   }));
