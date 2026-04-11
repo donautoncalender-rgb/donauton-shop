@@ -114,7 +114,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy }: H
           
           <nav className="nav-links">
             <div className="nav-item-dropdown">
-              <Link href="/noten" className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Link href="/noten?reset=true" className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                 Noten
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
               </Link>

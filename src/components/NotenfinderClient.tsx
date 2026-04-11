@@ -2,12 +2,13 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from './ProductCard';
 
 export default function NotenfinderClient({ categories, initialProducts }: { categories: any[], initialProducts: any[] }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBesetzungen, setSelectedBesetzungen] = useState<string[]>([]);
@@ -18,11 +19,22 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
+    // 1. Check for explicit TOP-LEVEL Reset Signal
+    if (searchParams.get('reset') === 'true') {
+      setSearchQuery('');
+      setSelectedBesetzungen([]);
+      setSelectedGenres([]);
+      setSelectedGrades([]);
+      router.replace('/noten', { scroll: false });
+      return; 
+    }
+
     const bParams = searchParams.getAll('besetzung');
     const gParams = searchParams.getAll('genre');
     const qParam = searchParams.get('q') || '';
     
-    // Strict Synchronization with URL Parameters
+    // 2. Strict Synchronization with URL Parameters
+
     setSearchQuery(qParam);
 
     if (bParams.length > 0) {
