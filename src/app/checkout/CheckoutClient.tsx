@@ -11,6 +11,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey }: { p
   
   // Dynamic Shipping Logic
   const hasOnlyDigitalItems = items.length > 0 && items.every(item => item.variant === 'Digital');
+  const hasDigitalItems = items.some(item => item.variant === 'Digital');
   const shippingCost = hasOnlyDigitalItems ? 0.00 : 4.90;
   
   const grandTotal = cartTotal + shippingCost;
@@ -38,11 +39,17 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey }: { p
         companyName: data.billing_company || data.shipping_company || prev.companyName,
         address: data.billing_street || data.shipping_street || prev.address,
         zip: data.billing_zip || data.shipping_zip || prev.zip,
-        city: data.billing_city || data.shipping_city || prev.city
+        city: data.billing_city || data.shipping_city || prev.city,
+        // Override saved payment if set to Rechnung but cart has digital items
+        payment: (prev.payment === 'Rechnung' && items.some((i: any) => i.variant === 'Digital')) ? 'PayPal' : prev.payment
       }));
       setIsLoggedIn(true);
+    } else {
+      if (items.some((i: any) => i.variant === 'Digital')) {
+        setFormData(prev => ({ ...prev, payment: 'PayPal' }));
+      }
     }
-  }, []);
+  }, [items]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -172,10 +179,12 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey }: { p
                   <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" style={{ height: '24px' }} />
                 </div>
               </label>
-              <label style={paymentBoxStyle}>
-                <input type="radio" name="payment" value="Rechnung" checked={formData.payment === 'Rechnung'} onChange={handleInputChange} style={{ accentColor: 'var(--primary)', transform: 'scale(1.2)' }} />
-                <span style={{ fontWeight: 600, flexGrow: 1 }}>Kauf auf Rechnung</span>
-              </label>
+              {!hasDigitalItems && (
+                <label style={paymentBoxStyle}>
+                  <input type="radio" name="payment" value="Rechnung" checked={formData.payment === 'Rechnung'} onChange={handleInputChange} style={{ accentColor: 'var(--primary)', transform: 'scale(1.2)' }} />
+                  <span style={{ fontWeight: 600, flexGrow: 1 }}>Kauf auf Rechnung</span>
+                </label>
+              )}
             </div>
           </section>
 

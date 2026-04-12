@@ -20,12 +20,21 @@ export async function GET(request: Request) {
     const erpUrlBase = erpUrlSetting?.value ? new URL(erpUrlSetting.value).origin : process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
     const erpKey = erpKeySetting?.value || process.env.ERP_SUITE_TOKEN || 'DONAUTON_SHOP_SECRET_123';
 
-    let fetchUrl = `${erpUrlBase}/api/v1/shop/download-file?secret=${erpKey}&email=${encodeURIComponent(email)}&orderItemId=${encodeURIComponent(orderItemId)}`;
+    const suiteApiKey = process.env.DONAUTON_SUITE_API_KEY || erpKey;
+
+    // Use secure-download and map orderItemId to orderId (assuming the Suite route either handles it or this is what the user intended)
+    let fetchUrl = `${erpUrlBase}/api/v1/shop/secure-download?orderId=${encodeURIComponent(orderItemId)}`;
     if (assetId) fetchUrl += `&assetId=${encodeURIComponent(assetId)}`;
+    
+    // Add additional original params just in case they are needed for fallback
+    fetchUrl += `&secret=${erpKey}&email=${encodeURIComponent(email)}`;
     
     const erpRes = await fetch(fetchUrl, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-api-key': suiteApiKey
+      },
       cache: 'no-store'
     });
 
