@@ -11,7 +11,7 @@ export default async function AdminDashboard() {
     <>
       <h1 style={{ marginBottom: '2rem' }}>Willkommen in der Shop-Verwaltung</h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
         <div className="admin-card" style={{ marginBottom: 0 }}>
           <div style={{ color: '#718096', fontWeight: 600, marginBottom: '0.5rem' }}>Eingestelltes Logo / Titel</div>
           <div style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--primary)', marginTop: '0.5rem' }}>
@@ -33,6 +33,15 @@ export default async function AdminDashboard() {
             Lädt alle relevanten "Work"-Einträge (die für den Shop markiert wurden) aus der DONAUTON-Suite in diese SQLite Datenbank.
           </div>
           <SyncButton />
+        </div>
+        <div className="admin-card" style={{ marginBottom: 0, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <div style={{ color: '#166534', fontWeight: 600, marginBottom: '0.5rem' }}>Shop-Backup</div>
+          <div style={{ fontSize: '0.9rem', color: '#14532d', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
+            Lade den aktuellen Stand als physische ZIP-Datei herunter. 
+          </div>
+          <a href="https://github.com/donautoncalender-rgb/donauton-shop/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ display: 'inline-block', backgroundColor: '#16a34a', border: 'none', padding: '0.6rem 1rem', fontSize: '0.9rem' }}>
+            ZIP-Archiv herunterladen
+          </a>
         </div>
       </div>
     </>
