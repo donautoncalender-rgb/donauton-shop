@@ -9,6 +9,7 @@ export interface CartItem {
   quantity: number;
   variant: string;
   image: string;
+  publisher?: string | null;
 }
 
 interface CartContextType {

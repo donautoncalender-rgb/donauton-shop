@@ -121,9 +121,29 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               );
             })()}
             
-            {(product.composer || product.artist || product.author) && (
-              <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span>von <strong>{product.composer || product.artist || product.author}</strong></span>
+            {(product.composer || product.artist || product.author || (product.publisher && product.publisher !== 'Donauton')) && (
+              <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                {product.composer || product.artist || product.author ? (
+                  <span>von <strong>{product.composer || product.artist || product.author}</strong></span>
+                ) : null}
+                {product.publisher && product.publisher !== 'Donauton' && (
+                  <Link href={`/noten?reset=true&besetzung=&genre=&q=&publisher=${encodeURIComponent(product.publisher)}`} passHref>
+                    <span style={{ 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      padding: '4px 8px', 
+                      background: 'rgba(0,0,0,0.05)', 
+                      borderRadius: '4px', 
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: 'var(--accent)',
+                      border: '1px solid rgba(0,0,0,0.1)',
+                      cursor: 'pointer'
+                    }}>
+                      Verlag: {product.publisher}
+                    </span>
+                  </Link>
+                )}
               </div>
             )}
             
@@ -148,7 +168,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               image: image,
               stockStatus: product.stockStatus,
               hasDigitalDownload: product.hasDigitalDownload,
-              digitalPrice: product.digitalPrice
+              digitalPrice: product.digitalPrice,
+              publisher: product.publisher
             }} />
           </div>
 

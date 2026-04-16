@@ -79,6 +79,10 @@ model Product {
   artist      String?
   author      String?
   medium      String? 
+  
+  publisher   String?
+  instrumentation String?
+  isExternal  Boolean @default(false)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

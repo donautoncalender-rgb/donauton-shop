@@ -14,6 +14,7 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
   const [selectedBesetzungen, setSelectedBesetzungen] = useState<string[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
+  const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -25,6 +26,7 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       setSelectedBesetzungen([]);
       setSelectedGenres([]);
       setSelectedGrades([]);
+      setSelectedPublishers([]);
       
       // Clean up the URL silently without triggering a Next.js router transition race condition
       window.history.replaceState(null, '', '/noten');
@@ -97,6 +99,16 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     });
   }, [initialProducts]);
 
+  const availablePublishers = useMemo(() => {
+    const publishers = new Set<string>();
+    initialProducts.forEach(p => {
+      if (p.publisher && p.publisher.trim() !== '') {
+        publishers.add(p.publisher.trim());
+      }
+    });
+    return Array.from(publishers).sort();
+  }, [initialProducts]);
+
   const toggleBesetzung = (b: string) => {
     setSelectedBesetzungen(prev => 
       prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]
@@ -114,6 +126,13 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
   const toggleGrade = (grade: string) => {
     setSelectedGrades(prev => 
       prev.includes(grade) ? prev.filter(g => g !== grade) : [...prev, grade]
+    );
+  };
+
+  // Handle publisher toggle
+  const togglePublisher = (publisher: string) => {
+    setSelectedPublishers(prev => 
+      prev.includes(publisher) ? prev.filter(p => p !== publisher) : [...prev, publisher]
     );
   };
 
@@ -137,9 +156,13 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       const matchesGrade = selectedGrades.length === 0 || 
         selectedGrades.includes(product.grade.trim());
 
-      return matchesSearch && matchesBesetzung && matchesGenre && matchesGrade;
+      // 4. Publisher filter
+      const matchesPublisher = selectedPublishers.length === 0 || 
+        selectedPublishers.includes(product.publisher.trim());
+
+      return matchesSearch && matchesBesetzung && matchesGenre && matchesGrade && matchesPublisher;
     });
-  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, initialProducts]);
+  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, initialProducts]);
 
   return (
     <div className="shop-layout">
@@ -197,6 +220,25 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
                     onChange={() => toggleGrade(grade)} 
                   /> 
                   Stufe {grade}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {availablePublishers.length > 0 && (
+          <div className="filter-group">
+            <h3 className="filter-title">Verlag</h3>
+            <div className="filter-list">
+              {availablePublishers.map((pub) => (
+                <label className="filter-label" key={pub}>
+                  <input 
+                    type="checkbox" 
+                    className="filter-checkbox"
+                    checked={selectedPublishers.includes(pub)}
+                    onChange={() => togglePublisher(pub)} 
+                  /> 
+                  {pub}
                 </label>
               ))}
             </div>

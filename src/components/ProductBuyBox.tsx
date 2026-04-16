@@ -12,6 +12,7 @@ interface ProductBuyBoxProps {
     stockStatus: string;
     hasDigitalDownload: boolean;
     digitalPrice: number | null;
+    publisher?: string | null;
   };
 }
 
@@ -87,7 +88,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '2rem', width: '100%' }}>
-          <AddToCartButton size="large" product={{ id: product.id, title: variant === 'Digital' ? `${product.title} (PDF Download)` : product.title, price: currentPriceStr, image: product.image }} selectedVariant={variant} />
+          <AddToCartButton size="large" product={{ id: product.id, title: variant === 'Digital' ? `${product.title} (PDF Download)` : product.title, price: currentPriceStr, image: product.image, publisher: product.publisher || null }} selectedVariant={variant} />
       </div>
 
       {/* Guarantees */}

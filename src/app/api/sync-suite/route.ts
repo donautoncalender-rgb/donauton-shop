@@ -63,6 +63,7 @@ export async function GET() {
       if (category) detailsList.push({ label: 'Kategorie', value: category + (work.genre ? ` - ${work.genre}` : '') });
       if (work.sku) detailsList.push({ label: 'Artikelnummer', value: work.sku });
       if (work.instrumentation) detailsList.push({ label: 'Besetzung', value: work.instrumentation });
+      if (work.is_external && work.partner_name) detailsList.push({ label: 'Originalverlag', value: work.partner_name });
       
       const parsedGrade = work.difficulty_min 
         ? `${work.difficulty_min}${work.difficulty_max && work.difficulty_max != work.difficulty_min ? ' - ' + work.difficulty_max : ''}` 
@@ -96,7 +97,10 @@ export async function GET() {
           pdfPreview: pdfPreview,
           hasDigitalDownload: Boolean(work.has_digital_download),
           digitalPrice: work.digital_price_gross ? parseFloat(work.digital_price_gross) : null,
-          detailsJson: detailsJson
+          detailsJson: detailsJson,
+          publisher: work.partner_name || "Donauton",
+          instrumentation: work.instrumentation || null,
+          isExternal: Boolean(work.is_external)
         },
         create: {
           title: work.title,
@@ -117,7 +121,10 @@ export async function GET() {
           pdfPreview: pdfPreview,
           hasDigitalDownload: Boolean(work.has_digital_download),
           digitalPrice: work.digital_price_gross ? parseFloat(work.digital_price_gross) : null,
-          detailsJson: detailsJson
+          detailsJson: detailsJson,
+          publisher: work.partner_name || "Donauton",
+          instrumentation: work.instrumentation || null,
+          isExternal: Boolean(work.is_external)
         }
       });
       syncedCount++;

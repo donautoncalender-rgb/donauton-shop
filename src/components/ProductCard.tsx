@@ -149,6 +149,11 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
           {/* MIDDLE: INFO */}
           <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+            {product.besetzung && (
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#666', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
+                {product.besetzung}
+              </div>
+            )}
             <div style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1rem', marginBottom: '0.3rem' }}>
               {product.composer || product.author}
             </div>
@@ -175,6 +180,11 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
               <div style={{ fontWeight: 600 }}>{product.genre || product.category || 'Blasorchester'}</div>
               {product.grade && <div>Stufe {product.grade}</div>}
               {product.sku && <div style={{ color: '#888' }}>{product.sku}</div>}
+              {product.publisher && product.publisher !== 'Donauton' && (
+                <div style={{ color: '#888', marginTop: '0.2rem', paddingtop: '0.2rem', borderTop: '1px solid #eee' }}>
+                  Verlag: {product.publisher}
+                </div>
+              )}
             </div>
           </div>
 
@@ -284,6 +294,11 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         </div>
         
         <div className="product-info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+          {product.besetzung && (
+            <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+              {product.besetzung.substring(0, 25)}{product.besetzung.length > 25 ? '...' : ''}
+            </div>
+          )}
           <div className="product-genre">{product.genre || 'Ohne Genre'}</div>
           <h3 className="product-title">{product.title}</h3>
           <div className="product-composer">{product.composer || product.author}</div>
@@ -302,6 +317,12 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
               </span>
             )}
           </div>
+          
+          {product.publisher && product.publisher !== 'Donauton' && (
+            <div style={{ fontSize: '0.75rem', color: '#a0aec0', marginTop: '0.3rem', fontWeight: 500 }}>
+              Verlag: {product.publisher}
+            </div>
+          )}
         </div>
       </Link>
       

@@ -202,7 +202,10 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey }: { p
                    <div style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'var(--primary)', color: 'white', width: '20px', height: '20px', borderRadius: '50%', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{item.quantity}</div>
                 </div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{item.title}</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '0.1rem' }}>{item.title}</div>
+                  {item.publisher && item.publisher !== 'Donauton' && (
+                    <div style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.3rem' }}>Verlag: {item.publisher}</div>
+                  )}
                   <div style={{ color: 'var(--text-light)', fontSize: '0.85rem' }}>{item.variant}</div>
                   <div style={{ fontWeight: 600, marginTop: '4px' }}>{(item.price * item.quantity).toFixed(2).replace('.', ',')} €</div>
                 </div>
