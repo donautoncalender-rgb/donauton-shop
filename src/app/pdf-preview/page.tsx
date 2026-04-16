@@ -7,6 +7,9 @@ export default async function PdfPreviewPage({ searchParams }: { searchParams: P
   const title = params?.title || 'DONAUTON Noten';
   const fullTitle = `${title} - Lesen`;
 
+  const isExternal = url && url.startsWith('http') && !url.includes('donauton');
+  const iframeSrc = isExternal ? `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true` : url;
+
   return (
     <>
       <title>{fullTitle}</title>
@@ -15,9 +18,9 @@ export default async function PdfPreviewPage({ searchParams }: { searchParams: P
           header, footer, .header, .footer, nav, .site-header, .top-bar { display: none !important; }
           body { padding: 0 !important; margin: 0 !important; background: '#333'; overflow: hidden; }
         `}} />
-        {url ? (
+        {iframeSrc ? (
           <iframe 
-            src={url} 
+            src={iframeSrc} 
             style={{ width: '100%', height: '100%', border: 'none' }} 
             title={fullTitle}
           />
