@@ -181,7 +181,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
               {product.grade && <div>Stufe {product.grade}</div>}
               {product.sku && <div style={{ color: '#888' }}>{product.sku}</div>}
               {product.publisher && product.publisher !== 'Donauton' && (
-                <div style={{ color: '#888', marginTop: '0.2rem', paddingtop: '0.2rem', borderTop: '1px solid #eee' }}>
+                <div style={{ color: '#888', marginTop: '0.2rem', paddingTop: '0.2rem', borderTop: '1px solid #eee' }}>
                   Verlag: {product.publisher}
                 </div>
               )}
