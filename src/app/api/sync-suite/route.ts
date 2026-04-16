@@ -21,9 +21,23 @@ export async function GET() {
 
     const data = await response.json();
     
-    // Die Schnittstelle gibt direkt ein Array zurück
     const works = Array.isArray(data) ? data : (data.works || []);
     let syncedCount = 0;
+
+    // ----- BEREINIGUNG VON GEISTER-ARTIKELN (GHOST PRODUCTS) -----
+    // Generiere alle gültigen Slugs der Suite
+    const validSlugs = works.map((w: any) => (w.title || `work-${w.id}`).toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    
+    // Lösche alle Shop-Produkte, die nicht mehr in der Suite existieren oder deren Titel/Slug sich geändert hat.
+    // OrderItems behalten ihre Daten (productId wird null), da onDelete: SetNull in Schema definiert ist.
+    if (validSlugs.length > 0) {
+      await prisma.product.deleteMany({
+        where: {
+          slug: { notIn: validSlugs }
+        }
+      });
+    }
+    // -------------------------------------------------------------
 
     for (const work of works) {
       // Category Mapping based on CatalogCategory name
