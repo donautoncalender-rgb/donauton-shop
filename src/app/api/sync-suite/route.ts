@@ -35,7 +35,8 @@ export async function GET() {
       else if (catName.includes('ticket')) category = "Tickets";
 
       // Price Formatting
-      const priceVal = parseFloat(work.base_list_price_gross || 0).toFixed(2).replace('.', ',');
+      const rawPrice = parseFloat(work.end_customer_price_gross || work.base_list_price_gross || 0);
+      const priceVal = rawPrice.toFixed(2).replace('.', ',');
       const priceStr = priceVal !== '0,00' ? `${priceVal} €` : 'Auf Anfrage';
 
       // Composer Name
