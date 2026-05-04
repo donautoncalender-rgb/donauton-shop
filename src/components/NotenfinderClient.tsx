@@ -136,6 +136,17 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     );
   };
 
+  const hasAnyFilter = selectedBesetzungen.length > 0 || selectedGenres.length > 0 || selectedGrades.length > 0 || selectedPublishers.length > 0 || searchQuery !== '';
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setSelectedBesetzungen([]);
+    setSelectedGenres([]);
+    setSelectedGrades([]);
+    setSelectedPublishers([]);
+    window.history.replaceState(null, '', window.location.pathname);
+  };
+
   // Filter products dynamically
   const filteredProducts = useMemo(() => {
     return initialProducts.filter(product => {
@@ -169,9 +180,37 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       {/* Sidebar */}
       <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
         
+        {hasAnyFilter && (
+          <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
+            <button 
+              onClick={clearAllFilters}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.4rem',
+                fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)',
+                background: 'none', border: 'none', cursor: 'pointer', padding: 0
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              Alle Filter löschen
+            </button>
+          </div>
+        )}
+
         {availableBesetzungen.length > 0 && (
           <div className="filter-group">
-            <h3 className="filter-title">Besetzung</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 className="filter-title" style={{ marginBottom: 0 }}>Besetzung</h3>
+              {selectedBesetzungen.length > 0 && (
+                <button 
+                  onClick={() => setSelectedBesetzungen([])}
+                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
+                >
+                  löschen
+                </button>
+              )}
+            </div>
             <div className="filter-list">
               {availableBesetzungen.map((b) => (
                 <label className="filter-label" key={b}>
@@ -190,7 +229,19 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
 
         {availableGenres.length > 0 && (
           <div className="filter-group">
-            <h3 className="filter-title">Genre</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 className="filter-title" style={{ marginBottom: 0 }}>Genre</h3>
+              {selectedGenres.length > 0 && (
+                <button 
+                  onClick={() => setSelectedGenres([])}
+                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
+                >
+                  löschen
+                </button>
+              )}
+            </div>
             <div className="filter-list">
               {availableGenres.map((genre) => (
                 <label className="filter-label" key={genre}>
@@ -209,7 +260,19 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
 
         {availableGrades.length > 0 && (
           <div className="filter-group">
-            <h3 className="filter-title">Stufe / Grad</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 className="filter-title" style={{ marginBottom: 0 }}>Stufe / Grad</h3>
+              {selectedGrades.length > 0 && (
+                <button 
+                  onClick={() => setSelectedGrades([])}
+                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
+                >
+                  löschen
+                </button>
+              )}
+            </div>
             <div className="filter-list">
               {availableGrades.map((grade) => (
                 <label className="filter-label" key={grade}>
@@ -228,7 +291,19 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
 
         {availablePublishers.length > 0 && (
           <div className="filter-group">
-            <h3 className="filter-title">Verlag</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 className="filter-title" style={{ marginBottom: 0 }}>Verlag</h3>
+              {selectedPublishers.length > 0 && (
+                <button 
+                  onClick={() => setSelectedPublishers([])}
+                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
+                >
+                  löschen
+                </button>
+              )}
+            </div>
             <div className="filter-list">
               {availablePublishers.map((pub) => (
                 <label className="filter-label" key={pub}>
