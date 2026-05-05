@@ -530,6 +530,25 @@ ul {
   position: sticky;
   top: 100px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+/* Sidebar Scrollbar Styling */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.1);
+  border-radius: 10px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0,0,0,0.25);
 }
 
 .filter-group {
