@@ -135,10 +135,12 @@ export async function POST(request: Request) {
             });
 
             if (!erpRes.ok) {
-                console.error("ERP Sync responded with status:", erpRes.status);
+                const text = await erpRes.text();
+                throw new Error(`ERP Suite rejected the order (${erpRes.status}): ${text}`);
             }
-        } catch (erpError) {
+        } catch (erpError: any) {
             console.error("Failed to sync with ERP:", erpError);
+            throw new Error(`ERP Sync Failed: ${erpError.message}`);
         }
     }
     // --- ERP SYNC END ---
