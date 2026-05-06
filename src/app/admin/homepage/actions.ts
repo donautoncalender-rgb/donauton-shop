@@ -59,7 +59,12 @@ export async function saveHomepageSettings(formData: FormData) {
         const filename = `homepage/${baseKey}-${Date.now()}${ext}`;
         
         try {
-          const blob = await put(filename, file, { access: 'public' });
+          const bytes = await file.arrayBuffer();
+          const buffer = Buffer.from(bytes);
+          const blob = await put(filename, buffer, { 
+            access: 'public',
+            contentType: file.type || 'image/jpeg'
+          });
           url = blob.url;
         } catch (e: any) {
           console.error("Blob Upload failed", e);
