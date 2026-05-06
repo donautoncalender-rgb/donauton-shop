@@ -8,7 +8,7 @@ import { useWishlist } from '../context/WishlistContext';
 interface HeaderProps {
   shopTitle?: string;
   logoUrl?: string | null;
-  taxonomy?: { besetzung: string; genres: string[] }[];
+  taxonomy?: { besetzung: string; items: string[]; type: 'genre' | 'solist' }[];
 }
 
 export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy }: HeaderProps) {
@@ -125,18 +125,23 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy }: H
                     <div key={tax.besetzung} className="dropdown-item-has-flyout">
                       <Link href={`/noten?besetzung=${encodeURIComponent(tax.besetzung)}`} className="dropdown-link">
                         {tax.besetzung} 
-                        {tax.genres.length > 0 && (
+                        {tax.items && tax.items.length > 0 && (
                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                         )}
                       </Link>
                       
-                      {tax.genres && tax.genres.length > 0 && (
+                      {tax.items && tax.items.length > 0 && (
                         <div className="dropdown-level-2">
-                          {tax.genres.map(genre => (
-                            <Link key={genre} href={`/noten?besetzung=${encodeURIComponent(tax.besetzung)}&genre=${encodeURIComponent(genre)}`} className="dropdown-link-sub">
-                              {genre}
-                            </Link>
-                          ))}
+                          {tax.items.map(item => {
+                            const linkHref = tax.type === 'solist' 
+                              ? `/noten?besetzung=${encodeURIComponent(tax.besetzung)}&soloinstrument=${encodeURIComponent(item)}`
+                              : `/noten?besetzung=${encodeURIComponent(tax.besetzung)}&genre=${encodeURIComponent(item)}`;
+                            return (
+                              <Link key={item} href={linkHref} className="dropdown-link-sub">
+                                {item}
+                              </Link>
+                            );
+                          })}
                         </div>
                       )}
                     </div>

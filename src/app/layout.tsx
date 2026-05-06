@@ -38,7 +38,7 @@ export default async function RootLayout({
   let shopTitle = "DONAUTON.";
   let logoUrl = null;
   let topBanner = null;
-  let notenTaxonomy: { besetzung: string; genres: string[] }[] = [];
+  let notenTaxonomy: { besetzung: string; items: string[]; type: 'genre' | 'solist' }[] = [];
 
   try {
     const settings = await prisma.shopSetting.findMany();
@@ -57,7 +57,7 @@ export default async function RootLayout({
       select: { genre: true, detailsJson: true }
     });
 
-    const taxonomyMap = new Map<string, Set<string>>();
+    const taxonomyMap = new Map<string, { type: 'genre' | 'solist', items: Set<string> }>();
     notenProducts.forEach((p: any) => {
       let besetzung = 'Sonstige Noten';
       if (p.detailsJson) {
@@ -68,16 +68,37 @@ export default async function RootLayout({
         } catch(e) {}
       }
       
-      const genre = p.genre ? p.genre.trim() : 'Ohne Genre';
-      if (genre !== 'Ohne Genre') {
-        if (!taxonomyMap.has(besetzung)) taxonomyMap.set(besetzung, new Set());
-        taxonomyMap.get(besetzung)!.add(genre);
+      let mainBesetzung = besetzung;
+      let subBesetzung: string | null = null;
+
+      // Extract Soloinstrument if present (e.g. "Blasorchester, Solist, Flügelhorn")
+      if (besetzung.includes(',') && besetzung.toLowerCase().includes('solist')) {
+        const parts = besetzung.split(',');
+        if (parts.length >= 2) {
+          subBesetzung = parts[parts.length - 1].trim();
+          mainBesetzung = parts.slice(0, parts.length - 1).join(',').trim();
+        }
+      }
+
+      if (!taxonomyMap.has(mainBesetzung)) {
+        taxonomyMap.set(mainBesetzung, { type: subBesetzung ? 'solist' : 'genre', items: new Set() });
+      }
+
+      if (subBesetzung) {
+        taxonomyMap.get(mainBesetzung)!.items.add(subBesetzung);
+        taxonomyMap.get(mainBesetzung)!.type = 'solist';
+      } else {
+        const genre = p.genre ? p.genre.trim() : 'Ohne Genre';
+        if (genre !== 'Ohne Genre') {
+          taxonomyMap.get(mainBesetzung)!.items.add(genre);
+        }
       }
     });
 
-    notenTaxonomy = Array.from(taxonomyMap.entries()).map(([besetzung, genres]) => ({
+    notenTaxonomy = Array.from(taxonomyMap.entries()).map(([besetzung, data]) => ({
       besetzung,
-      genres: Array.from(genres).sort()
+      type: data.type,
+      items: Array.from(data.items).sort()
     })).sort((a,b) => a.besetzung.localeCompare(b.besetzung));
 
   } catch (e) {

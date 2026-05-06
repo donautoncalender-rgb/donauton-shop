@@ -15,6 +15,7 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
   const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
+  const [selectedSoloinstruments, setSelectedSoloinstruments] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -27,6 +28,7 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       setSelectedGenres([]);
       setSelectedGrades([]);
       setSelectedPublishers([]);
+      setSelectedSoloinstruments([]);
       
       // Clean up the URL silently without triggering a Next.js router transition race condition
       window.history.replaceState(null, '', '/noten');
@@ -55,6 +57,14 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       setSelectedGenres(singleG ? [singleG] : []);
     }
     
+    const sParams = searchParams.getAll('soloinstrument');
+    if (sParams.length > 0) {
+      setSelectedSoloinstruments(sParams);
+    } else {
+      const singleS = searchParams.get('soloinstrument');
+      setSelectedSoloinstruments(singleS ? [singleS] : []);
+    }
+    
     // Note: Grades currently have no URL parameter equivalent in the taxonomy dropdown.
     // If a mega menu link is navigated to, it should reset the local grade filters to show all.
     if (bParams.length > 0 || gParams.length > 0 || searchParams.has('besetzung') || searchParams.has('genre')) {
@@ -68,6 +78,16 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     initialProducts.forEach(p => {
       if (p.besetzung && p.besetzung.trim() !== '') {
         list.add(p.besetzung.trim());
+      }
+    });
+    return Array.from(list).sort();
+  }, [initialProducts]);
+
+  const availableSoloinstruments = useMemo(() => {
+    const list = new Set<string>();
+    initialProducts.forEach(p => {
+      if (p.soloinstrument && p.soloinstrument.trim() !== '') {
+        list.add(p.soloinstrument.trim());
       }
     });
     return Array.from(list).sort();
@@ -136,7 +156,13 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     );
   };
 
-  const hasAnyFilter = selectedBesetzungen.length > 0 || selectedGenres.length > 0 || selectedGrades.length > 0 || selectedPublishers.length > 0 || searchQuery !== '';
+  const toggleSoloinstrument = (inst: string) => {
+    setSelectedSoloinstruments(prev => 
+      prev.includes(inst) ? prev.filter(i => i !== inst) : [...prev, inst]
+    );
+  };
+
+  const hasAnyFilter = selectedBesetzungen.length > 0 || selectedGenres.length > 0 || selectedGrades.length > 0 || selectedPublishers.length > 0 || selectedSoloinstruments.length > 0 || searchQuery !== '';
 
   const clearAllFilters = () => {
     setSearchQuery('');
@@ -144,6 +170,7 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     setSelectedGenres([]);
     setSelectedGrades([]);
     setSelectedPublishers([]);
+    setSelectedSoloinstruments([]);
     window.history.replaceState(null, '', window.location.pathname);
   };
 
@@ -159,6 +186,9 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       const matchesBesetzung = selectedBesetzungen.length === 0 ||
         selectedBesetzungen.includes(product.besetzung?.trim());
         
+      const matchesSoloinstrument = selectedSoloinstruments.length === 0 ||
+        (product.soloinstrument && selectedSoloinstruments.includes(product.soloinstrument.trim()));
+
       // 2. Genre filter (Exact mapping from Suite)
       const matchesGenre = selectedGenres.length === 0 || 
         selectedGenres.includes(product.genre.trim());
@@ -171,7 +201,7 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       const matchesPublisher = selectedPublishers.length === 0 || 
         selectedPublishers.includes(product.publisher.trim());
 
-      return matchesSearch && matchesBesetzung && matchesGenre && matchesGrade && matchesPublisher;
+      return matchesSearch && matchesBesetzung && matchesSoloinstrument && matchesGenre && matchesGrade && matchesPublisher;
     });
   }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, initialProducts]);
 
@@ -221,6 +251,37 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
                     onChange={() => toggleBesetzung(b)}
                   /> 
                   {b}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {availableSoloinstruments.length > 0 && selectedBesetzungen.some(b => b.toLowerCase().includes('solist')) && (
+          <div className="filter-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 className="filter-title" style={{ marginBottom: 0 }}>Soloinstrument</h3>
+              {selectedSoloinstruments.length > 0 && (
+                <button 
+                  onClick={() => setSelectedSoloinstruments([])}
+                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
+                >
+                  löschen
+                </button>
+              )}
+            </div>
+            <div className="filter-list">
+              {availableSoloinstruments.map((inst) => (
+                <label className="filter-label" key={inst}>
+                  <input 
+                    type="checkbox" 
+                    className="filter-checkbox" 
+                    checked={selectedSoloinstruments.includes(inst)}
+                    onChange={() => toggleSoloinstrument(inst)}
+                  /> 
+                  {inst}
                 </label>
               ))}
             </div>

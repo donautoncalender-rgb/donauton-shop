@@ -22,6 +22,16 @@ export default async function Notenfinder() {
       } catch (e) {}
     }
 
+    let mainBesetzung = besetzung;
+    let soloinstrument: string | null = null;
+    if (besetzung.includes(',') && besetzung.toLowerCase().includes('solist')) {
+      const parts = besetzung.split(',');
+      if (parts.length >= 2) {
+        soloinstrument = parts[parts.length - 1].trim();
+        mainBesetzung = parts.slice(0, parts.length - 1).join(',').trim();
+      }
+    }
+
     return {
     id: p.id,
     wooId: p.wooId,
@@ -40,7 +50,8 @@ export default async function Notenfinder() {
     image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=565&fit=crop&q=80',
     slug: p.slug,
     category: p.category || 'Noten',
-    besetzung,
+    besetzung: mainBesetzung,
+    soloinstrument,
     publisher: p.publisher || 'Donauton'
   };
 });
