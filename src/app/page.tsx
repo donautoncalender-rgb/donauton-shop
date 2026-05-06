@@ -84,8 +84,46 @@ export default async function Home() {
 
   // Helper to get products for slider
   const getProductsForSlider = (slider: any) => {
-    // For now we just return latest 6 products as fallback, unless filtered
-    return allProducts.slice(0, 8);
+    let filteredDb = [...productsDb];
+
+    if (slider.filterType === 'CATEGORY' && slider.filterValue) {
+      const searchVal = slider.filterValue.toLowerCase();
+      filteredDb = filteredDb.filter(p => 
+        (p.genre && p.genre.toLowerCase().includes(searchVal)) ||
+        (p.category && p.category.toLowerCase().includes(searchVal)) ||
+        (p.publisher && p.publisher.toLowerCase().includes(searchVal)) ||
+        (p.composer && p.composer.toLowerCase().includes(searchVal)) ||
+        (p.instrumentation && p.instrumentation.toLowerCase().includes(searchVal))
+      );
+    } else if (slider.filterType === 'MANUAL' && slider.filterValue) {
+      const ids = slider.filterValue.split(',').map((id: string) => id.trim());
+      filteredDb = filteredDb.filter(p => ids.includes(p.id) || ids.includes(String(p.wooId)));
+    } else if (slider.filterType === 'BESTSELLER') {
+      const bestsellers = filteredDb.filter(p => p.badge && p.badge.toLowerCase().includes('bestseller'));
+      if (bestsellers.length > 0) {
+        filteredDb = bestsellers;
+      }
+    }
+
+    // Default fallback to latest
+    const limit = slider.limit || 15;
+    const finalDbList = filteredDb.slice(0, limit);
+
+    return finalDbList.map((p: any) => {
+      let urlType = p.category?.toLowerCase() || 'noten';
+      if (urlType === 'bücher') urlType = 'buecher';
+      return {
+        id: p.id,
+        wooId: p.wooId,
+        title: p.title,
+        type: urlType,
+        price: p.price,
+        image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=565&fit=crop&q=80',
+        badge: p.badge || '',
+        slug: p.slug,
+        genre: p.genre || p.category
+      };
+    });
   };
 
   return (
