@@ -63,7 +63,11 @@ export async function POST(request: Request) {
     const erpUrlSetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_url' }});
     const erpKeySetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_key' }});
 
-    const erpUrlBase = erpUrlSetting?.value ? new URL(erpUrlSetting.value).origin : process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
+    const rawUrl = erpUrlSetting?.value || process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
+    let erpUrlBase = new URL(rawUrl).origin;
+    if (process.env.NODE_ENV === 'production' && (erpUrlBase.includes('localhost') || erpUrlBase.includes('127.0.0.1'))) {
+        erpUrlBase = 'https://donauton-suite.de';
+    }
     const erpUrl = `${erpUrlBase}/api/v1/shop/orders`;
     const erpKey = erpKeySetting?.value || process.env.ERP_SUITE_TOKEN || 'DONAUTON_SHOP_SECRET_123';
     
