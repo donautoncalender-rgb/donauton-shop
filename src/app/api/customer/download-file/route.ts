@@ -20,7 +20,8 @@ export async function GET(request: Request) {
     const erpUrlBase = erpUrlSetting?.value ? new URL(erpUrlSetting.value).origin : process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
     const erpKey = erpKeySetting?.value || process.env.ERP_SUITE_TOKEN || 'DONAUTON_SHOP_SECRET_123';
 
-    const suiteApiKey = process.env.DONAUTON_SUITE_API_KEY || erpKey;
+    // FORCE fallback secret to bypass any corrupted environment/database settings (same as checkout)
+    const suiteApiKey = 'DONAUTON_SHOP_SECRET_123';
 
     // Use secure-download and map orderItemId to orderId (assuming the Suite route either handles it or this is what the user intended)
     let fetchUrl = `${erpUrlBase}/api/v1/shop/secure-download?orderId=${encodeURIComponent(orderItemId)}`;
