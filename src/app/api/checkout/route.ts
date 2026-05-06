@@ -31,7 +31,8 @@ export async function POST(request: Request) {
       };
     });
 
-    const shipping = 4.90; // Default shipping
+    const hasOnlyDigitalItems = orderItems.length > 0 && orderItems.every((item: any) => item.variant === 'Digital');
+    const shipping = hasOnlyDigitalItems ? 0.00 : 4.90;
     const calculatedTotal = calculatedSubtotal + shipping;
 
     // Create the order in database
