@@ -2,8 +2,7 @@
 
 import { prisma } from '../../../lib/prisma';
 import { revalidatePath } from 'next/cache';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { put } from '@vercel/blob';
 
 export async function saveHomepageSettings(formData: FormData) {
   try {
@@ -50,28 +49,21 @@ export async function saveHomepageSettings(formData: FormData) {
       'home_featured_img',
     ];
 
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    let dirCreated = false;
-
     for (const baseKey of imageKeys) {
       const file = formData.get(`${baseKey}_file`) as File | null;
       let url = formData.get(`${baseKey}_url`) as string;
 
-      if (file && file.size > 0 && typeof file.arrayBuffer === 'function') {
-        if (!dirCreated) {
-          try { await mkdir(uploadDir, { recursive: true }); } catch (e) {}
-          dirCreated = true;
-        }
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        
+      if (file && file.size > 0) {
         const extMatch = file.name.match(/\.[0-9a-z]+$/i);
         const ext = extMatch ? extMatch[0] : '.jpg';
-        const filename = `${baseKey}-${Date.now()}${ext}`;
-        const path = join(uploadDir, filename);
+        const filename = `homepage/${baseKey}-${Date.now()}${ext}`;
         
-        await writeFile(path, buffer);
-        url = `/uploads/${filename}`;
+        try {
+          const blob = await put(filename, file, { access: 'public' });
+          url = blob.url;
+        } catch (e: any) {
+          console.error("Blob Upload failed", e);
+        }
       }
 
       if (url !== null && url !== undefined && url !== '') {
