@@ -41,20 +41,48 @@ export default function HeroSlider({ slides }: { slides: any[] }) {
         >
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url("${slide.image}")`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.4 }}></div>
           
-          <div className="container" style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '1rem', transform: currentSlide === index ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 1s ease-out' }}>
-            <div style={{ background: 'var(--accent)', color: 'white', padding: '0.3rem 0.8rem', display: 'inline-block', alignSelf: 'flex-start', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.8rem' }}>
-              {slide.tagline}
-            </div>
-            <h1 style={{ color: 'white', fontSize: '3rem', fontWeight: 900, lineHeight: 1.1, textTransform: 'uppercase', textShadow: '0 4px 20px rgba(0,0,0,0.5)', margin: 0 }}>
-              {slide.title} <br/> <span style={{ color: '#f0f0f0', fontWeight: 300 }}>{slide.subtitle}</span>
-            </h1>
-            <p style={{ color: '#ddd', fontSize: '1.1rem', maxWidth: '500px', margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-              {slide.text}
-            </p>
-            <div style={{ marginTop: '0.5rem' }}>
-              <Link href={slide.link} className="btn btn-primary" style={{ padding: '0.9rem 2.5rem', fontSize: '1.1rem', boxShadow: '0 10px 30px rgba(205,23,25,0.5)' }}>
-                {slide.btnText}
-              </Link>
+          <div className="container" style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', transform: currentSlide === index ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 1s ease-out' }}>
+            <div style={{
+              background: 'rgba(10, 15, 25, 0.45)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              padding: '2.5rem 3rem',
+              maxWidth: '650px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.2rem'
+            }}>
+              <style dangerouslySetInnerHTML={{__html: `
+                @keyframes pulseGlow {
+                  0% { box-shadow: 0 0 0 0 rgba(167, 25, 48, 0.7); }
+                  70% { box-shadow: 0 0 0 15px rgba(167, 25, 48, 0); }
+                  100% { box-shadow: 0 0 0 0 rgba(167, 25, 48, 0); }
+                }
+                .hero-pulse-btn {
+                  animation: pulseGlow 2s infinite;
+                  transition: transform 0.2s;
+                }
+                .hero-pulse-btn:hover {
+                  transform: scale(1.05);
+                }
+              `}} />
+              <div style={{ background: 'var(--accent)', color: 'white', padding: '0.4rem 1rem', display: 'inline-block', alignSelf: 'flex-start', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.85rem', borderRadius: '4px' }}>
+                {slide.tagline}
+              </div>
+              <h1 style={{ color: 'white', fontSize: '3.2rem', fontWeight: 900, lineHeight: 1.1, textTransform: 'uppercase', margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                {slide.title} <br/> <span style={{ color: '#e2e8f0', fontWeight: 300 }}>{slide.subtitle}</span>
+              </h1>
+              <p style={{ color: '#cbd5e1', fontSize: '1.15rem', margin: 0, lineHeight: 1.6 }}>
+                {slide.text}
+              </p>
+              <div style={{ marginTop: '0.8rem' }}>
+                <Link href={slide.link} className="btn btn-primary hero-pulse-btn" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '8px' }}>
+                  {slide.btnText}
+                </Link>
+              </div>
             </div>
           </div>
         </div>

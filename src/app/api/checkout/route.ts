@@ -32,7 +32,31 @@ export async function POST(request: Request) {
     });
 
     const hasOnlyDigitalItems = orderItems.length > 0 && orderItems.every((item: any) => item.variant === 'Digital');
-    const shipping = hasOnlyDigitalItems ? 0.00 : 4.90;
+    // Fetch shipping zones from shop settings
+    let shippingZones = [];
+    try {
+      const shippingZonesSetting = await prisma.shopSetting.findUnique({ where: { key: 'shipping_zones' } });
+      if (shippingZonesSetting?.value) {
+        shippingZones = JSON.parse(shippingZonesSetting.value);
+      }
+    } catch (e) {
+      console.error("Failed to parse shipping zones in checkout", e);
+    }
+
+    let shipping = hasOnlyDigitalItems ? 0.00 : 4.90;
+    if (!hasOnlyDigitalItems && shippingZones.length > 0) {
+      const country = formData.country || 'DE';
+      const matchedZone = shippingZones.find((z: any) => 
+        z.countries.split(',').map((c: string) => c.trim().toUpperCase()).includes(country.toUpperCase())
+      );
+      if (matchedZone) {
+        if (matchedZone.freeShippingThreshold > 0 && calculatedSubtotal >= matchedZone.freeShippingThreshold) {
+          shipping = 0.00;
+        } else {
+          shipping = matchedZone.price;
+        }
+      }
+    }
     const calculatedTotal = calculatedSubtotal + shipping;
 
     // Create the order in database

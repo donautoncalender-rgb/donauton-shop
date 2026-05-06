@@ -24,6 +24,18 @@ export async function GET() {
     const works = Array.isArray(data) ? data : (data.works || []);
     let syncedCount = 0;
 
+    // ----- SYNC SETTINGS (e.g. Shipping Zones) -----
+    if (!Array.isArray(data) && data.settings) {
+      if (data.settings.shippingZones) {
+        await prisma.shopSetting.upsert({
+          where: { key: 'shipping_zones' },
+          update: { value: data.settings.shippingZones },
+          create: { key: 'shipping_zones', value: data.settings.shippingZones }
+        });
+      }
+    }
+    // ------------------------------------------------
+
     // ----- BEREINIGUNG VON GEISTER-ARTIKELN (GHOST PRODUCTS) -----
     // Generiere alle gültigen Slugs der Suite
     const validSlugs = works.map((w: any) => (w.title || `work-${w.id}`).toLowerCase().replace(/[^a-z0-9]+/g, '-'));

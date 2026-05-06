@@ -6,20 +6,33 @@ import Link from 'next/link';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { Turnstile } from '@marsidev/react-turnstile';
 
-export default function CheckoutClient({ paypalClientId, turnstileSiteKey }: { paypalClientId: string | null, turnstileSiteKey: string | null }) {
+export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shippingZones = [] }: { paypalClientId: string | null, turnstileSiteKey: string | null, shippingZones?: any[] }) {
   const { items, cartTotal, clearCart } = useCart();
   
   // Dynamic Shipping Logic
   const hasOnlyDigitalItems = items.length > 0 && items.every(item => item.variant === 'Digital');
   const hasDigitalItems = items.some(item => item.variant === 'Digital');
-  const shippingCost = hasOnlyDigitalItems ? 0.00 : 4.90;
-  
-  const grandTotal = cartTotal + shippingCost;
-
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', companyName: '',
-    address: '', zip: '', city: '', email: '', payment: 'PayPal'
+    address: '', zip: '', city: '', country: 'DE', email: '', payment: 'PayPal'
   });
+
+  // Calculate dynamic shipping based on zones
+  let shippingCost = hasOnlyDigitalItems ? 0.00 : 4.90; // Fallback
+  if (!hasOnlyDigitalItems && shippingZones.length > 0) {
+    const matchedZone = shippingZones.find((z: any) => 
+      z.countries.split(',').map((c: string) => c.trim().toUpperCase()).includes(formData.country.toUpperCase())
+    );
+    if (matchedZone) {
+      if (matchedZone.freeShippingThreshold > 0 && cartTotal >= matchedZone.freeShippingThreshold) {
+        shippingCost = 0.00;
+      } else {
+        shippingCost = matchedZone.price;
+      }
+    }
+  }
+
+  const grandTotal = cartTotal + shippingCost;
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [orderDetails, setOrderDetails] = useState<any>(null);
@@ -158,6 +171,19 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey }: { p
               <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>Straße & Hausnummer</label><input required name="address" value={formData.address} onChange={handleInputChange} type="text" style={inputStyle} /></div>
               <div><label style={labelStyle}>PLZ</label><input required name="zip" value={formData.zip} onChange={handleInputChange} type="text" style={inputStyle} /></div>
               <div><label style={labelStyle}>Ort</label><input required name="city" value={formData.city} onChange={handleInputChange} type="text" style={inputStyle} /></div>
+              <div>
+                <label style={labelStyle}>Land</label>
+                <select name="country" value={formData.country} onChange={handleInputChange as any} style={inputStyle} required>
+                  <option value="DE">Deutschland</option>
+                  <option value="AT">Österreich</option>
+                  <option value="CH">Schweiz</option>
+                  <option value="NL">Niederlande</option>
+                  <option value="BE">Belgien</option>
+                  <option value="LU">Luxemburg</option>
+                  <option value="FR">Frankreich</option>
+                  <option value="IT">Italien</option>
+                </select>
+              </div>
               <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>E-Mail Adresse (für Bestellbestätigung & Rechnungen)</label><input required name="email" value={formData.email} onChange={handleInputChange} type="email" style={inputStyle} /></div>
             </div>
           </section>

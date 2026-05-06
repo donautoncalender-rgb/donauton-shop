@@ -93,7 +93,7 @@ export default async function Home() {
       <HeroSlider slides={heroSlides} />
 
       {/* ENDLOS-MARQUEE / TRUST-BADGE */}
-      <div style={{ backgroundColor: 'var(--surface)', borderTop: '3px solid var(--accent)', borderBottom: '3px solid var(--accent)', overflow: 'hidden', padding: '1.2rem 0', display: 'flex', position: 'relative' }}>
+      <div style={{ backgroundColor: 'var(--surface)', borderTop: '3px solid var(--accent)', borderBottom: '3px solid var(--accent)', overflow: 'hidden', padding: '1.2rem 0', display: 'flex', position: 'relative', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
           .trust-marquee { display: inline-flex; animation: scrollMarquee 35s linear infinite; white-space: nowrap; }
@@ -121,24 +121,55 @@ export default async function Home() {
         <div className="container">
           <div style={{ display: 'flex', justifyItems: 'center', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap' }}>
             {[
-              { title: 'Noten', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>, path: '/noten' },
-              { title: 'CDs & Audio', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="12" x2="16.24" y2="7.76"></line></svg>, path: '/cds' },
-              { title: 'Bücher', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>, path: '/buecher' },
-              { title: 'Merch', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>, path: '/merch' },
-              { title: 'Tickets', icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>, path: '/tickets' }
+              { title: 'Noten', desc: 'Partituren & Stimmen', icon: <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>, path: '/noten' },
+              { title: 'CDs & Audio', desc: 'Alben & MP3s', icon: <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="12" x2="16.24" y2="7.76"></line></svg>, path: '/cds' },
+              { title: 'Bücher', desc: 'Fachliteratur', icon: <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>, path: '/buecher' },
+              { title: 'Merch', desc: 'Shirts & Caps', icon: <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>, path: '/merch' },
+              { title: 'Tickets', desc: 'Live Events', icon: <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>, path: '/tickets' }
             ].map((cat, idx) => (
-              <Link href={cat.path} key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.2rem', textDecoration: 'none', color: 'var(--text)' }} className="cat-link-hover">
+              <Link href={cat.path} key={idx} style={{ flex: '1 1 180px', maxWidth: '250px', display: 'flex', flexDirection: 'column', textDecoration: 'none', color: 'var(--text)' }} className="bento-card-link">
                 <style dangerouslySetInnerHTML={{__html: `
-                  .cat-link-hover:hover .cat-circle-inner { transform: translateY(-5px) scale(1.02); background-color: var(--primary) !important; box-shadow: 0 15px 30px rgba(167, 25, 48, 0.4) !important; }
-                  .cat-link-hover:hover .cat-icon-container { transform: scale(1.15) rotate(3deg); }
-                  .cat-link-hover:hover .cat-title-text { color: var(--accent); }
+                  .bento-card-link .bento-card {
+                    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                    border: 1px solid #e2e8f0;
+                    border-radius: 20px;
+                    padding: 2rem 1.5rem;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+                  }
+                  .bento-card-link:hover .bento-card { 
+                    transform: translateY(-8px); 
+                    border-color: var(--accent);
+                    box-shadow: 0 20px 40px rgba(167, 25, 48, 0.12); 
+                  }
+                  .bento-card-link .bento-icon {
+                    width: 70px; height: 70px;
+                    background: #fef2f2;
+                    color: var(--accent);
+                    border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 1.2rem;
+                    transition: all 0.4s ease;
+                  }
+                  .bento-card-link:hover .bento-icon {
+                    background: var(--accent);
+                    color: #fff;
+                    transform: scale(1.1) rotate(3deg);
+                  }
                 `}} />
-                <div className="cat-circle-inner" style={{ width: '120px', height: '120px', borderRadius: '50%', backgroundColor: 'var(--accent)', border: 'none', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', boxShadow: '0 8px 20px rgba(167, 25, 48, 0.15)', zIndex: 2 }}>
-                  <div className="cat-icon-container" style={{ color: '#fff', transition: 'all 0.4s ease' }}>
+                <div className="bento-card">
+                  <div className="bento-icon">
                     {cat.icon}
                   </div>
+                  <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '0.5px', marginBottom: '0.3rem', color: 'var(--text)' }}>{cat.title}</span>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-light)', fontWeight: 500 }}>{cat.desc}</span>
                 </div>
-                <span className="cat-title-text" style={{ fontWeight: 800, textTransform: 'uppercase', fontSize: '1.05rem', letterSpacing: '1px', transition: 'color 0.3s' }}>{cat.title}</span>
               </Link>
             ))}
           </div>
