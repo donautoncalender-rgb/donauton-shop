@@ -151,7 +151,9 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
             perspective: '2500px',
             padding: '3rem',
             position: 'relative',
-            zIndex: 2
+            zIndex: 2,
+            transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            transform: isHovered ? 'translateX(-30px)' : 'translateX(0)'
           }}>
             <div style={{
               width: `${mockupWidth}px`,
@@ -175,7 +177,7 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
                     boxShadow: '0 0 30px rgba(0,0,0,0.15)',
                     transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     transform: isHovered 
-                      ? `translateZ(${-(i + 1) * 15}px) translateX(${(i + 1) * 80}px) rotateY(-${(i + 1) * 5}deg)` 
+                      ? `translateZ(${-(i + 1) * 15}px) translateX(${(i + 1) * 65}px) rotateY(-${(i + 1) * 5}deg)` 
                       : `translateZ(${-(i + 1) * 3}px) translateX(${(i + 1) * 0.8}px)`,
                     border: '1px solid #e2e8f0',
                     zIndex: -(i + 1)
