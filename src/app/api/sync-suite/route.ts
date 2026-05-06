@@ -39,7 +39,7 @@ export async function GET() {
     }
     // -------------------------------------------------------------
 
-    for (const work of works) {
+    const upsertPromises = works.map((work: any) => {
       // Category Mapping based on CatalogCategory name
       const catName = (work.catalog_category?.name || '').toLowerCase();
       let category = "Noten";
@@ -92,7 +92,7 @@ export async function GET() {
 
       const detailsJson = JSON.stringify(detailsList);
 
-      await prisma.product.upsert({
+      return prisma.product.upsert({
         where: { slug: safeSlug }, // Using slug as unique key
         update: {
           title: work.title,
@@ -142,8 +142,10 @@ export async function GET() {
           isExternal: Boolean(work.is_external)
         }
       });
-      syncedCount++;
-    }
+    });
+
+    await prisma.$transaction(upsertPromises);
+    syncedCount = works.length;
 
     // Flush the global Next.js cache so the Storefront updates instantly
     revalidatePath('/', 'layout');
