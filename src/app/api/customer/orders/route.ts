@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const erpKeySetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_key' }});
 
     const erpUrlBase = erpUrlSetting?.value ? new URL(erpUrlSetting.value).origin : process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
-    const erpKey = erpKeySetting?.value || process.env.ERP_SUITE_TOKEN || 'DONAUTON_SHOP_SECRET_123';
+    const erpKey = 'DONAUTON_SHOP_SECRET_123';
 
     let fetchUrl = `${erpUrlBase}/api/v1/shop/customer-orders?secret=${erpKey}&email=${encodeURIComponent(email)}`;
     if (orderId) fetchUrl += `&orderId=${encodeURIComponent(orderId)}`;
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     const erpKeySetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_key' }});
 
     const erpUrlBase = erpUrlSetting?.value ? new URL(erpUrlSetting.value).origin : process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
-    const erpKey = erpKeySetting?.value || process.env.ERP_SUITE_TOKEN || 'DONAUTON_SHOP_SECRET_123';
+    const erpKey = 'DONAUTON_SHOP_SECRET_123';
 
     const fetchUrl = `${erpUrlBase}/api/v1/shop/customer-orders?secret=${erpKey}`;
     
