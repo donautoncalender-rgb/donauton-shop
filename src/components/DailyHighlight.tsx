@@ -10,7 +10,19 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
   const [aspectRatio, setAspectRatio] = useState(1);
   const [isReady, setIsReady] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Parse gallery images (up to 2 for fanning effect)
+  const galleryImages = React.useMemo(() => {
+    if (!product?.galleryImages) return [];
+    try {
+      const parsed = JSON.parse(product.galleryImages);
+      return Array.isArray(parsed) ? parsed.slice(0, 2) : [];
+    } catch (e) {
+      return [];
+    }
+  }, [product?.galleryImages]);
 
   useEffect(() => {
     if (!product?.imageUrl) return;
@@ -35,6 +47,11 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
 
   const handleMouseLeave = () => {
     setMousePos({ x: 0, y: 0 });
+    setIsHovered(false);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
   };
 
   if (!product) return null;
@@ -96,6 +113,7 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
           ref={containerRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleMouseEnter}
           style={{ 
             background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
             borderRadius: '48px', 
@@ -143,19 +161,44 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
               transform: `rotateY(${mousePos.x * 20}deg) rotateX(${mousePos.y * -20}deg) scale(1.05)`,
               transformStyle: 'preserve-3d',
             }}>
-              {/* Luxury Stacked Pages */}
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} style={{
-                  position: 'absolute',
-                  top: 0, left: 0, right: 0, bottom: 0,
-                  backgroundColor: '#fff',
-                  borderRadius: '2px 10px 10px 2px',
-                  boxShadow: '0 0 30px rgba(0,0,0,0.03)',
-                  transform: `translateZ(${-i * 3}px) translateX(${i * 0.8}px)`,
-                  border: '1px solid #f1f5f9',
-                  zIndex: -i
-                }} />
-              ))}
+              {/* Luxury Stacked Pages / Gallery Images */}
+              {galleryImages.length > 0 ? (
+                galleryImages.map((imgUrl: string, i: number) => (
+                  <div key={i} style={{
+                    position: 'absolute',
+                    top: 0, left: 0, width: '100%', height: '100%',
+                    backgroundImage: `url(${imgUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'top center',
+                    backgroundColor: '#fff',
+                    borderRadius: '2px 10px 10px 2px',
+                    boxShadow: '0 0 30px rgba(0,0,0,0.15)',
+                    transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: isHovered 
+                      ? `translateZ(${-(i + 1) * 15}px) translateX(${(i + 1) * 80}px) rotateY(-${(i + 1) * 5}deg)` 
+                      : `translateZ(${-(i + 1) * 3}px) translateX(${(i + 1) * 0.8}px)`,
+                    border: '1px solid #e2e8f0',
+                    zIndex: -(i + 1)
+                  }} />
+                ))
+              ) : (
+                /* Fallback if no gallery images */
+                [1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: '#fff',
+                    borderRadius: '2px 10px 10px 2px',
+                    boxShadow: '0 0 30px rgba(0,0,0,0.03)',
+                    transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    transform: isHovered
+                      ? `translateZ(${-i * 10}px) translateX(${i * 15}px) rotateY(-${i * 2}deg)`
+                      : `translateZ(${-i * 3}px) translateX(${i * 0.8}px)`,
+                    border: '1px solid #f1f5f9',
+                    zIndex: -i
+                  }} />
+                ))
+              )}
 
               {/* Main Cover */}
               <div style={{
