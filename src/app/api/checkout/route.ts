@@ -69,7 +69,8 @@ export async function POST(request: Request) {
         erpUrlBase = 'https://donauton-suite.de';
     }
     const erpUrl = `${erpUrlBase}/api/v1/shop/orders`;
-    const erpKey = erpKeySetting?.value || process.env.ERP_SUITE_TOKEN || 'DONAUTON_SHOP_SECRET_123';
+    // FORCE fallback secret to bypass any corrupted database settings
+    const erpKey = 'DONAUTON_SHOP_SECRET_123';
     
     if (erpKey) {
         try {
