@@ -94,6 +94,36 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     })).sort((a, b) => a.besetzung.localeCompare(b.besetzung));
   }, [initialProducts]);
 
+  const availableBesetzungen = useMemo(() => {
+    const list = new Set<string>();
+    initialProducts.forEach(p => {
+      if (p.besetzung && p.besetzung.trim() !== '') {
+        list.add(p.besetzung.trim());
+      }
+    });
+    return Array.from(list).sort();
+  }, [initialProducts]);
+
+  const availableSoloinstruments = useMemo(() => {
+    const list = new Set<string>();
+    initialProducts.forEach(p => {
+      if (p.soloinstrument && p.soloinstrument.trim() !== '') {
+        list.add(p.soloinstrument.trim());
+      }
+    });
+    return Array.from(list).sort();
+  }, [initialProducts]);
+
+  const availableGenres = useMemo(() => {
+    const genres = new Set<string>();
+    initialProducts.forEach(p => {
+      if (p.genre && p.genre.trim() !== '' && p.genre !== 'Ohne Genre') {
+        genres.add(p.genre.trim());
+      }
+    });
+    return Array.from(genres).sort();
+  }, [initialProducts]);
+
   const availableGrades = useMemo(() => {
     const grades = new Set<string>();
     initialProducts.forEach(p => {
@@ -312,6 +342,39 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
           </div>
           
           {/* Filter Dropdowns */}
+          {availableBesetzungen.length > 0 && (
+            <select 
+              value={selectedBesetzungen[0] || ''}
+              onChange={(e) => setSelectedBesetzungen(e.target.value ? [e.target.value] : [])}
+              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedBesetzungen.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
+            >
+              <option value="">Alle Besetzungen</option>
+              {availableBesetzungen.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+          )}
+
+          {availableSoloinstruments.length > 0 && (
+            <select 
+              value={selectedSoloinstruments[0] || ''}
+              onChange={(e) => setSelectedSoloinstruments(e.target.value ? [e.target.value] : [])}
+              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedSoloinstruments.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
+            >
+              <option value="">Alle Soloinstrumente</option>
+              {availableSoloinstruments.map(i => <option key={i} value={i}>{i}</option>)}
+            </select>
+          )}
+
+          {availableGenres.length > 0 && (
+            <select 
+              value={selectedGenres[0] || ''}
+              onChange={(e) => setSelectedGenres(e.target.value ? [e.target.value] : [])}
+              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedGenres.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
+            >
+              <option value="">Alle Genres</option>
+              {availableGenres.map(g => <option key={g} value={g}>{g}</option>)}
+            </select>
+          )}
+
           {availableGrades.length > 0 && (
             <select 
               value={selectedGrades[0] || ''}
