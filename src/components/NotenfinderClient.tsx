@@ -194,6 +194,7 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     });
   }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, initialProducts]);
 
+  return (
     <div className="shop-layout">
       {/* Sidebar - Category Navigation */}
       <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s', borderRight: '1px solid #e2e8f0', paddingRight: '2rem' }}>
