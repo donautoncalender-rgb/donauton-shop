@@ -7,7 +7,17 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from './ProductCard';
 
-export default function NotenfinderClient({ categories, initialProducts }: { categories: any[], initialProducts: any[] }) {
+export default function NotenfinderClient({ 
+  categories, 
+  initialProducts,
+  title,
+  description
+}: { 
+  categories: any[], 
+  initialProducts: any[],
+  title?: string,
+  description?: string
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
@@ -225,10 +235,168 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
   }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, initialProducts]);
 
   return (
-    <div className="shop-layout">
+    <div style={{ position: 'relative' }}>
+      {/* Unified Sticky Header */}
+      <div 
+        className="animate-fade-in"
+        style={{ 
+          position: 'sticky', 
+          top: '0', 
+          zIndex: 40, 
+          background: 'rgba(255,255,255,0.95)', 
+          backdropFilter: 'blur(12px)',
+          padding: '1rem 0',
+          marginBottom: '2rem',
+          borderBottom: '1px solid #e2e8f0',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+          marginLeft: '-max(1rem, calc((100vw - 1200px) / 2))', // Stretch to full window background visually if needed, but since it's in .container it's already bounded. Actually, .container page-container has padding.
+          marginRight: '-max(1rem, calc((100vw - 1200px) / 2))',
+          paddingLeft: 'max(1rem, calc((100vw - 1200px) / 2))',
+          paddingRight: 'max(1rem, calc((100vw - 1200px) / 2))',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              {title && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px' }}>{title}</h1>}
+              {description && <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-light)', maxWidth: '600px', lineHeight: 1.4 }}>{description}</p>}
+            </div>
+            
+            <div style={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
+               <div className="search-box" style={{ width: '100%', maxWidth: '400px', margin: 0, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '50px' }}>
+                 <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ left: '1.2rem', color: '#94a3b8' }}>
+                   <circle cx="11" cy="11" r="8"></circle>
+                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                 </svg>
+                 <input 
+                   type="text" 
+                   className="search-input" 
+                   placeholder="Nach Titel, Komponist oder Genre suchen..." 
+                   value={searchQuery}
+                   onChange={(e) => setSearchQuery(e.target.value)}
+                   style={{ fontSize: '0.95rem', padding: '0.8rem 1.5rem 0.8rem 3rem', background: 'transparent', border: 'none' }}
+                 />
+               </div>
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <style dangerouslySetInnerHTML={{__html: `
+              .sleek-select {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background-color: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 50px;
+                padding: 0.6rem 2.5rem 0.6rem 1.2rem;
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: var(--text);
+                cursor: pointer;
+                transition: all 0.2s;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 1rem center;
+                background-size: 14px;
+              }
+              .sleek-select:hover {
+                border-color: #cbd5e1;
+                background-color: white;
+              }
+              .sleek-select:focus {
+                outline: none;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+              }
+              .sleek-select.active {
+                background-color: #fef2f2;
+                border-color: #fca5a5;
+                color: var(--accent);
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+              }
+            `}} />
+
+            {availableBesetzungen.length > 0 && (
+              <select 
+                value={selectedBesetzungen[0] || ''}
+                onChange={(e) => setSelectedBesetzungen(e.target.value ? [e.target.value] : [])}
+                className={`sleek-select ${selectedBesetzungen.length > 0 ? 'active' : ''}`}
+              >
+                <option value="">Alle Besetzungen</option>
+                {availableBesetzungen.map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+            )}
+
+            {availableSoloinstruments.length > 0 && (
+              <select 
+                value={selectedSoloinstruments[0] || ''}
+                onChange={(e) => setSelectedSoloinstruments(e.target.value ? [e.target.value] : [])}
+                className={`sleek-select ${selectedSoloinstruments.length > 0 ? 'active' : ''}`}
+              >
+                <option value="">Alle Soloinstrumente</option>
+                {availableSoloinstruments.map(i => <option key={i} value={i}>{i}</option>)}
+              </select>
+            )}
+
+            {availableGenres.length > 0 && (
+              <select 
+                value={selectedGenres[0] || ''}
+                onChange={(e) => setSelectedGenres(e.target.value ? [e.target.value] : [])}
+                className={`sleek-select ${selectedGenres.length > 0 ? 'active' : ''}`}
+              >
+                <option value="">Alle Genres</option>
+                {availableGenres.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+            )}
+
+            {availableGrades.length > 0 && (
+              <select 
+                value={selectedGrades[0] || ''}
+                onChange={(e) => setSelectedGrades(e.target.value ? [e.target.value] : [])}
+                className={`sleek-select ${selectedGrades.length > 0 ? 'active' : ''}`}
+              >
+                <option value="">Alle Stufen</option>
+                {availableGrades.map(g => <option key={g} value={g}>Stufe {g}</option>)}
+              </select>
+            )}
+
+            {availablePublishers.length > 0 && (
+              <select 
+                value={selectedPublishers[0] || ''}
+                onChange={(e) => setSelectedPublishers(e.target.value ? [e.target.value] : [])}
+                className={`sleek-select ${selectedPublishers.length > 0 ? 'active' : ''}`}
+              >
+                <option value="">Alle Verlage</option>
+                {availablePublishers.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            )}
+
+            {hasAnyFilter && (
+               <button 
+                 onClick={clearAllFilters} 
+                 style={{ 
+                   padding: '0.6rem 1.2rem', background: 'transparent', color: '#ef4444', 
+                   border: '1px solid #fca5a5', borderRadius: '50px', cursor: 'pointer', 
+                   fontWeight: 600, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem',
+                   transition: 'all 0.2s'
+                 }}
+                 onMouseOver={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
+                 onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
+               >
+                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                 Filter löschen
+               </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+    <div className="shop-layout" style={{ maxWidth: '1200px', margin: '0 auto' }}>
       {/* Sidebar - Category Navigation */}
       <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s', borderRight: '1px solid #e2e8f0', paddingRight: '2rem' }}>
-        <div style={{ position: 'sticky', top: '2rem' }}>
+        <div style={{ position: 'sticky', top: '12rem' }}>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', display: 'inline-block' }}>
             Notenkategorien
           </h3>
@@ -306,105 +474,6 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
 
       {/* Main Content */}
       <div className="shop-main">
-        {/* Sticky Top Filter Bar */}
-        <div 
-          className="sticky-filter-bar animate-fade-in" 
-          style={{ 
-            position: 'sticky', 
-            top: '0', 
-            zIndex: 40, 
-            background: 'rgba(255,255,255,0.95)', 
-            backdropFilter: 'blur(10px)',
-            padding: '1rem 0',
-            marginBottom: '1.5rem',
-            borderBottom: '1px solid #e2e8f0',
-            display: 'flex',
-            gap: '1rem',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            animationDelay: '0.2s'
-          }}
-        >
-          {/* Search Box */}
-          <div className="search-box" style={{ flexGrow: 1, minWidth: '250px', margin: 0, boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)' }}>
-            <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input 
-              type="text" 
-              className="search-input" 
-              placeholder="Nach Titel, Komponist oder Genre suchen..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ fontSize: '0.95rem', padding: '0.8rem 1rem 0.8rem 2.5rem' }}
-            />
-          </div>
-          
-          {/* Filter Dropdowns */}
-          {availableBesetzungen.length > 0 && (
-            <select 
-              value={selectedBesetzungen[0] || ''}
-              onChange={(e) => setSelectedBesetzungen(e.target.value ? [e.target.value] : [])}
-              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedBesetzungen.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
-            >
-              <option value="">Alle Besetzungen</option>
-              {availableBesetzungen.map(b => <option key={b} value={b}>{b}</option>)}
-            </select>
-          )}
-
-          {availableSoloinstruments.length > 0 && (
-            <select 
-              value={selectedSoloinstruments[0] || ''}
-              onChange={(e) => setSelectedSoloinstruments(e.target.value ? [e.target.value] : [])}
-              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedSoloinstruments.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
-            >
-              <option value="">Alle Soloinstrumente</option>
-              {availableSoloinstruments.map(i => <option key={i} value={i}>{i}</option>)}
-            </select>
-          )}
-
-          {availableGenres.length > 0 && (
-            <select 
-              value={selectedGenres[0] || ''}
-              onChange={(e) => setSelectedGenres(e.target.value ? [e.target.value] : [])}
-              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedGenres.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
-            >
-              <option value="">Alle Genres</option>
-              {availableGenres.map(g => <option key={g} value={g}>{g}</option>)}
-            </select>
-          )}
-
-          {availableGrades.length > 0 && (
-            <select 
-              value={selectedGrades[0] || ''}
-              onChange={(e) => setSelectedGrades(e.target.value ? [e.target.value] : [])}
-              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedGrades.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
-            >
-              <option value="">Alle Stufen</option>
-              {availableGrades.map(g => <option key={g} value={g}>Stufe {g}</option>)}
-            </select>
-          )}
-
-          {availablePublishers.length > 0 && (
-            <select 
-              value={selectedPublishers[0] || ''}
-              onChange={(e) => setSelectedPublishers(e.target.value ? [e.target.value] : [])}
-              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedPublishers.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
-            >
-              <option value="">Alle Verlage</option>
-              {availablePublishers.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-          )}
-
-          {hasAnyFilter && (
-             <button onClick={clearAllFilters} style={{ padding: '0.8rem 1rem', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-               Filter löschen
-             </button>
-          )}
-        </div>
-
         <div className="toolbar animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <div style={{ color: 'var(--text-light)' }}>
             {filteredProducts.length === 0 ? "Keine Ergebnisse gefunden" : filteredProducts.length === 1 ? "1 Ergebnis gefunden" : `${filteredProducts.length} Ergebnisse gefunden`}

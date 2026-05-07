@@ -58,15 +58,13 @@ export default async function Notenfinder() {
 
   return (
     <div className="container page-container">
-      <div className="page-header animate-fade-in" style={{ marginBottom: '1.5rem', textAlign: 'left', padding: '1rem 0' }}>
-        <h1 className="page-title" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Notenfinder</h1>
-        <p className="page-subtitle" style={{ fontSize: '1rem', margin: 0, maxWidth: '800px' }}>
-          Entdecke unser Repertoire. Filtere ganz einfach nach Genre, Schwierigkeitsgrad oder Komponist, um genau das richtige Stück für dein Orchester zu finden.
-        </p>
-      </div>
-
       <Suspense fallback={<div className="animate-pulse" style={{ padding: '2rem', textAlign: 'center' }}>Lädt Katalog...</div>}>
-        <NotenfinderClient categories={categories} initialProducts={products} />
+        <NotenfinderClient 
+          title="Notenfinder"
+          description="Entdecke unser Repertoire. Filtere ganz einfach nach Genre, Schwierigkeitsgrad oder Komponist, um genau das richtige Stück für dein Orchester zu finden."
+          categories={categories} 
+          initialProducts={products} 
+        />
       </Suspense>
     </div>
   );
