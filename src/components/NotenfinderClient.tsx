@@ -73,35 +73,25 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
 
   }, [searchParams]);
 
-  const availableBesetzungen = useMemo(() => {
-    const list = new Set<string>();
+  const taxonomy = useMemo(() => {
+    const taxonomyMap = new Map<string, { type: 'genre' | 'solist', items: Set<string> }>();
     initialProducts.forEach(p => {
-      if (p.besetzung && p.besetzung.trim() !== '') {
-        list.add(p.besetzung.trim());
+      const main = p.besetzung || 'Sonstige Noten';
+      if (!taxonomyMap.has(main)) {
+         taxonomyMap.set(main, { type: p.soloinstrument ? 'solist' : 'genre', items: new Set() });
+      }
+      if (p.soloinstrument) {
+         taxonomyMap.get(main)!.items.add(p.soloinstrument);
+         taxonomyMap.get(main)!.type = 'solist';
+      } else if (p.genre && p.genre !== 'Ohne Genre') {
+         taxonomyMap.get(main)!.items.add(p.genre);
       }
     });
-    return Array.from(list).sort();
-  }, [initialProducts]);
-
-  const availableSoloinstruments = useMemo(() => {
-    const list = new Set<string>();
-    initialProducts.forEach(p => {
-      if (p.soloinstrument && p.soloinstrument.trim() !== '') {
-        list.add(p.soloinstrument.trim());
-      }
-    });
-    return Array.from(list).sort();
-  }, [initialProducts]);
-
-  // Dynamically extract unique genres and grades from the synced products
-  const availableGenres = useMemo(() => {
-    const genres = new Set<string>();
-    initialProducts.forEach(p => {
-      if (p.genre && p.genre.trim() !== '' && p.genre !== 'Ohne Genre') {
-        genres.add(p.genre.trim());
-      }
-    });
-    return Array.from(genres).sort();
+    return Array.from(taxonomyMap.entries()).map(([b, data]) => ({
+      besetzung: b,
+      type: data.type,
+      items: Array.from(data.items).sort()
+    })).sort((a, b) => a.besetzung.localeCompare(b.besetzung));
   }, [initialProducts]);
 
   const availableGrades = useMemo(() => {
@@ -112,7 +102,6 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
       }
     });
     return Array.from(grades).sort((a, b) => {
-      // Basic numerical sort if they are numbers like "3" or "3.5"
       const numA = parseFloat(a) || 0;
       const numB = parseFloat(b) || 0;
       return numA - numB || a.localeCompare(b);
@@ -205,197 +194,151 @@ export default function NotenfinderClient({ categories, initialProducts }: { cat
     });
   }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, initialProducts]);
 
-  return (
     <div className="shop-layout">
-      {/* Sidebar */}
-      <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        
-        {hasAnyFilter && (
-          <div style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border)' }}>
-            <button 
-              onClick={clearAllFilters}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '0.4rem',
-                fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)',
-                background: 'none', border: 'none', cursor: 'pointer', padding: 0
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              Alle Filter löschen
-            </button>
-          </div>
-        )}
-
-        {availableBesetzungen.length > 0 && (
-          <div className="filter-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 className="filter-title" style={{ marginBottom: 0 }}>Besetzung</h3>
-              {selectedBesetzungen.length > 0 && (
-                <button 
-                  onClick={() => setSelectedBesetzungen([])}
-                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
-                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
-                >
-                  löschen
-                </button>
-              )}
-            </div>
-            <div className="filter-list">
-              {availableBesetzungen.map((b) => (
-                <label className="filter-label" key={b}>
-                  <input 
-                    type="checkbox" 
-                    className="filter-checkbox" 
-                    checked={selectedBesetzungen.includes(b)}
-                    onChange={() => toggleBesetzung(b)}
-                  /> 
-                  {b}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {availableSoloinstruments.length > 0 && selectedBesetzungen.some(b => b.toLowerCase().includes('solist')) && (
-          <div className="filter-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 className="filter-title" style={{ marginBottom: 0 }}>Soloinstrument</h3>
-              {selectedSoloinstruments.length > 0 && (
-                <button 
-                  onClick={() => setSelectedSoloinstruments([])}
-                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
-                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
-                >
-                  löschen
-                </button>
-              )}
-            </div>
-            <div className="filter-list">
-              {availableSoloinstruments.map((inst) => (
-                <label className="filter-label" key={inst}>
-                  <input 
-                    type="checkbox" 
-                    className="filter-checkbox" 
-                    checked={selectedSoloinstruments.includes(inst)}
-                    onChange={() => toggleSoloinstrument(inst)}
-                  /> 
-                  {inst}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {availableGenres.length > 0 && (
-          <div className="filter-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 className="filter-title" style={{ marginBottom: 0 }}>Genre</h3>
-              {selectedGenres.length > 0 && (
-                <button 
-                  onClick={() => setSelectedGenres([])}
-                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
-                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
-                >
-                  löschen
-                </button>
-              )}
-            </div>
-            <div className="filter-list">
-              {availableGenres.map((genre) => (
-                <label className="filter-label" key={genre}>
-                  <input 
-                    type="checkbox" 
-                    className="filter-checkbox" 
-                    checked={selectedGenres.includes(genre)}
-                    onChange={() => toggleGenre(genre)}
-                  /> 
-                  {genre}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {availableGrades.length > 0 && (
-          <div className="filter-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 className="filter-title" style={{ marginBottom: 0 }}>Stufe / Grad</h3>
-              {selectedGrades.length > 0 && (
-                <button 
-                  onClick={() => setSelectedGrades([])}
-                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
-                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
-                >
-                  löschen
-                </button>
-              )}
-            </div>
-            <div className="filter-list">
-              {availableGrades.map((grade) => (
-                <label className="filter-label" key={grade}>
-                  <input 
-                    type="checkbox" 
-                    className="filter-checkbox"
-                    checked={selectedGrades.includes(grade)}
-                    onChange={() => toggleGrade(grade)} 
-                  /> 
-                  Stufe {grade}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {availablePublishers.length > 0 && (
-          <div className="filter-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 className="filter-title" style={{ marginBottom: 0 }}>Verlag</h3>
-              {selectedPublishers.length > 0 && (
-                <button 
-                  onClick={() => setSelectedPublishers([])}
-                  style={{ fontSize: '0.75rem', fontWeight: 600, color: '#a0aec0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary)'}
-                  onMouseOut={(e) => e.currentTarget.style.color = '#a0aec0'}
-                >
-                  löschen
-                </button>
-              )}
-            </div>
-            <div className="filter-list">
-              {availablePublishers.map((pub) => (
-                <label className="filter-label" key={pub}>
-                  <input 
-                    type="checkbox" 
-                    className="filter-checkbox"
-                    checked={selectedPublishers.includes(pub)}
-                    onChange={() => togglePublisher(pub)} 
-                  /> 
-                  {pub}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
+      {/* Sidebar - Category Navigation */}
+      <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s', borderRight: '1px solid #e2e8f0', paddingRight: '2rem' }}>
+        <div style={{ position: 'sticky', top: '2rem' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', display: 'inline-block' }}>
+            Notenkategorien
+          </h3>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            {taxonomy.map(tax => {
+               const isExpanded = selectedBesetzungen.includes(tax.besetzung) || (selectedBesetzungen.length === 0 && searchParams.has('besetzung') && searchParams.get('besetzung') === tax.besetzung);
+               return (
+                 <li key={tax.besetzung}>
+                   <button 
+                     onClick={() => {
+                        if (isExpanded) {
+                          setSelectedBesetzungen([]);
+                          setSelectedSoloinstruments([]);
+                          setSelectedGenres([]);
+                        } else {
+                          setSelectedBesetzungen([tax.besetzung]);
+                          setSelectedSoloinstruments([]);
+                          setSelectedGenres([]);
+                        }
+                     }}
+                     style={{ 
+                       background: 'none', border: 'none', padding: '0.5rem 0', 
+                       textAlign: 'left', width: '100%', cursor: 'pointer',
+                       fontWeight: isExpanded ? 700 : 500,
+                       color: isExpanded ? 'var(--accent)' : 'var(--text)',
+                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                       fontSize: '1.05rem',
+                       transition: 'color 0.2s'
+                     }}
+                   >
+                     {tax.besetzung}
+                     {tax.items.length > 0 && (
+                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                     )}
+                   </button>
+                   
+                   {isExpanded && tax.items.length > 0 && (
+                     <ul style={{ listStyle: 'none', padding: '0.5rem 0 1rem 1rem', margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem', borderLeft: '2px solid #f1f5f9', marginLeft: '0.5rem' }}>
+                       {tax.items.map(item => {
+                         const isSubActive = tax.type === 'solist' ? selectedSoloinstruments.includes(item) : selectedGenres.includes(item);
+                         return (
+                           <li key={item}>
+                             <button
+                               onClick={() => {
+                                 if (tax.type === 'solist') {
+                                   setSelectedSoloinstruments(isSubActive ? [] : [item]);
+                                   setSelectedGenres([]);
+                                 } else {
+                                   setSelectedGenres(isSubActive ? [] : [item]);
+                                   setSelectedSoloinstruments([]);
+                                 }
+                               }}
+                               style={{
+                                 background: 'none', border: 'none', padding: 0,
+                                 textAlign: 'left', width: '100%', cursor: 'pointer',
+                                 fontSize: '0.95rem',
+                                 color: isSubActive ? 'var(--accent)' : 'var(--text-light)',
+                                 fontWeight: isSubActive ? 700 : 500,
+                                 transition: 'color 0.2s'
+                               }}
+                             >
+                               {item}
+                             </button>
+                           </li>
+                         );
+                       })}
+                     </ul>
+                   )}
+                 </li>
+               )
+            })}
+          </ul>
+        </div>
       </aside>
 
       {/* Main Content */}
       <div className="shop-main">
-        <div className="search-box animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <svg className="search-icon" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input 
-            type="text" 
-            className="search-input" 
-            placeholder="Nach Titel, Komponist oder Genre suchen..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        {/* Sticky Top Filter Bar */}
+        <div 
+          className="sticky-filter-bar animate-fade-in" 
+          style={{ 
+            position: 'sticky', 
+            top: '0', 
+            zIndex: 40, 
+            background: 'rgba(255,255,255,0.95)', 
+            backdropFilter: 'blur(10px)',
+            padding: '1rem 0',
+            marginBottom: '1.5rem',
+            borderBottom: '1px solid #e2e8f0',
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            animationDelay: '0.2s'
+          }}
+        >
+          {/* Search Box */}
+          <div className="search-box" style={{ flexGrow: 1, minWidth: '250px', margin: 0, boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)' }}>
+            <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+              type="text" 
+              className="search-input" 
+              placeholder="Nach Titel, Komponist oder Genre suchen..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ fontSize: '0.95rem', padding: '0.8rem 1rem 0.8rem 2.5rem' }}
+            />
+          </div>
+          
+          {/* Filter Dropdowns */}
+          {availableGrades.length > 0 && (
+            <select 
+              value={selectedGrades[0] || ''}
+              onChange={(e) => setSelectedGrades(e.target.value ? [e.target.value] : [])}
+              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedGrades.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
+            >
+              <option value="">Alle Stufen</option>
+              {availableGrades.map(g => <option key={g} value={g}>Stufe {g}</option>)}
+            </select>
+          )}
+
+          {availablePublishers.length > 0 && (
+            <select 
+              value={selectedPublishers[0] || ''}
+              onChange={(e) => setSelectedPublishers(e.target.value ? [e.target.value] : [])}
+              style={{ padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontWeight: 500, fontSize: '0.95rem', color: selectedPublishers.length > 0 ? 'var(--accent)' : 'inherit', minWidth: '150px' }}
+            >
+              <option value="">Alle Verlage</option>
+              {availablePublishers.map(p => <option key={p} value={p}>{p}</option>)}
+            </select>
+          )}
+
+          {hasAnyFilter && (
+             <button onClick={clearAllFilters} style={{ padding: '0.8rem 1rem', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+               Filter löschen
+             </button>
+          )}
         </div>
 
         <div className="toolbar animate-fade-in" style={{ animationDelay: '0.3s' }}>
