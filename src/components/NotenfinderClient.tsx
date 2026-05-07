@@ -572,5 +572,6 @@ export default function NotenfinderClient({
         )}
       </div>
     </div>
+    </div>
   );
 }
