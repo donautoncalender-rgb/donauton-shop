@@ -232,7 +232,7 @@ export default function NotenfinderClient({
 
       return matchesSearch && matchesBesetzung && matchesSoloinstrument && matchesGenre && matchesGrade && matchesPublisher;
     });
-  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, initialProducts]);
+  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, selectedSoloinstruments, initialProducts]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -245,24 +245,23 @@ export default function NotenfinderClient({
           zIndex: 40, 
           background: 'rgba(255,255,255,0.95)', 
           backdropFilter: 'blur(12px)',
-          padding: '1rem 0',
+          padding: '1.5rem 0 1rem 0',
           marginBottom: '2rem',
           borderBottom: '1px solid #e2e8f0',
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-          marginLeft: '-max(1rem, calc((100vw - 1200px) / 2))', // Stretch to full window background visually if needed, but since it's in .container it's already bounded. Actually, .container page-container has padding.
-          marginRight: '-max(1rem, calc((100vw - 1200px) / 2))',
-          paddingLeft: 'max(1rem, calc((100vw - 1200px) / 2))',
-          paddingRight: 'max(1rem, calc((100vw - 1200px) / 2))',
+          width: '100vw',
+          marginLeft: 'calc(50% - 50vw)',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           
-          <div style={{ marginBottom: '0.5rem' }}>
-            {title && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px' }}>{title}</h1>}
-            {description && <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-light)', maxWidth: '800px', lineHeight: 1.4 }}>{description}</p>}
-          </div>
-          
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Row 1: Title, Subtitle & Search */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
+            <div style={{ flex: '1 1 500px' }}>
+              {title && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px' }}>{title}</h1>}
+              {description && <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-light)', lineHeight: 1.4 }}>{description}</p>}
+            </div>
+            
             <div className="search-box" style={{ width: '100%', maxWidth: '350px', margin: 0, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '50px' }}>
               <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ left: '1.2rem', color: '#94a3b8' }}>
                 <circle cx="11" cy="11" r="8"></circle>
@@ -277,6 +276,10 @@ export default function NotenfinderClient({
                 style={{ fontSize: '0.95rem', padding: '0.8rem 1.5rem 0.8rem 3rem', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit' }}
               />
             </div>
+          </div>
+          
+          {/* Row 2: Filter Dropdowns */}
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
 
             <style dangerouslySetInnerHTML={{__html: `
               .sleek-select {
