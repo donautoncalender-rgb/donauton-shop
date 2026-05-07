@@ -329,7 +329,7 @@ export default function NotenfinderClient({
               </select>
             )}
 
-            {availableSoloinstruments.length > 0 && (
+            {availableSoloinstruments.length > 0 && selectedBesetzungen.some(b => b.toLowerCase().includes('solist')) && (
               <select 
                 value={selectedSoloinstruments[0] || ''}
                 onChange={(e) => setSelectedSoloinstruments(e.target.value ? [e.target.value] : [])}
