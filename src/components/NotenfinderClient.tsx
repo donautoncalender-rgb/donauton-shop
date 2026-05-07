@@ -257,31 +257,27 @@ export default function NotenfinderClient({
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              {title && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px' }}>{title}</h1>}
-              {description && <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-light)', maxWidth: '600px', lineHeight: 1.4 }}>{description}</p>}
-            </div>
-            
-            <div style={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
-               <div className="search-box" style={{ width: '100%', maxWidth: '400px', margin: 0, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '50px' }}>
-                 <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ left: '1.2rem', color: '#94a3b8' }}>
-                   <circle cx="11" cy="11" r="8"></circle>
-                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                 </svg>
-                 <input 
-                   type="text" 
-                   className="search-input" 
-                   placeholder="Nach Titel, Komponist oder Genre suchen..." 
-                   value={searchQuery}
-                   onChange={(e) => setSearchQuery(e.target.value)}
-                   style={{ fontSize: '0.95rem', padding: '0.8rem 1.5rem 0.8rem 3rem', background: 'transparent', border: 'none' }}
-                 />
-               </div>
-            </div>
+          <div style={{ marginBottom: '0.5rem' }}>
+            {title && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px' }}>{title}</h1>}
+            {description && <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-light)', maxWidth: '800px', lineHeight: 1.4 }}>{description}</p>}
           </div>
           
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="search-box" style={{ width: '100%', maxWidth: '350px', margin: 0, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '50px' }}>
+              <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ left: '1.2rem', color: '#94a3b8' }}>
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input 
+                type="text" 
+                className="search-input" 
+                placeholder="Nach Titel, Komponist oder Genre suchen..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ fontSize: '0.95rem', padding: '0.8rem 1.5rem 0.8rem 3rem', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit' }}
+              />
+            </div>
+
             <style dangerouslySetInnerHTML={{__html: `
               .sleek-select {
                 appearance: none;
@@ -292,6 +288,7 @@ export default function NotenfinderClient({
                 border-radius: 50px;
                 padding: 0.6rem 2.5rem 0.6rem 1.2rem;
                 font-size: 0.9rem;
+                font-family: inherit;
                 font-weight: 600;
                 color: var(--text);
                 cursor: pointer;
