@@ -116,6 +116,8 @@ export async function POST(request: Request) {
                     email: order.email,
                     first_name: order.firstName,
                     last_name: order.lastName,
+                    password: formData.password || undefined,
+                    create_account: formData.createAccount,
                     billing: {
                         company: order.companyName,
                         street: order.address,
@@ -145,6 +147,7 @@ export async function POST(request: Request) {
                     total_net: order.total / 1.07,
                     shipping_cost_gross: order.shippingCost
                 },
+                customer_notes: formData.newsletter ? "Kunde möchte den Newsletter abonnieren." : "Kunde hat Newsletter-Anmeldung abgelehnt.",
                 payment: {
                     method: order.paymentMethod,
                     status: finalPaymentStatus

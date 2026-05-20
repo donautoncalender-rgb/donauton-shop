@@ -14,7 +14,8 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
   const hasDigitalItems = items.some(item => item.variant === 'Digital');
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', companyName: '',
-    address: '', zip: '', city: '', country: 'DE', email: '', payment: 'PayPal'
+    address: '', zip: '', city: '', country: 'DE', email: '', payment: 'PayPal',
+    newsletter: true, createAccount: true, password: ''
   });
 
   // Calculate dynamic shipping based on zones
@@ -37,6 +38,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
   const [success, setSuccess] = useState(false);
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [existingAccountWarning, setExistingAccountWarning] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // MOCK: Check if "Session" exists and autofill
@@ -65,11 +67,32 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
   }, [items]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+  };
+
+  const handleEmailBlur = async () => {
+    if (!formData.email || isLoggedIn) return;
+    try {
+      const res = await fetch('/api/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email })
+      });
+      const data = await res.json();
+      setExistingAccountWarning(!!data.exists);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleSubmit = async (e?: React.FormEvent, paymentStatus: string = 'pending') => {
     if (e) e.preventDefault();
+    
+    if (formData.createAccount && !isLoggedIn && !formData.password) {
+      alert('Bitte lege ein Passwort für dein neues Kundenkonto fest.');
+      return;
+    }
+
     if (turnstileSiteKey && !turnstileToken) {
       alert('Bitte bestätigen Sie, dass Sie kein Roboter sind.');
       return;
@@ -159,6 +182,14 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
                 </button>
               </div>
             )}
+            {existingAccountWarning && !isLoggedIn && (
+              <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', padding: '1rem', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#92400e', fontSize: '0.9rem' }}>Wir haben ein bestehendes Kundenkonto für <strong>{formData.email}</strong> gefunden!</span>
+                <Link href="/login-customer" onClick={() => localStorage.setItem('redirect_after_login', '/checkout')} style={{ backgroundColor: '#f59e0b', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', color: 'white' }}>
+                  Jetzt Einloggen
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Step 1 */}
@@ -184,7 +215,34 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
                   <option value="IT">Italien</option>
                 </select>
               </div>
-              <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>E-Mail Adresse (für Bestellbestätigung & Rechnungen)</label><input required name="email" value={formData.email} onChange={handleInputChange} type="email" style={inputStyle} /></div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={labelStyle}>E-Mail Adresse (für Bestellbestätigung & Rechnungen)</label>
+                <input required name="email" value={formData.email} onChange={handleInputChange} onBlur={handleEmailBlur} type="email" style={inputStyle} />
+              </div>
+              
+              <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', color: '#4a5568' }}>
+                  <input type="checkbox" name="newsletter" checked={formData.newsletter} onChange={handleInputChange} style={{ width: '1.2rem', height: '1.2rem', accentColor: 'var(--primary)' }} />
+                  Ich möchte über Neuigkeiten (DONAUTON Newsletter) informiert werden.
+                </label>
+
+                {!isLoggedIn && (
+                  <div style={{ padding: '1.5rem', border: '1px solid #e2e8f0', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600, color: '#0f172a' }}>
+                      <input type="checkbox" name="createAccount" checked={formData.createAccount} onChange={handleInputChange} style={{ width: '1.2rem', height: '1.2rem', accentColor: 'var(--primary)' }} />
+                      Ein Kundenkonto für zukünftige Bestellungen erstellen
+                    </label>
+                    <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem', marginLeft: '1.7rem' }}>Erhalte Zugriff auf deine Bestellhistorie, digitale Downloads und Rechnungen.</p>
+                    
+                    {formData.createAccount && (
+                      <div style={{ marginTop: '1rem', marginLeft: '1.7rem' }}>
+                        <label style={{ ...labelStyle, fontSize: '0.85rem' }}>Passwort festlegen *</label>
+                        <input required name="password" value={formData.password} onChange={handleInputChange} type="password" style={{ ...inputStyle, padding: '0.8rem' }} placeholder="Dein sicheres Passwort" />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </section>
 
