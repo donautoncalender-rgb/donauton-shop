@@ -209,6 +209,7 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
                 backgroundImage: `url(${product.imageUrl})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
+                backgroundColor: '#ffffff',
                 borderRadius: '2px 10px 10px 2px',
                 boxShadow: `
                   ${20 + mousePos.x * 30}px ${30 + mousePos.y * 30}px 80px -10px rgba(0,0,0,0.35),
