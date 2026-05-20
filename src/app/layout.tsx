@@ -38,6 +38,7 @@ export default async function RootLayout({
   let shopTitle = "DONAUTON.";
   let logoUrl = null;
   let topBanner = null;
+  let faviconUrl = '/favicon.ico';
   let notenTaxonomy: { besetzung: string; items: string[]; type: 'genre' | 'solist' }[] = [];
 
   try {
@@ -49,6 +50,7 @@ export default async function RootLayout({
     
     if (settingsMap['shop_title']) shopTitle = settingsMap['shop_title'];
     if (settingsMap['logo_url']) logoUrl = settingsMap['logo_url'];
+    if (settingsMap['favicon_url']) faviconUrl = settingsMap['favicon_url'];
     if (settingsMap['announcement_text']) topBanner = settingsMap['announcement_text'];
 
     // Fetch taxonomy for dropdown
@@ -107,6 +109,9 @@ export default async function RootLayout({
 
   return (
     <html lang="de">
+      <head>
+        <link rel="icon" href={`${faviconUrl}?v=${Date.now()}`} sizes="any" />
+      </head>
       <body>
         <WishlistProvider>
           <CartProvider>
