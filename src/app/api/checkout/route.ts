@@ -13,8 +13,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Warenkorb ist leer' }, { status: 400 });
     }
 
-    // Generate simple order number
-    const orderNumber = `DTN-${Date.now().toString().slice(-6)}`;
+    // Generate sequential order number (B-0001, etc.)
+    const nextOrderNumber = await prisma.$transaction(async (tx) => {
+        let setting = await tx.shopSetting.findUnique({ where: { key: 'seq_order' } });
+        let nextVal = 1;
+        if (setting) {
+            nextVal = parseInt(setting.value) + 1;
+            await tx.shopSetting.update({ where: { key: 'seq_order' }, data: { value: nextVal.toString() } });
+        } else {
+            await tx.shopSetting.create({ data: { key: 'seq_order', value: '2' } }); // Store the next one
+        }
+        return nextVal;
+    });
+    const orderNumber = `B-${nextOrderNumber.toString().padStart(4, '0')}`;
 
     // Calculate subtotal from items to prevent tampering
     let calculatedSubtotal = 0;
