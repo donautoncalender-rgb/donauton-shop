@@ -13,7 +13,7 @@ import { Toaster } from 'react-hot-toast';
 export async function generateMetadata(): Promise<Metadata> {
   let faviconUrl = '/favicon.ico';
   try {
-    const setting = await prisma.shopSetting.findUnique({ where: { key: 'logo_url' } });
+    const setting = await prisma.shopSetting.findUnique({ where: { key: 'favicon_url' } });
     if (setting && setting.value) {
       faviconUrl = setting.value;
     }

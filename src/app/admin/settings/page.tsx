@@ -11,6 +11,8 @@ async function saveSettings(formData: FormData) {
   
   let logoUrl = formData.get('logoUrl') as string;
   const logoFile = formData.get('logoFile') as File | null;
+  let faviconUrl = formData.get('faviconUrl') as string;
+  const faviconFile = formData.get('faviconFile') as File | null;
   const shopTitle = formData.get('shopTitle') as string;
   const announcementText = formData.get('announcementText') as string;
 
@@ -34,12 +36,38 @@ async function saveSettings(formData: FormData) {
     }
   }
 
+  if (faviconFile && faviconFile.size > 0) {
+    const bytes = await faviconFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const extMatch = faviconFile.name.match(/\.[0-9a-z]+$/i);
+    const ext = extMatch ? extMatch[0] : '.ico';
+    const filename = `favicon-${Date.now()}${ext}`;
+    
+    try {
+      const blob = await put(filename, buffer, { 
+        access: 'public',
+        contentType: faviconFile.type
+      });
+      faviconUrl = blob.url;
+    } catch(e: any) {
+      console.log('Favicon upload failed.', e);
+    }
+  }
+
   // Upsert settings
   if (logoUrl != null && logoUrl !== "") {
     await prisma.shopSetting.upsert({
       where: { key: 'logo_url' },
       update: { value: logoUrl },
       create: { key: 'logo_url', value: logoUrl }
+    });
+  }
+
+  if (faviconUrl != null && faviconUrl !== "") {
+    await prisma.shopSetting.upsert({
+      where: { key: 'favicon_url' },
+      update: { value: faviconUrl },
+      create: { key: 'favicon_url', value: faviconUrl }
     });
   }
 
@@ -205,6 +233,39 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             
             <small style={{ color: '#718096', display: 'block', marginTop: '0.5rem' }}>
               Dies ersetzt den Text "DONAUTON." im Headerbereich. Wähle einfach ein Bild von deinem PC aus.
+            </small>
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-label">Favicon (Browser-Tab Symbol)</label>
+            
+            {settings['favicon_url'] && (
+              <div style={{ marginBottom: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', display: 'inline-block' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.5rem' }}>Aktuelles Favicon:</p>
+                <img src={settings['favicon_url']} alt="Current Favicon" style={{ maxHeight: '32px', maxWidth: '32px', objectFit: 'contain' }} />
+              </div>
+            )}
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <input 
+                name="faviconFile" 
+                type="file" 
+                accept="image/png, image/x-icon, image/jpeg, image/svg+xml"
+                className="admin-input" 
+                style={{ cursor: 'pointer', padding: '0.8rem' }}
+              />
+              <span style={{ fontSize: '0.85rem', color: '#64748b', alignSelf: 'center' }}>- ODER alternative Bild-ID -</span>
+              <input 
+                name="faviconUrl" 
+                type="text" 
+                className="admin-input" 
+                placeholder="https://... (Leer lassen falls Datei hochgeladen wird)"
+                defaultValue={settings['favicon_url'] || ''} 
+              />
+            </div>
+            
+            <small style={{ color: '#718096', display: 'block', marginTop: '0.5rem' }}>
+              Dieses Bild wird als kleines Icon oben im Browser-Tab angezeigt. (Empfohlen: Quadratisch, mind. 32x32px, Format: PNG oder ICO)
             </small>
           </div>
 
