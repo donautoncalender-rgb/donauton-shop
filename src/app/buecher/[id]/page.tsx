@@ -5,6 +5,7 @@ import AddToCartButton from '../../../components/AddToCartButton';
 import ActionButtons from '../../../components/ActionButtons';
 import ProductGallery from '../../../components/ProductGallery';
 import ProductDetailsList from '../../../components/ProductDetailsList';
+import MiniProductSlider from '../../../components/MiniProductSlider';
 import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 
@@ -20,6 +21,36 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
   const title = product.title;
   const image = product.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80';
+
+  let relatedProductsRaw = await prisma.product.findMany({
+    where: {
+      category: product.category,
+      id: { not: product.id },
+      ...(product.genre && product.genre !== 'Ohne Genre' ? { genre: product.genre } : {})
+    },
+    take: 10
+  });
+
+  if (relatedProductsRaw.length < 4) {
+    const moreProducts = await prisma.product.findMany({
+      where: {
+        category: product.category,
+        id: { not: product.id, notIn: relatedProductsRaw.map(p => p.id) }
+      },
+      take: 10 - relatedProductsRaw.length
+    });
+    relatedProductsRaw = [...relatedProductsRaw, ...moreProducts];
+  }
+
+  const sliderProducts = relatedProductsRaw.map(p => ({
+    id: p.id,
+    title: p.title,
+    image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80',
+    price: p.price,
+    genre: p.genre,
+    type: p.category,
+    badge: p.badge || undefined
+  }));
 
   return (
     <div className="container page-container">
@@ -183,6 +214,18 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
 
         </div>
       </div>
+      
+      {/* RELATED PRODUCTS */}
+      {sliderProducts.length > 0 && (
+        <div className="no-print" style={{ marginTop: '5rem' }}>
+          <MiniProductSlider 
+            title="Ähnliche Artikel" 
+            linkAll={`/${product.category.toLowerCase()}`} 
+            products={sliderProducts} 
+          />
+        </div>
+      )}
+
       </div>
     </div>
   );
