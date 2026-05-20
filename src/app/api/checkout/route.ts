@@ -13,19 +13,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Warenkorb ist leer' }, { status: 400 });
     }
 
-    // Generate sequential order number (B-0001, etc.)
-    const nextOrderNumber = await prisma.$transaction(async (tx) => {
-        let setting = await tx.shopSetting.findUnique({ where: { key: 'seq_order' } });
-        let nextVal = 1;
-        if (setting) {
-            nextVal = parseInt(setting.value) + 1;
-            await tx.shopSetting.update({ where: { key: 'seq_order' }, data: { value: nextVal.toString() } });
+    // Fetch next sequential order number from the ERP Suite
+    const erpUrlSetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_url' }});
+    const rawUrl = erpUrlSetting?.value || process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
+    let erpUrlBase = new URL(rawUrl).origin;
+    if (process.env.NODE_ENV === 'production' && (erpUrlBase.includes('localhost') || erpUrlBase.includes('127.0.0.1'))) {
+        erpUrlBase = 'https://donauton-suite.de';
+    }
+    const erpKey = 'DONAUTON_SHOP_SECRET_123';
+    
+    let orderNumber = `DTN-${Date.now().toString().slice(-6)}`;
+    try {
+        const seqRes = await fetch(`${erpUrlBase}/api/v1/shop/next-order-number`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${erpKey}`
+            }
+        });
+        if (seqRes.ok) {
+            const seqData = await seqRes.json();
+            if (seqData.success && seqData.orderNumber) {
+                orderNumber = seqData.orderNumber;
+            }
         } else {
-            await tx.shopSetting.create({ data: { key: 'seq_order', value: '2' } }); // Store the next one
+            console.warn("ERP Sequence Fetch Failed, falling back to DTN format", await seqRes.text());
         }
-        return nextVal;
-    });
-    const orderNumber = `B-${nextOrderNumber.toString().padStart(4, '0')}`;
+    } catch (seqError) {
+        console.error("Failed to fetch order sequence from ERP:", seqError);
+    }
 
     // Calculate subtotal from items to prevent tampering
     let calculatedSubtotal = 0;
@@ -96,17 +112,10 @@ export async function POST(request: Request) {
     });
 
     // --- ERP SYNC START ---
-    const erpUrlSetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_url' }});
-    const erpKeySetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_key' }});
-
-    const rawUrl = erpUrlSetting?.value || process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
-    let erpUrlBase = new URL(rawUrl).origin;
-    if (process.env.NODE_ENV === 'production' && (erpUrlBase.includes('localhost') || erpUrlBase.includes('127.0.0.1'))) {
-        erpUrlBase = 'https://donauton-suite.de';
-    }
+    // ERP BASE URL is already calculated above
     const erpUrl = `${erpUrlBase}/api/v1/shop/orders`;
     // FORCE fallback secret to bypass any corrupted database settings
-    const erpKey = 'DONAUTON_SHOP_SECRET_123';
+    // erpKey is already defined above
     
     if (erpKey) {
         try {
