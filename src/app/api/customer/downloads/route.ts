@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -19,6 +21,7 @@ export async function GET(request: Request) {
     const erpRes = await fetch(`${erpUrlBase}/api/v1/shop/customer-downloads?secret=${erpKey}&email=${encodeURIComponent(email)}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store'
     });
 
     if (!erpRes.ok) {
