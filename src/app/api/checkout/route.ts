@@ -54,7 +54,8 @@ export async function POST(request: Request) {
         title: item.title,
         variant: item.variant || null,
         price: price,
-        quantity: parseInt(item.quantity)
+        quantity: parseInt(item.quantity),
+        attendeeNames: item.attendeeNames ? JSON.stringify(item.attendeeNames) : null
       };
     });
 
@@ -160,7 +161,8 @@ export async function POST(request: Request) {
                     quantity: oi.quantity,
                     unit_price_gross: oi.price,
                     unit_price_net: oi.price / 1.07, // roughly ~7% tax assumption
-                    tax_rate_percent: 7
+                    tax_rate_percent: 7,
+                    attendee_names: oi.attendeeNames ? JSON.parse(oi.attendeeNames) : []
                 })),
                 totals: {
                     total_gross: order.total,

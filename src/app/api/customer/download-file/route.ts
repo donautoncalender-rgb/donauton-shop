@@ -42,6 +42,16 @@ export async function GET(request: Request) {
     if (!erpRes.ok) {
         let errorText = '';
         try { errorText = await erpRes.text(); } catch(e) {}
+
+        if (erpRes.status === 403 && (errorText.includes('TICKET_DOWNLOAD_EXPIRED') || erpRes.headers.get('X-Download-Error') === 'TICKET_DOWNLOAD_EXPIRED')) {
+            const orderItem = await prisma.orderItem.findUnique({
+                where: { id: orderItemId },
+                include: { order: true }
+            });
+            const orderNumber = orderItem?.order.orderNumber || '';
+            return NextResponse.redirect(new URL(`/downloads/error?orderNumber=${encodeURIComponent(orderNumber)}`, request.url));
+        }
+
         throw new Error(`Fehler bei der Kommunikation mit der DONAUTON Suite. HTTP: ${erpRes.status} ${errorText}`);
     }
 

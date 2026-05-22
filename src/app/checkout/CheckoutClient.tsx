@@ -41,6 +41,35 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
   const [existingAccountWarning, setExistingAccountWarning] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
+  const [attendeeNames, setAttendeeNames] = useState<Record<string, string[]>>({});
+  const ticketItems = items.filter((item: any) => 
+    item.category === 'Tickets' || 
+    item.category === 'TICKET' || 
+    item.title.toLowerCase().includes('ticket')
+  );
+  const hasTickets = ticketItems.length > 0;
+
+  useEffect(() => {
+    const initialNames: Record<string, string[]> = {};
+    items.forEach((item: any) => {
+      const isTicket = item.category === 'Tickets' || item.category === 'TICKET' || item.title.toLowerCase().includes('ticket');
+      if (isTicket) {
+        initialNames[item.id] = Array(item.quantity).fill('');
+      }
+    });
+    setAttendeeNames(prev => {
+      const next = { ...initialNames };
+      Object.keys(next).forEach(id => {
+        if (prev[id]) {
+          for (let i = 0; i < Math.min(prev[id].length, next[id].length); i++) {
+            next[id][i] = prev[id][i];
+          }
+        }
+      });
+      return next;
+    });
+  }, [items]);
+
   // MOCK: Check if "Session" exists and autofill
   useEffect(() => {
     const savedCustomer = localStorage.getItem('donauton_customer');
@@ -105,7 +134,10 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           formData,
-          items,
+          items: items.map((item: any) => ({
+            ...item,
+            attendeeNames: attendeeNames[item.id] || []
+          })),
           totals: { subtotal: cartTotal, shipping: shippingCost, total: grandTotal },
           paymentStatus: paymentStatus,
           turnstileToken
@@ -245,6 +277,63 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
               </div>
             </div>
           </section>
+
+          {/* Step 1.5: Ticket Personalisierung */}
+          {hasTickets && (
+            <section style={{ backgroundColor: '#fff5f5', border: '1px solid #feb2b2', padding: '2rem', borderRadius: '12px', marginTop: '1rem' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#c53030', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '24px', height: '24px' }}>
+                  <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z" />
+                  <path d="M13 5v14" />
+                </svg>
+                Ticket-Personalisierung
+              </h2>
+              <p style={{ color: '#742a2a', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                Um Ticket-Missbrauch zu verhindern, sind Eintrittskarten personengebunden. Bitte tragen Sie hier die Namen der Konzertbesucher ein. 
+                <strong> Falls ein Feld leer gelassen wird, wird das Ticket automatisch auf den Besteller ({formData.firstName} {formData.lastName || 'Besteller'}) ausgestellt.</strong>
+              </p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {ticketItems.map((item: any) => (
+                  <div key={item.id} style={{ borderLeft: '4px solid #f56565', paddingLeft: '1rem', marginBottom: '1rem' }}>
+                    <div style={{ fontWeight: 700, color: '#2d3748', marginBottom: '0.8rem', fontSize: '1rem' }}>
+                      {item.title} ({item.quantity} {item.quantity === 1 ? 'Ticket' : 'Tickets'})
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                      {Array.from({ length: item.quantity }).map((_, idx) => (
+                        <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4a5568' }}>
+                            Ticket #{idx + 1} - Name des Besuchers
+                          </label>
+                          <input 
+                            type="text"
+                            placeholder={`${formData.firstName} ${formData.lastName || 'Besteller'} (Standard)`}
+                            value={attendeeNames[item.id]?.[idx] || ''}
+                            onChange={(e) => {
+                              const newNames = [...(attendeeNames[item.id] || [])];
+                              newNames[idx] = e.target.value;
+                              setAttendeeNames(prev => ({
+                                ...prev,
+                                [item.id]: newNames
+                              }));
+                            }}
+                            style={{ 
+                              width: '100%', 
+                              padding: '0.8rem', 
+                              border: '1px solid #cbd5e0', 
+                              borderRadius: '6px', 
+                              fontSize: '0.95rem',
+                              backgroundColor: 'white'
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Step 2 */}
           <section>
