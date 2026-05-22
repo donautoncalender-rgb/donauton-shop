@@ -23,7 +23,7 @@ export default async function TicketsPage() {
     image: p.imageUrl || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=565&fit=crop&q=80',
     slug: p.slug,
     category: p.category || 'Tickets',
-    composer: p.author || 'Event'
+    composer: p.composer || p.artist || 'Event'
   }));
 
   return (

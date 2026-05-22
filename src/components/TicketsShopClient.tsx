@@ -8,6 +8,7 @@ import ProductCard from './ProductCard';
 export default function TicketsShopClient({ initialProducts }: { initialProducts: any[] }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const { addToCart, toggleCart } = useCart();
 
@@ -21,21 +22,37 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
     return Array.from(locations).sort();
   }, [initialProducts]);
 
+  const availableGroups = useMemo(() => {
+    const groups = new Set<string>();
+    initialProducts.forEach(p => {
+      if (p.composer && p.composer !== 'Event' && p.composer.trim() !== '') {
+        groups.add(p.composer.trim());
+      }
+    });
+    return Array.from(groups).sort();
+  }, [initialProducts]);
+
   const toggleLocation = (loc: string) => {
     setSelectedLocations(prev => prev.includes(loc) ? prev.filter(l => l !== loc) : [...prev, loc]);
+  };
+
+  const toggleGroup = (group: string) => {
+    setSelectedGroups(prev => prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]);
   };
 
   const filteredProducts = useMemo(() => {
     return initialProducts.filter(product => {
       const matchesSearch = 
         product.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        product.location.toLowerCase().includes(searchQuery.toLowerCase());
+        product.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.composer.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesLocation = selectedLocations.length === 0 || selectedLocations.includes(product.location);
+      const matchesGroup = selectedGroups.length === 0 || selectedGroups.includes(product.composer);
 
-      return matchesSearch && matchesLocation;
+      return matchesSearch && matchesLocation && matchesGroup;
     });
-  }, [searchQuery, selectedLocations, initialProducts]);
+  }, [searchQuery, selectedLocations, selectedGroups, initialProducts]);
 
   return (
     <div className="shop-layout">
@@ -48,6 +65,19 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
               {availableLocations.map(loc => (
                 <label className="filter-label" key={loc}>
                   <input type="checkbox" className="filter-checkbox" checked={selectedLocations.includes(loc)} onChange={() => toggleLocation(loc)} /> {loc}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {availableGroups.length > 0 && (
+          <div className="filter-group" style={{ marginTop: '2rem' }}>
+            <h3 className="filter-title">Gruppe / Interpret</h3>
+            <div className="filter-list">
+              {availableGroups.map(group => (
+                <label className="filter-label" key={group}>
+                  <input type="checkbox" className="filter-checkbox" checked={selectedGroups.includes(group)} onChange={() => toggleGroup(group)} /> {group}
                 </label>
               ))}
             </div>
@@ -139,7 +169,7 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
             </svg>
             <h3>Keine Konzerte gefunden</h3>
             <p>Leider gibt es für diese Filter aktuell keine Tickets.</p>
-            <button className="btn btn-secondary" style={{ marginTop: '1.5rem' }} onClick={() => { setSearchQuery(''); setSelectedLocations([]); }}>
+            <button className="btn btn-secondary" style={{ marginTop: '1.5rem' }} onClick={() => { setSearchQuery(''); setSelectedLocations([]); setSelectedGroups([]); }}>
               Filter zurücksetzen
             </button>
           </div>
