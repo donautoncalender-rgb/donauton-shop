@@ -18,6 +18,7 @@ interface ProductBuyBoxProps {
 
 export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
   const [variant, setVariant] = useState<'Physisch' | 'Digital'>('Physisch');
+  const [quantity, setQuantity] = useState<number>(1);
 
   // Convert string price to number for physical
   const physicalPriceStr = product.price.replace(' €', '').replace(',', '.');
@@ -71,7 +72,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
         inkl. MwSt. <a href="/versand" style={{ color: '#0066cc', textDecoration: 'none' }}>{variant === 'Digital' ? 'Keine Versandkosten' : 'zzgl. Versandkosten'}</a>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '0.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '1.5rem' }}>
         <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: variant === 'Digital' ? '#00a651' : (product.stockStatus === 'instock' ? '#00a651' : '#eab308'), flexShrink: 0, marginTop: '3px', position: 'relative' }}>
           {(variant === 'Digital' || product.stockStatus === 'instock') ? (
               <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -86,9 +87,46 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
         </div>
       </div>
 
+      {/* Quantity Selector - Show only for Physical sheets */}
+      {variant === 'Physisch' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#4a5568', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Menge</label>
+          <div style={{ display: 'flex', alignItems: 'center', width: '120px', height: '40px', border: '1px solid #cbd5e1', borderRadius: '6px', background: 'white', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <button 
+              onClick={() => setQuantity(q => Math.max(1, q - 1))}
+              type="button"
+              style={{ width: '35px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 600, color: '#4a5568', transition: 'background 0.2s' }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              -
+            </button>
+            <input 
+              type="number" 
+              min="1" 
+              value={quantity} 
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                setQuantity(isNaN(val) || val < 1 ? 1 : val);
+              }}
+              style={{ flex: 1, width: '100%', height: '100%', border: 'none', textAlign: 'center', fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', outline: 'none', background: 'transparent' }}
+            />
+            <button 
+              onClick={() => setQuantity(q => q + 1)}
+              type="button"
+              style={{ width: '35px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 600, color: '#4a5568', transition: 'background 0.2s' }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              +
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Huge Cart Button */}
-      <div style={{ marginTop: '2rem', width: '100%' }}>
-          <AddToCartButton size="large" product={{ id: product.id, title: variant === 'Digital' ? `${product.title} (PDF Download)` : product.title, price: currentPriceStr, image: product.image, publisher: product.publisher || null }} selectedVariant={variant} />
+      <div style={{ marginTop: '0.5rem', width: '100%' }}>
+          <AddToCartButton size="large" product={{ id: product.id, title: variant === 'Digital' ? `${product.title} (PDF Download)` : product.title, price: currentPriceStr, image: product.image, publisher: product.publisher || null }} selectedVariant={variant} quantity={variant === 'Digital' ? 1 : quantity} />
       </div>
 
       {/* Guarantees */}

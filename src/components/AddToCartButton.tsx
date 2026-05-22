@@ -13,9 +13,10 @@ interface AddToCartButtonProps {
   };
   size?: 'small' | 'large';
   selectedVariant?: string;
+  quantity?: number;
 }
 
-export default function AddToCartButton({ product, size = 'small', selectedVariant }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, size = 'small', selectedVariant, quantity = 1 }: AddToCartButtonProps) {
   const { addToCart, toggleCart } = useCart();
   const isLarge = size === 'large';
 
@@ -51,7 +52,7 @@ export default function AddToCartButton({ product, size = 'small', selectedVaria
           id: product.id.toString(),
           title: product.title,
           price: parseFloat(product.price.replace(',', '.')),
-          quantity: 1,
+          quantity: quantity,
           variant: selectedVariant || 'Standard',
           image: product.image,
           publisher: product.publisher || null
