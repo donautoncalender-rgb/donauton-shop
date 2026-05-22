@@ -74,16 +74,14 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             />
           </div>
 
-          {(product.audioPreview || product.pdfPreview || product.category === 'Noten') && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '0.6rem', marginTop: '-1rem' }}>
-               {product.audioPreview && <AudioPreviewModal title={title} audioUrl={product.audioPreview} />}
-               {product.pdfPreview && <ScorePreviewModal title={title} pdfUrl={product.pdfPreview} />}
-               <ActionButtons 
-                 youtubeUrl={product.youtubeUrl} 
-                 product={{ id: product.id.toString(), title: product.title, price: product.price, image: product.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80', slug: product.slug, composer: product.composer || product.artist || product.author, category: product.category }} 
-               />
-            </div>
-          )}
+          <div className="action-buttons-container no-print" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '0.6rem', marginTop: '-1rem' }}>
+             {product.audioPreview && <AudioPreviewModal title={title} audioUrl={product.audioPreview} />}
+             {product.pdfPreview && <ScorePreviewModal title={title} pdfUrl={product.pdfPreview} />}
+             <ActionButtons 
+               youtubeUrl={product.youtubeUrl} 
+               product={{ id: product.id.toString(), title: product.title, price: product.price, image: product.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80', slug: product.slug, composer: product.composer || product.artist || product.author, category: product.category }} 
+             />
+          </div>
 
           <div>
             <h3 style={{ fontSize: '1.2rem', marginBottom: '0.8rem', fontWeight: 800 }}>Informationen zum Produkt</h3>
