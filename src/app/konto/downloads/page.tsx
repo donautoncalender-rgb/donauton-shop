@@ -48,31 +48,74 @@ export default function DownloadsPage() {
   if (downloads.length === 0) {
     return (
       <div className="animate-fade-in" style={{ padding: '2rem 0' }}>
-         <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Digitale Noten (PDFs & Audio)</h2>
-         <p style={{ color: 'var(--text-light)', marginBottom: '3rem' }}>Dein digitales Noten-Archiv ist noch leer. Sobald du digitale Artikel kaufst, erscheinen diese hier.</p>
+         <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Digitale Downloads</h2>
+         <p style={{ color: 'var(--text-light)', marginBottom: '3rem' }}>Dein digitales Download-Archiv ist noch leer. Sobald du digitale Artikel kaufst, erscheinen diese hier.</p>
       </div>
     );
   }
 
+  const hasTickets = downloads.some((dl: any) => dl.is_ticket);
+  const hasNotes = downloads.some((dl: any) => !dl.is_ticket);
+
+  let pageTitle = 'Digitale Downloads';
+  let pageDesc = 'Dein digitales Download-Archiv. Lade gekaufte Medien und Tickets sicher herunter.';
+
+  if (hasTickets && !hasNotes) {
+    pageTitle = 'Digitale Eintrittskarten';
+    pageDesc = 'Deine Tickets. Lade deine Eintrittskarten hier sicher herunter.';
+  } else if (hasNotes && !hasTickets) {
+    pageTitle = 'Digitale Noten (PDFs & Audio)';
+    pageDesc = 'Dein digitales Noten-Archiv. Lade gekaufte Partituren und Stimmen sicher herunter.';
+  } else if (hasNotes && hasTickets) {
+    pageTitle = 'Digitale Downloads (Noten & Tickets)';
+    pageDesc = 'Dein persönliches Archiv. Lade gekaufte Partituren, MP3s und Eintrittskarten sicher herunter.';
+  }
+
   return (
     <div className="animate-fade-in">
-      <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Digitale Noten (PDFs & Audio)</h2>
-      <p style={{ color: 'var(--text-light)', marginBottom: '3rem' }}>Dein digitales Noten-Archiv. Lade gekaufte Partituren und Stimmen sicher herunter.</p>
+      <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>{pageTitle}</h2>
+      <p style={{ color: 'var(--text-light)', marginBottom: '3rem' }}>{pageDesc}</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
         {downloads.map((dl, idx) => {
-          // Simplistic type detection based on title for the icon (until we get real file types back)
           const isAudio = dl.title.toLowerCase().includes('audio') || dl.title.toLowerCase().includes('playalong') || dl.title.toLowerCase().includes('mp3');
-          const typeLabel = isAudio ? 'MP3 Audio' : 'Digitale Noten';
+          
+          let typeLabel = 'Digitale Noten';
+          let themeColor = '#dc2626';
+          let themeBg = '#fee2e2';
+          
+          if (dl.is_ticket) {
+            typeLabel = 'Eintrittskarte';
+            themeColor = '#d97706';
+            themeBg = '#fef3c7';
+          } else if (isAudio) {
+            typeLabel = 'MP3 Audio';
+            themeColor = '#4f46e5';
+            themeBg = '#e0e7ff';
+          }
+
+          // Card Icon (Large)
+          const cardIcon = dl.is_ticket ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          );
+
+          // Button Icon
+          const buttonIcon = dl.is_ticket ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          );
 
           return (
             <div key={dl.id || idx} style={{ display: 'flex', flexDirection: 'column', backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
               
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: !isAudio ? '#fee2e2' : '#e0e7ff', color: !isAudio ? '#dc2626' : '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: themeBg, color: themeColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {cardIcon}
                 </div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', padding: '0.2rem 0.5rem', backgroundColor: '#f1f5f9', borderRadius: '4px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: themeColor, textTransform: 'uppercase', padding: '0.2rem 0.5rem', backgroundColor: themeBg, borderRadius: '4px' }}>
                   {typeLabel}
                 </span>
               </div>
@@ -97,7 +140,7 @@ export default function DownloadsPage() {
                       disabled={dl.download_count >= dl.download_limit}
                       onClick={dl.download_count < dl.download_limit ? () => window.location.href = asset.download_url : undefined}
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                      {buttonIcon}
                       {dl.download_count >= dl.download_limit ? 'Limit erreicht' : `${asset.title} laden`}
                     </button>
                   ))
