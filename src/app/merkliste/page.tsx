@@ -3,6 +3,15 @@
 import Link from 'next/link';
 import { useWishlist } from '../../context/WishlistContext';
 
+const getProductRoute = (category?: string) => {
+  const cat = category?.toLowerCase();
+  if (cat === 'bücher' || cat === 'buecher') return 'buecher';
+  if (cat === 'cds') return 'cds';
+  if (cat === 'tickets') return 'tickets';
+  if (cat === 'merchandise' || cat === 'merch') return 'merch';
+  return 'noten';
+};
+
 export default function MerklistePage() {
   const { items, toggleWishlist } = useWishlist();
 
@@ -34,7 +43,7 @@ export default function MerklistePage() {
         <div className="product-grid" style={{ marginTop: '2rem' }}>
           {items.map((product) => (
             <div className="product-card" key={product.id} style={{ display: 'flex', flexDirection: 'column' }}>
-              <Link href={`/${product.category === 'Merch' ? 'merch' : 'noten'}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
+              <Link href={`/${getProductRoute(product.category)}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
                 <div className="product-image-container" style={{ position: 'relative' }}>
                   <img src={product.image} alt={product.title} className="product-image" />
                   
@@ -79,7 +88,7 @@ export default function MerklistePage() {
               <div className="product-bottom" style={{ padding: '0 1.5rem 1.5rem', marginTop: 'auto' }}>
                 <div className="product-price">{product.price}</div>
                 <Link 
-                  href={`/${product.category === 'Merch' ? 'merch' : 'noten'}/${product.id}`}
+                  href={`/${getProductRoute(product.category)}/${product.id}`}
                   style={{ background: 'var(--primary-light)', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '30px', display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.3s', textTransform: 'uppercase', textDecoration: 'none' }}
                 >
                   Zum Artikel

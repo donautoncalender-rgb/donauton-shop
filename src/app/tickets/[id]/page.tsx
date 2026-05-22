@@ -162,29 +162,24 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
                 {product.price.replace(' €', '')} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
               </div>
             </div>
-            
-            <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1.5rem' }}>
-              inkl. MwSt. <a href="/versand" style={{ color: '#0066cc', textDecoration: 'none' }}>zzgl. Versandkosten</a>
+                    <div style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1.5rem' }}>
+              inkl. MwSt. <span style={{ color: '#00a651', fontWeight: 600 }}>Keine Versandkosten (Digitaler Download)</span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '0.5rem' }}>
-              <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: product.stockStatus === 'instock' ? '#00a651' : '#eab308', flexShrink: 0, marginTop: '3px', position: 'relative' }}>
-                {product.stockStatus === 'instock' ? (
-                   <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
-                ) : (
-                   <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                )}
+              <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#00a651', flexShrink: 0, marginTop: '3px', position: 'relative' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
               </div>
               <div>
-                <strong style={{ color: product.stockStatus === 'instock' ? '#00a651' : '#eab308', fontSize: '1rem', display: 'block', marginBottom: '2px' }}>
-                  {product.stockStatus === 'instock' ? 'Sofort lieferbar' : 'Auf Anfrage'}
+                <strong style={{ color: '#00a651', fontSize: '1rem', display: 'block', marginBottom: '2px' }}>
+                  Sofort nach Kauf als E-Ticket downloadbar
                 </strong>
               </div>
             </div>
 
             {/* Huge Cart Button */}
             <div style={{ marginTop: '2rem', width: '100%' }}>
-               <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: product.price, image: image }} />
+               <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: product.price, image: image }} selectedVariant="Digital" />
             </div>
 
             {/* Guarantees */}

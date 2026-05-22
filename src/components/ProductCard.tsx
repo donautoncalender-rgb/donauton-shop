@@ -10,6 +10,15 @@ interface ProductCardProps {
   viewMode?: 'grid' | 'list';
 }
 
+const getProductRoute = (category?: string) => {
+  const cat = category?.toLowerCase();
+  if (cat === 'bücher' || cat === 'buecher') return 'buecher';
+  if (cat === 'cds') return 'cds';
+  if (cat === 'tickets') return 'tickets';
+  if (cat === 'merchandise' || cat === 'merch') return 'merch';
+  return 'noten';
+};
+
 export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -20,12 +29,13 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const isTicket = product.category?.toLowerCase() === 'tickets';
     addToCart({
       id: product.id.toString(),
       title: product.title,
       price: parseFloat(product.price.replace(',', '.')),
       quantity: 1,
-      variant: 'Gedruckte Ausgabe',
+      variant: isTicket ? 'Digital' : 'Gedruckte Ausgabe',
       image: product.image
     });
     toggleCart();
@@ -70,7 +80,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
     if (navigator.share) {
       navigator.share({
         title: `DONAUTON - ${product.title}`,
-        url: `${window.location.origin}/${product.category?.toLowerCase() || 'noten'}/${product.id}`,
+        url: `${window.location.origin}/${getProductRoute(product.category)}/${product.id}`,
       }).catch(console.error);
     } else {
       alert('Teilen wird in diesem Browser nicht unterstützt. Kopiere einfach die URL!');
@@ -117,7 +127,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
     );
 
     return (
-      <Link href={`/${product.category?.toLowerCase() === 'bücher' ? 'buecher' : product.category?.toLowerCase() === 'cds' ? 'cds' : 'noten'}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <Link href={`/${getProductRoute(product.category)}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <div 
           className="product-card-list RundelLayout"
           style={{ 
@@ -287,7 +297,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         </svg>
       </button>
 
-      <Link href={`/${product.category?.toLowerCase() === 'bücher' ? 'buecher' : product.category?.toLowerCase() === 'cds' ? 'cds' : 'noten'}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <Link href={`/${getProductRoute(product.category)}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <div className="product-image-container">
           {product.badge && <span className="product-badge">{product.badge}</span>}
           <img src={product.image} alt={product.title} className="product-image" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
