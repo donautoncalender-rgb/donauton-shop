@@ -1,11 +1,20 @@
 import { prisma } from '../../lib/prisma';
 import SyncButton from './SyncButton';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function AdminDashboard() {
   const categoryCount = await prisma.shopCategory.count();
   const titleSetting = await prisma.shopSetting.findUnique({ where: { key: 'shop_title' } });
   const logoSetting = await prisma.shopSetting.findUnique({ where: { key: 'logo_url' } });
   const productCount = await prisma.product.count();
+  
+  const categoryBreakdown = await prisma.product.groupBy({
+    by: ['category'],
+    _count: { id: true },
+    orderBy: { category: 'asc' }
+  });
 
   return (
     <>
@@ -26,6 +35,14 @@ export default async function AdminDashboard() {
           <div style={{ color: '#718096', fontWeight: 600, marginBottom: '0.5rem' }}>Verbundene Suite Datenbank</div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#2d3748' }}>{productCount} Produkte</div>
           <div style={{ fontSize: '0.9rem', color: '#718096', marginTop: '0.5rem' }}>sind aktuell synchronisiert.</div>
+          
+          <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            {categoryBreakdown.map(cat => (
+              <div key={cat.category} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#4a5568' }}>
+                <span>{cat._count.id} in {cat.category}</span>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="admin-card" style={{ marginBottom: 0, backgroundColor: 'rgba(205, 23, 25, 0.05)', border: '1px solid rgba(205, 23, 25, 0.2)' }}>
           <div style={{ color: 'var(--primary)', fontWeight: 600, marginBottom: '0.5rem' }}>Shop-Synchronisation</div>
