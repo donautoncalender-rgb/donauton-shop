@@ -1,5 +1,16 @@
+import type { Metadata } from 'next';
 import BuecherShopClient from '../../components/BuecherShopClient';
 import { prisma } from '../../lib/prisma';
+
+export const metadata: Metadata = {
+  title: 'Bücher & Literatur | DONAUTON Shop',
+  description: 'Entdecken Sie Bücher und Literatur rund um die Musik im DONAUTON Shop.',
+  openGraph: {
+    title: 'Bücher & Literatur | DONAUTON Shop',
+    description: 'Entdecken Sie Bücher und Literatur rund um die Musik im DONAUTON Shop.',
+    type: 'website',
+  }
+};
 
 export default async function BuecherPage() {
   const dbProducts = await prisma.product.findMany({

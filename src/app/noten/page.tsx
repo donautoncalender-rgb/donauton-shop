@@ -1,7 +1,18 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { prisma } from '../../lib/prisma';
 import NotenfinderClient from '../../components/NotenfinderClient';
+
+export const metadata: Metadata = {
+  title: 'Noten kaufen & Notenfinder | DONAUTON Shop',
+  description: 'Durchstöbern Sie unseren Notenfinder nach Blasmusik-Noten, Solostücken und vielem mehr. DONAUTON Shop - Premium Noten & Musik.',
+  openGraph: {
+    title: 'Noten kaufen & Notenfinder | DONAUTON Shop',
+    description: 'Durchstöbern Sie unseren Notenfinder nach Blasmusik-Noten, Solostücken und vielem mehr.',
+    type: 'website',
+  }
+};
 
 export default async function Notenfinder() {
   const categories = await prisma.shopCategory.findMany({

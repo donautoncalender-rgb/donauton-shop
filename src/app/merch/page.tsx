@@ -1,5 +1,16 @@
+import type { Metadata } from 'next';
 import MerchShopClient from '../../components/MerchShopClient';
 import { prisma } from '../../lib/prisma';
+
+export const metadata: Metadata = {
+  title: 'Fanartikel & Merch | DONAUTON Shop',
+  description: 'Entdecken Sie Fanartikel, Kleidung und Merchandise im DONAUTON Shop.',
+  openGraph: {
+    title: 'Fanartikel & Merch | DONAUTON Shop',
+    description: 'Entdecken Sie Fanartikel, Kleidung und Merchandise im DONAUTON Shop.',
+    type: 'website',
+  }
+};
 
 export default async function MerchPage() {
   const dbProducts = await prisma.product.findMany({

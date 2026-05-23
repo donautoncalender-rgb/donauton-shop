@@ -1,6 +1,17 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { prisma } from '../../lib/prisma';
 import CDsShopClient from '../../components/CDsShopClient';
+
+export const metadata: Metadata = {
+  title: 'CDs kaufen | DONAUTON Shop',
+  description: 'Entdecken Sie CDs und Alben im DONAUTON Shop. Premium Noten & Musik.',
+  openGraph: {
+    title: 'CDs kaufen | DONAUTON Shop',
+    description: 'Entdecken Sie CDs und Alben im DONAUTON Shop. Premium Noten & Musik.',
+    type: 'website',
+  }
+};
 
 export default async function CDsShop() {
   const categories = await prisma.shopCategory.findMany({

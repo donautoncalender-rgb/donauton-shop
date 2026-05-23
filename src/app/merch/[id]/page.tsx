@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import AudioPreviewModal from '../../../components/AudioPreviewModal';
 import ScorePreviewModal from '../../../components/ScorePreviewModal';
@@ -10,6 +11,39 @@ import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const product = await prisma.product.findUnique({
+    where: { id: resolvedParams.id }
+  });
+
+  if (!product) {
+    return { title: 'Produkt nicht gefunden | DONAUTON' };
+  }
+
+  const title = `${product.title} - ${product.category} kaufen | DONAUTON`;
+  const description = product.description 
+    ? product.description.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'
+    : `Entdecken Sie ${product.title} im DONAUTON Shop.`;
+    
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: product.imageUrl ? [product.imageUrl] : [],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: product.imageUrl ? [product.imageUrl] : [],
+    }
+  };
+}
 
 export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -54,8 +88,33 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
     badge: p.badge || undefined
   }));
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.title,
+    "image": image,
+    "description": product.description?.replace(/<[^>]*>?/gm, '') || `DONAUTON ${product.category} - ${product.title}`,
+    "offers": {
+      "@type": "Offer",
+      "url": `https://donauton-shop.vercel.app/${product.category.toLowerCase()}/${product.id}`,
+      "priceCurrency": "EUR",
+      "price": product.price.replace(' €', '').replace('.', '').replace(',', '.'),
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": product.stockStatus === 'instock' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "DONAUTON"
+      }
+    }
+  };
+
   return (
     <div className="container page-container">
+      {/* JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* -----------------------------
           PRINT-ONLY, DEDICATED LAYOUT 
          ----------------------------- */}
