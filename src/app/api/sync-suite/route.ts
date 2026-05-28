@@ -88,7 +88,9 @@ export async function GET() {
       }
 
       // Group and serialize variants (child products / Stimmen)
-      const variantsForParent = childVariants.filter((v: any) => v.parent_id === work.id);
+      const variantsForParent = childVariants
+        .filter((v: any) => v.parent_id === work.id)
+        .sort((a: any, b: any) => (a.position || 0) - (b.position || 0));
       const variantsList = variantsForParent.map((v: any) => {
         const vRawPrice = parseFloat(v.end_customer_price_gross || v.base_list_price_gross || 0);
         const vPriceVal = vRawPrice.toFixed(2).replace('.', ',');
