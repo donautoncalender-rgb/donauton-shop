@@ -26,20 +26,19 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
   const variants = product.variantsJson ? JSON.parse(product.variantsJson) : [];
   
   // Define options
-  const options = [
+  const options = variants.length > 0 ? variants : [
     {
       id: 'parent',
       title: 'Komplette Ausgabe (Partitur & Stimmen)',
       sku: product.sku || '',
       price: product.price,
       stockStatus: product.stockStatus
-    },
-    ...variants
+    }
   ];
 
-  const [selectedOptionId, setSelectedOptionId] = useState<string>('parent');
+  const [selectedOptionId, setSelectedOptionId] = useState<string>(options[0].id);
 
-  const selectedOption = options.find(opt => opt.id === selectedOptionId) || options[0];
+  const selectedOption = options.find((opt: any) => opt.id === selectedOptionId) || options[0];
 
   // Convert string price to number for physical
   const physicalPriceStr = selectedOption.price.replace(' €', '').replace(',', '.');
@@ -105,7 +104,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
               cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' 
             }}
           >
-            {options.map(opt => (
+            {options.map((opt: any) => (
               <option key={opt.id} value={opt.id}>
                 {opt.title} ({opt.price})
               </option>
