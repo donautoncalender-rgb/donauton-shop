@@ -29,6 +29,29 @@ export default function ProductGallery({ images, altTitle, badge }: ProductGalle
     };
   }, [lightboxOpen]);
 
+  // Tastatur-Navigation für Pfeiltasten (links/rechts/oben/unten) und ESC-Taste
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setLightboxOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [lightboxOpen, images.length]);
+
   if (!images || images.length === 0) return null;
 
   return (
