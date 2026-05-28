@@ -39,15 +39,16 @@ export async function GET() {
     // ------------------------------------------------
 
     const getWorkDetails = (w: any) => {
-      let title = w.title || `work-${w.id}`;
+      const title = w.title || `work-${w.id}`;
+      let slugTitle = title;
       if (w.instrumentation) {
         const normTitle = title.toLowerCase();
         const normInst = w.instrumentation.toLowerCase();
         if (!normTitle.includes(normInst)) {
-          title = `${title} - ${w.instrumentation}`;
+          slugTitle = `${title} - ${w.instrumentation}`;
         }
       }
-      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const slug = slugTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       return { title, slug };
     };
 

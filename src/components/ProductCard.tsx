@@ -161,7 +161,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
           <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             {product.besetzung && (
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#666', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
-                {product.besetzung}
+                {product.besetzung}{product.soloinstrument ? `, ${product.soloinstrument}` : ''}
               </div>
             )}
             <div style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '1rem', marginBottom: '0.3rem' }}>
@@ -306,7 +306,10 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         <div className="product-info" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
           {product.besetzung && (
             <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
-              {product.besetzung.substring(0, 25)}{product.besetzung.length > 25 ? '...' : ''}
+              {(() => {
+                const fullBes = product.besetzung + (product.soloinstrument ? `, ${product.soloinstrument}` : '');
+                return fullBes.substring(0, 35) + (fullBes.length > 35 ? '...' : '');
+              })()}
             </div>
           )}
           <div className="product-genre">{product.genre || 'Ohne Genre'}</div>
