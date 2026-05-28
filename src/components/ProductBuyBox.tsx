@@ -13,6 +13,8 @@ interface ProductBuyBoxProps {
     hasDigitalDownload: boolean;
     digitalPrice: number | null;
     publisher?: string | null;
+    variantsJson?: string | null;
+    sku?: string | null;
   };
 }
 
@@ -20,14 +22,42 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
   const [variant, setVariant] = useState<'Physisch' | 'Digital'>('Physisch');
   const [quantity, setQuantity] = useState<number>(1);
 
+  // Parse variants if category === 'Noten' and variantsJson exists
+  const variants = product.variantsJson ? JSON.parse(product.variantsJson) : [];
+  
+  // Define options
+  const options = [
+    {
+      id: 'parent',
+      title: 'Komplette Ausgabe (Partitur & Stimmen)',
+      sku: product.sku || '',
+      price: product.price,
+      stockStatus: product.stockStatus
+    },
+    ...variants
+  ];
+
+  const [selectedOptionId, setSelectedOptionId] = useState<string>('parent');
+
+  const selectedOption = options.find(opt => opt.id === selectedOptionId) || options[0];
+
   // Convert string price to number for physical
-  const physicalPriceStr = product.price.replace(' €', '').replace(',', '.');
+  const physicalPriceStr = selectedOption.price.replace(' €', '').replace(',', '.');
   const physicalPrice = parseFloat(physicalPriceStr);
   
-  const digitalPrice = product.digitalPrice || physicalPrice;
+  const digitalPrice = product.digitalPrice || parseFloat(product.price.replace(' €', '').replace(',', '.'));
 
   const currentPrice = variant === 'Physisch' ? physicalPrice : digitalPrice;
   const currentPriceStr = currentPrice.toFixed(2).replace('.', ',');
+
+  const stockStatus = variant === 'Digital' ? 'instock' : selectedOption.stockStatus;
+
+  // Build cart item properties
+  const cartTitle = variant === 'Digital' 
+    ? `${product.title} (PDF Download)` 
+    : (selectedOption.id === 'parent' ? product.title : `${product.title} - ${selectedOption.title}`);
+
+  const cartSku = variant === 'Digital' ? null : selectedOption.sku;
 
   return (
     <div style={{ background: '#f5f5f5', border: '1px solid #e1e1e1', borderRadius: '4px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
@@ -62,6 +92,28 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
         </div>
       )}
 
+      {/* Voice Selection Dropdown */}
+      {variants.length > 0 && variant === 'Physisch' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#4a5568', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Ausführung / Stimme</label>
+          <select 
+            value={selectedOptionId}
+            onChange={(e) => setSelectedOptionId(e.target.value)}
+            style={{ 
+              width: '100%', height: '42px', padding: '0 0.8rem', border: '1px solid #cbd5e1', borderRadius: '6px', 
+              background: 'white', fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', outline: 'none', 
+              cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' 
+            }}
+          >
+            {options.map(opt => (
+              <option key={opt.id} value={opt.id}>
+                {opt.title} ({opt.price})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
         <div style={{ fontSize: '2.8rem', fontWeight: 900, color: '#111', lineHeight: 1 }}>
           {currentPriceStr} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
@@ -73,16 +125,16 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '1.5rem' }}>
-        <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: variant === 'Digital' ? '#00a651' : (product.stockStatus === 'instock' ? '#00a651' : '#eab308'), flexShrink: 0, marginTop: '3px', position: 'relative' }}>
-          {(variant === 'Digital' || product.stockStatus === 'instock') ? (
+        <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: (variant === 'Digital' || stockStatus === 'instock') ? '#00a651' : '#eab308', flexShrink: 0, marginTop: '3px', position: 'relative' }}>
+          {(variant === 'Digital' || stockStatus === 'instock') ? (
               <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
           ) : (
               <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           )}
         </div>
         <div>
-          <strong style={{ color: variant === 'Digital' ? '#00a651' : (product.stockStatus === 'instock' ? '#00a651' : '#eab308'), fontSize: '1rem', display: 'block', marginBottom: '2px' }}>
-            {variant === 'Digital' ? 'Sofort nach Kauf als Download verfügbar' : (product.stockStatus === 'instock' ? 'Sofort lieferbar' : 'Auf Anfrage')}
+          <strong style={{ color: (variant === 'Digital' || stockStatus === 'instock') ? '#00a651' : '#eab308', fontSize: '1rem', display: 'block', marginBottom: '2px' }}>
+            {variant === 'Digital' ? 'Sofort nach Kauf als Download verfügbar' : (stockStatus === 'instock' ? 'Sofort lieferbar' : 'Auf Anfrage')}
           </strong>
         </div>
       </div>
@@ -126,7 +178,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
-          <AddToCartButton size="large" product={{ id: product.id, title: variant === 'Digital' ? `${product.title} (PDF Download)` : product.title, price: currentPriceStr, image: product.image, publisher: product.publisher || null }} selectedVariant={variant} quantity={variant === 'Digital' ? 1 : quantity} />
+          <AddToCartButton size="large" product={{ id: product.id, title: cartTitle, price: currentPriceStr, image: product.image, publisher: product.publisher || null, sku: cartSku }} selectedVariant={variant} quantity={variant === 'Digital' ? 1 : quantity} />
       </div>
 
       {/* Guarantees */}

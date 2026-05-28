@@ -84,6 +84,8 @@ model Product {
   instrumentation String?
   isExternal  Boolean @default(false)
 
+  variantsJson String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

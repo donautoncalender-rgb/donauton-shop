@@ -10,6 +10,7 @@ interface AddToCartButtonProps {
     price: string;
     image: string;
     publisher?: string | null;
+    sku?: string | null;
   };
   size?: 'small' | 'large';
   selectedVariant?: string;
@@ -55,7 +56,8 @@ export default function AddToCartButton({ product, size = 'small', selectedVaria
           quantity: quantity,
           variant: selectedVariant || 'Standard',
           image: product.image,
-          publisher: product.publisher || null
+          publisher: product.publisher || null,
+          sku: product.sku || null
         });
         
         toast.success(

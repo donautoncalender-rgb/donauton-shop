@@ -10,6 +10,7 @@ export interface CartItem {
   variant: string;
   image: string;
   publisher?: string | null;
+  sku?: string | null;
 }
 
 interface CartContextType {

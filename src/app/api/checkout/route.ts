@@ -55,9 +55,12 @@ export async function POST(request: Request) {
         variant: item.variant || null,
         price: price,
         quantity: parseInt(item.quantity),
-        attendeeNames: item.attendeeNames ? JSON.stringify(item.attendeeNames) : null
+        attendeeNames: item.attendeeNames ? JSON.stringify(item.attendeeNames) : null,
+        sku: item.sku || null
       };
     });
+
+    const orderItemsDb = orderItems.map(({ sku, ...rest }: any) => rest);
 
     const hasOnlyDigitalItems = orderItems.length > 0 && orderItems.every((item: any) => item.variant === 'Digital');
     // Fetch shipping zones from shop settings
@@ -107,7 +110,7 @@ export async function POST(request: Request) {
         total: calculatedTotal,
         
         items: {
-          create: orderItems
+          create: orderItemsDb
         }
       }
     });
@@ -155,8 +158,7 @@ export async function POST(request: Request) {
                     }
                 },
                 items: orderItems.map((oi: any) => ({
-                    sku: (oi.productId && skuMap[oi.productId]) ? skuMap[oi.productId] : oi.productId, // Use REAL fetched SKU
-
+                    sku: oi.sku || ((oi.productId && skuMap[oi.productId]) ? skuMap[oi.productId] : oi.productId), // Use REAL fetched SKU or variant-specific SKU
                     title: oi.title,
                     quantity: oi.quantity,
                     unit_price_gross: oi.price,
