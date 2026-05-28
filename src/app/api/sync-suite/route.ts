@@ -38,9 +38,22 @@ export async function GET() {
     }
     // ------------------------------------------------
 
+    const getWorkDetails = (w: any) => {
+      let title = w.title || `work-${w.id}`;
+      if (w.instrumentation) {
+        const normTitle = title.toLowerCase();
+        const normInst = w.instrumentation.toLowerCase();
+        if (!normTitle.includes(normInst)) {
+          title = `${title} - ${w.instrumentation}`;
+        }
+      }
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      return { title, slug };
+    };
+
     // ----- BEREINIGUNG VON GEISTER-ARTIKELN (GHOST PRODUCTS) -----
     // Generiere alle gültigen Slugs der Suite
-    const validSlugs = parentWorks.map((w: any) => (w.title || `work-${w.id}`).toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+    const validSlugs = parentWorks.map((w: any) => getWorkDetails(w).slug);
     
     // Lösche alle Shop-Produkte, die nicht mehr in der Suite existieren oder deren Titel/Slug sich geändert hat.
     // OrderItems behalten ihre Daten (productId wird null), da onDelete: SetNull in Schema definiert ist.
@@ -54,6 +67,8 @@ export async function GET() {
     // -------------------------------------------------------------
 
     const upsertPromises = parentWorks.map((work: any) => {
+      const { title: finalTitle, slug: safeSlug } = getWorkDetails(work);
+
       // Category Mapping based on CatalogCategory name
       const catName = (work.catalog_category?.name || '').toLowerCase();
       let category = "Noten";
@@ -71,8 +86,6 @@ export async function GET() {
       const composerName = work.composer_person?.vorname && work.composer_person?.nachname 
          ? `${work.composer_person.vorname} ${work.composer_person.nachname}` 
          : (work.artist || null);
-
-      const safeSlug = (work.title || `work-${work.id}`).toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
       // Assets - Specifically look for the new shop_usage categories
       const workAssets = work.assets || [];
@@ -134,7 +147,7 @@ export async function GET() {
       return prisma.product.upsert({
         where: { slug: safeSlug }, // Using slug as unique key
         update: {
-          title: work.title,
+          title: finalTitle,
           sku: work.sku || null,
           category,
           price: priceStr,
@@ -161,7 +174,7 @@ export async function GET() {
           partsListJson: work.parts_list_json || null
         },
         create: {
-          title: work.title,
+          title: finalTitle,
           slug: safeSlug,
           sku: work.sku || null,
           category,
@@ -191,7 +204,7 @@ export async function GET() {
       });
     });
 
-    await prisma.$transaction(upsertPromises);
+    await Promise.all(upsertPromises);
     syncedCount = parentWorks.length;
 
     // Flush the global Next.js cache so the Storefront updates instantly
