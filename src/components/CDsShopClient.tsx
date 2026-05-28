@@ -10,6 +10,7 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [selectedArtists, setSelectedArtists] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [sortBy, setSortBy] = useState('newest');
   const { addToCart, toggleCart } = useCart();
 
   const availableGenres = useMemo(() => {
@@ -42,7 +43,7 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
   };
 
   const filteredProducts = useMemo(() => {
-    return initialProducts.filter(product => {
+    const filtered = initialProducts.filter(product => {
       const matchesSearch = 
         product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.artist.toLowerCase().includes(searchQuery.toLowerCase());
@@ -52,7 +53,23 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
 
       return matchesSearch && matchesGenre && matchesArtist;
     });
-  }, [searchQuery, selectedGenres, selectedArtists, initialProducts]);
+
+    const parsePrice = (pStr: string) => {
+      if (pStr.toLowerCase().includes('anfrage')) return Infinity;
+      const parsed = parseFloat(pStr.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+      return parsed;
+    };
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'title-asc') {
+        return a.title.localeCompare(b.title, 'de', { sensitivity: 'base' });
+      }
+      if (sortBy === 'price-asc') {
+        return parsePrice(a.price) - parsePrice(b.price);
+      }
+      return 0; // 'newest' uses default database order (creation order)
+    });
+  }, [searchQuery, selectedGenres, selectedArtists, sortBy, initialProducts]);
 
   return (
     <div className="shop-layout">
@@ -150,13 +167,18 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
               </button>
             </div>
-            <select defaultValue="newest">
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value)} 
+              className="sleek-select"
+            >
               <option value="newest">Neueste zuerst</option>
               <option value="title-asc">Titel (A-Z)</option>
               <option value="price-asc">Preis aufsteigend</option>
             </select>
           </div>
         </div>
+
 
         {filteredProducts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '4rem', color: '#718096' }}>

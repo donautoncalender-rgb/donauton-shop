@@ -27,6 +27,7 @@ export default function NotenfinderClient({
   const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
   const [selectedSoloinstruments, setSelectedSoloinstruments] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [sortBy, setSortBy] = useState('newest');
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -203,9 +204,9 @@ export default function NotenfinderClient({
     window.history.replaceState(null, '', window.location.pathname);
   };
 
-  // Filter products dynamically
+  // Filter and sort products dynamically
   const filteredProducts = useMemo(() => {
-    return initialProducts.filter(product => {
+    const filtered = initialProducts.filter(product => {
       // 1. Search filter
       const matchesSearch = 
         product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -232,7 +233,23 @@ export default function NotenfinderClient({
 
       return matchesSearch && matchesBesetzung && matchesSoloinstrument && matchesGenre && matchesGrade && matchesPublisher;
     });
-  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, selectedSoloinstruments, initialProducts]);
+
+    const parsePrice = (pStr: string) => {
+      if (pStr.toLowerCase().includes('anfrage')) return Infinity;
+      const parsed = parseFloat(pStr.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+      return parsed;
+    };
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'title-asc') {
+        return a.title.localeCompare(b.title, 'de', { sensitivity: 'base' });
+      }
+      if (sortBy === 'price-asc') {
+        return parsePrice(a.price) - parsePrice(b.price);
+      }
+      return 0; // 'newest' uses default database order (creation order)
+    });
+  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, selectedSoloinstruments, sortBy, initialProducts]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -281,42 +298,6 @@ export default function NotenfinderClient({
           {/* Row 2: Filter Dropdowns */}
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
 
-            <style dangerouslySetInnerHTML={{__html: `
-              .sleek-select {
-                appearance: none;
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                background-color: #f8fafc;
-                border: 1px solid #e2e8f0;
-                border-radius: 50px;
-                padding: 0.6rem 2.5rem 0.6rem 1.2rem;
-                font-size: 0.9rem;
-                font-family: inherit;
-                font-weight: 600;
-                color: var(--text);
-                cursor: pointer;
-                transition: all 0.2s;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 1rem center;
-                background-size: 14px;
-              }
-              .sleek-select:hover {
-                border-color: #cbd5e1;
-                background-color: white;
-              }
-              .sleek-select:focus {
-                outline: none;
-                border-color: var(--accent);
-                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-              }
-              .sleek-select.active {
-                background-color: #fef2f2;
-                border-color: #fca5a5;
-                color: var(--accent);
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-              }
-            `}} />
 
             {availableBesetzungen.length > 0 && (
               <select 
@@ -533,7 +514,11 @@ export default function NotenfinderClient({
                 </svg>
               </button>
             </div>
-            <select defaultValue="newest">
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value)} 
+              className="sleek-select"
+            >
               <option value="newest">Neueste zuerst</option>
               <option value="title-asc">Titel (A-Z)</option>
               <option value="price-asc">Preis aufsteigend</option>
