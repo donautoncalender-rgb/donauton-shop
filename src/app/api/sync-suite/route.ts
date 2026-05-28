@@ -157,7 +157,8 @@ export async function GET() {
           publisher: work.partner_name || "Donauton",
           instrumentation: work.instrumentation || null,
           isExternal: Boolean(work.is_external),
-          variantsJson
+          variantsJson,
+          partsListJson: work.parts_list_json || null
         },
         create: {
           title: work.title,
@@ -184,7 +185,8 @@ export async function GET() {
           publisher: work.partner_name || "Donauton",
           instrumentation: work.instrumentation || null,
           isExternal: Boolean(work.is_external),
-          variantsJson
+          variantsJson,
+          partsListJson: work.parts_list_json || null
         }
       });
     });

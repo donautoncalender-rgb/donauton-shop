@@ -127,7 +127,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             <div style={{ fontSize: '16pt', fontWeight: 'bold', marginTop: '10px' }}>Preis: {product.price}</div>
           </div>
           <div style={{ marginBottom: '20px' }}>
-             <ProductDetailsList detailsJson={product.detailsJson} category={product.category} genre={product.genre} sku={product.sku} />
+             <ProductDetailsList detailsJson={product.detailsJson} category={product.category} genre={product.genre} sku={product.sku} partsListJson={product.partsListJson} />
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
             <div style={{ width: '250px', flexShrink: 0 }}>
@@ -245,6 +245,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               category={product.category} 
               genre={product.genre} 
               sku={product.sku} 
+              partsListJson={product.partsListJson}
             />
           </div>
 
