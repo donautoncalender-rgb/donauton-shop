@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { prisma } from '../../lib/prisma';
 import NotenfinderClient from '../../components/NotenfinderClient';
+import CategoryBanner from '../../components/CategoryBanner';
 
 export const metadata: Metadata = {
   title: 'Noten kaufen & Notenfinder | DONAUTON Shop',
@@ -69,10 +70,14 @@ export default async function Notenfinder() {
 
   return (
     <div className="container page-container">
+      <CategoryBanner 
+        title="Notenfinder"
+        subtitle="Entdecke unser Repertoire. Filtere ganz einfach nach Genre, Schwierigkeitsgrad oder Komponist, um genau das richtige Stück für dein Orchester zu finden."
+        imageUrl="https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=1200&q=80"
+        gradient="linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
+      />
       <Suspense fallback={<div className="animate-pulse" style={{ padding: '2rem', textAlign: 'center' }}>Lädt Katalog...</div>}>
         <NotenfinderClient 
-          title="Notenfinder"
-          description="Entdecke unser Repertoire. Filtere ganz einfach nach Genre, Schwierigkeitsgrad oder Komponist, um genau das richtige Stück für dein Orchester zu finden."
           categories={categories} 
           initialProducts={products} 
         />

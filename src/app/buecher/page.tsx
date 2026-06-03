@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import BuecherShopClient from '../../components/BuecherShopClient';
+import CategoryBanner from '../../components/CategoryBanner';
 import { prisma } from '../../lib/prisma';
 
 export const metadata: Metadata = {
@@ -37,12 +38,12 @@ export default async function BuecherPage() {
 
   return (
     <div className="container page-container">
-      <div className="page-header animate-fade-in">
-        <h1 className="page-title">Bücher & Literatur</h1>
-        <p className="page-subtitle">
-          Fachliteratur, Lehrwerke, und humorvolle Geschichten für jeden Blasmusiker.
-        </p>
-      </div>
+      <CategoryBanner 
+        title="Bücher & Literatur"
+        subtitle="Fachliteratur, Lehrwerke, und humorvolle Geschichten für jeden Blasmusiker."
+        imageUrl="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=1200&q=80"
+        gradient="linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)"
+      />
 
       <BuecherShopClient initialProducts={products} />
     </div>

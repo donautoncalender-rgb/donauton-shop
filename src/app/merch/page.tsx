@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import MerchShopClient from '../../components/MerchShopClient';
+import CategoryBanner from '../../components/CategoryBanner';
 import { prisma } from '../../lib/prisma';
 
 export const metadata: Metadata = {
@@ -38,12 +39,12 @@ export default async function MerchPage() {
 
   return (
     <div className="container page-container">
-      <div className="page-header animate-fade-in">
-        <h1 className="page-title">Merchandise</h1>
-        <p className="page-subtitle">
-          Zeige deine Liebe zur Blasmusik. Hochwertige Kleidung und Accessoires im Donauton-Design.
-        </p>
-      </div>
+      <CategoryBanner 
+        title="Merchandise"
+        subtitle="Zeige deine Liebe zur Blasmusik. Hochwertige Kleidung und Accessoires im Donauton-Design."
+        imageUrl="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1200&q=80"
+        gradient="linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 100%)"
+      />
 
       <MerchShopClient initialProducts={merchItems} />
     </div>
