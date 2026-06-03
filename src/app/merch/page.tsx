@@ -20,7 +20,7 @@ export default async function MerchPage() {
   const merchItems = dbProducts.map((p: any) => ({
     id: p.id,
     wooId: p.wooId,
-    genre: p.genre || 'Bekleidung',
+    genre: p.genre || 'Accessoires',
     type: p.title.includes('Shirt') ? 'T-Shirt' : (p.title.includes('Hood') || p.title.includes('Pullover') ? 'Hoodie' : 'Zubehör'),
     title: p.title,
     price: p.price,
