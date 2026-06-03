@@ -99,13 +99,14 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
             value={selectedOptionId}
             onChange={(e) => setSelectedOptionId(e.target.value)}
             style={{ 
+              fontFamily: 'inherit',
               width: '100%', height: '42px', padding: '0 0.8rem', border: '1px solid #cbd5e1', borderRadius: '6px', 
               background: 'white', fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', outline: 'none', 
               cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' 
             }}
           >
             {options.map((opt: any) => (
-              <option key={opt.id} value={opt.id}>
+              <option key={opt.id} value={opt.id} style={{ fontFamily: 'inherit' }}>
                 {opt.title} ({opt.price})
               </option>
             ))}
