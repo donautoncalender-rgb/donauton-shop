@@ -129,6 +129,27 @@ export async function GET() {
       // For merchandise products, genre is mapped from category_description, else work.genre
       const productGenre = category === 'Merch' ? (work.category_description || 'Accessoires') : (work.genre || null);
 
+      // Extract sizes and colors for merchandise attributes
+      let sizesJson = null;
+      let colorsJson = null;
+      if (work.attributes_json) {
+        try {
+          const attributes = JSON.parse(work.attributes_json);
+          if (Array.isArray(attributes)) {
+            const sizeAttr = attributes.find((a: any) => a.key && (a.key.toLowerCase() === 'größe' || a.key.toLowerCase() === 'groesse' || a.key.toLowerCase() === 'size'));
+            const colorAttr = attributes.find((a: any) => a.key && (a.key.toLowerCase() === 'farbe' || a.key.toLowerCase() === 'color'));
+            if (sizeAttr && Array.isArray(sizeAttr.values)) {
+              sizesJson = JSON.stringify(sizeAttr.values);
+            }
+            if (colorAttr && Array.isArray(colorAttr.values)) {
+              colorsJson = JSON.stringify(colorAttr.values);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse attributes_json for work " + work.id, e);
+        }
+      }
+
       // Build detailed technical specs for the frontend
       const detailsList = [];
       if (category) detailsList.push({ label: 'Kategorie', value: category + (productGenre ? ` - ${productGenre}` : '') });
@@ -163,6 +184,8 @@ export async function GET() {
           artist: work.artist || null,
           author: work.event_location || null,
           genre: productGenre,
+          sizes: sizesJson,
+          colors: colorsJson,
           grade: parsedGrade,
           duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,
@@ -191,6 +214,8 @@ export async function GET() {
           artist: work.artist || null,
           author: work.event_location || null,
           genre: productGenre,
+          sizes: sizesJson,
+          colors: colorsJson,
           grade: parsedGrade,
           duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,
