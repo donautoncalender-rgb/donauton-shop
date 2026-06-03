@@ -30,10 +30,18 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
   const hasActualSizes = product.sizes.some(isSizeOption);
   const sizeLabel = hasActualSizes ? "Größe" : "Ausführung";
 
+  // Bestimme, ob es sich um tatsächliche Farben oder sonstige Varianten (z.B. Aufdrucke) handelt
+  const isColorOption = (val: string) => {
+    const v = val.toLowerCase().trim();
+    return ['schwarz', 'weiß', 'weiss', 'blau', 'rot', 'grün', 'gruen', 'gelb', 'grau', 'navy', 'anthrazit', 'khaki', 'oliv', 'rosa', 'pink', 'türkis', 'bunt', 'gold', 'silber', 'bronze'].includes(v);
+  };
+  const hasActualColors = product.colors.some(isColorOption);
+  const colorLabel = hasActualColors ? "Farbe" : "Aufdruck";
+
   // Helper object to override the AddToCart default logic slightly by passing selectedSize/selectedColor
   const selectedVariantParts = [];
   if (selectedSize) selectedVariantParts.push(`${sizeLabel}: ${selectedSize}`);
-  if (selectedColor) selectedVariantParts.push(`Farbe: ${selectedColor}`);
+  if (selectedColor) selectedVariantParts.push(`${colorLabel}: ${selectedColor}`);
   const combinedVariant = selectedVariantParts.length > 0 ? selectedVariantParts.join(', ') : undefined;
 
   return (
@@ -95,7 +103,7 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
       {/* Color Selector */}
       {product.colors && product.colors.length > 0 && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>Farbe wählen:</label>
+          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{colorLabel} wählen:</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {product.colors.map(color => (
               <button

@@ -138,11 +138,34 @@ export async function GET() {
           if (Array.isArray(attributes)) {
             const sizeAttr = attributes.find((a: any) => a.key && (a.key.toLowerCase() === 'größe' || a.key.toLowerCase() === 'groesse' || a.key.toLowerCase() === 'size'));
             const colorAttr = attributes.find((a: any) => a.key && (a.key.toLowerCase() === 'farbe' || a.key.toLowerCase() === 'color'));
+            
             if (sizeAttr && Array.isArray(sizeAttr.values)) {
               sizesJson = JSON.stringify(sizeAttr.values);
             }
             if (colorAttr && Array.isArray(colorAttr.values)) {
               colorsJson = JSON.stringify(colorAttr.values);
+            }
+
+            // Fallback for custom attributes like 'Aufdruck' if no explicit color is set
+            if (!colorsJson && sizeAttr) {
+              const otherAttr = attributes.find((a: any) => a !== sizeAttr);
+              if (otherAttr && Array.isArray(otherAttr.values)) {
+                colorsJson = JSON.stringify(otherAttr.values);
+              }
+            }
+
+            // Generic fallback if sizesJson is still null but attributes exist
+            if (!sizesJson && attributes.length > 0) {
+              const firstAttr = attributes[0];
+              if (firstAttr && Array.isArray(firstAttr.values)) {
+                sizesJson = JSON.stringify(firstAttr.values);
+              }
+              if (!colorsJson && attributes.length > 1) {
+                const secondAttr = attributes[1];
+                if (secondAttr && Array.isArray(secondAttr.values)) {
+                  colorsJson = JSON.stringify(secondAttr.values);
+                }
+              }
             }
           }
         } catch (e) {
