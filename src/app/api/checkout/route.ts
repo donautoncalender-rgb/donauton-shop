@@ -159,7 +159,7 @@ export async function POST(request: Request) {
                 },
                 items: orderItems.map((oi: any) => ({
                     sku: oi.sku || ((oi.productId && skuMap[oi.productId]) ? skuMap[oi.productId] : oi.productId), // Use REAL fetched SKU or variant-specific SKU
-                    title: oi.title,
+                    title: (oi.variant && oi.variant !== 'Digital') ? `${oi.title} - ${oi.variant.replace(/,\s*/g, ' - ')}` : oi.title,
                     quantity: oi.quantity,
                     unit_price_gross: oi.price,
                     unit_price_net: oi.price / 1.07, // roughly ~7% tax assumption
