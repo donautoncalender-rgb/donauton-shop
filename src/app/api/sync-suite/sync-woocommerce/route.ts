@@ -71,8 +71,17 @@ export async function GET() {
       // Attribute Helfer für Meta-Daten (Kunden-Spezialfall)
       const getMeta = (key: string) => p.meta_data?.find((m: any) => m.key === key)?.value || null;
 
-      // Extras für Merch
-      const sizeAttr = p.attributes?.find((a: any) => a.name && (a.name.includes('Größe') || a.name.includes('Size') || a.name.includes('Grö')));
+      // Extras für Merch: Größe, Ausführung oder Variante
+      const sizeAttr = p.attributes?.find((a: any) => a.name && (
+        a.name.includes('Größe') || 
+        a.name.includes('Size') || 
+        a.name.includes('Grö') ||
+        a.name.includes('Ausführung') ||
+        a.name.includes('Variante') ||
+        a.name.includes('Typ') ||
+        a.name.includes('Modell') ||
+        a.name.includes('Edition')
+      ));
       const sizesStr = sizeAttr?.options ? JSON.stringify(sizeAttr.options) : null;
 
       const colorAttr = p.attributes?.find((a: any) => a.name && (a.name.includes('Farbe') || a.name.includes('Color') || a.name.includes('Colour')));
