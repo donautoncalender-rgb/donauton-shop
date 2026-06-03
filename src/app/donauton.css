@@ -1061,7 +1061,6 @@ ul {
 }
 
 .text-content-dynamic * {
-  white-space: pre-wrap !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
   max-width: 100% !important;
@@ -1069,8 +1068,15 @@ ul {
 }
 
 .text-content-dynamic p, 
-.text-content-dynamic div {
-  margin-bottom: 1rem;
+.text-content-dynamic div,
+.text-content-dynamic h1,
+.text-content-dynamic h2,
+.text-content-dynamic h3,
+.text-content-dynamic h4,
+.text-content-dynamic h5,
+.text-content-dynamic h6 {
+  margin: 0;
+  padding: 0;
   line-height: inherit;
 }
 
