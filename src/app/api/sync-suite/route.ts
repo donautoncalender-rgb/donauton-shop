@@ -126,9 +126,12 @@ export async function GET() {
 
       const variantsJson = variantsForParent.length > 0 ? JSON.stringify(variantsList) : null;
 
+      // For merchandise products, genre is mapped from category_description, else work.genre
+      const productGenre = category === 'Merch' ? (work.category_description || 'Accessoires') : (work.genre || null);
+
       // Build detailed technical specs for the frontend
       const detailsList = [];
-      if (category) detailsList.push({ label: 'Kategorie', value: category + (work.genre ? ` - ${work.genre}` : '') });
+      if (category) detailsList.push({ label: 'Kategorie', value: category + (productGenre ? ` - ${productGenre}` : '') });
       if (work.sku) detailsList.push({ label: 'Artikelnummer', value: work.sku });
       if (work.instrumentation) detailsList.push({ label: 'Besetzung', value: work.instrumentation });
       if (work.is_external && work.partner_name) detailsList.push({ label: 'Originalverlag', value: work.partner_name });
@@ -159,7 +162,7 @@ export async function GET() {
           composer: composerName,
           artist: work.artist || null,
           author: work.event_location || null,
-          genre: work.genre || null,
+          genre: productGenre,
           grade: parsedGrade,
           duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,
@@ -187,7 +190,7 @@ export async function GET() {
           composer: composerName,
           artist: work.artist || null,
           author: work.event_location || null,
-          genre: work.genre || null,
+          genre: productGenre,
           grade: parsedGrade,
           duration: formattedDuration,
           youtubeUrl: work.youtube_link || null,

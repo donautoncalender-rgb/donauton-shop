@@ -21,7 +21,7 @@ export default async function MerchPage() {
     id: p.id,
     wooId: p.wooId,
     genre: p.genre || 'Accessoires',
-    type: p.title.includes('Shirt') ? 'T-Shirt' : (p.title.includes('Hood') || p.title.includes('Pullover') ? 'Hoodie' : 'Zubehör'),
+    type: p.genre || 'Accessoires',
     title: p.title,
     price: p.price,
     badge: p.badge || '',
