@@ -19,14 +19,51 @@ interface MerchBuyBoxProps {
 export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
   // Parse variants if they exist
   const variants = product.variantsJson ? JSON.parse(product.variantsJson) : [];
-  const [selectedVariantId, setSelectedVariantId] = useState<string>(variants.length > 0 ? variants[0].id : '');
-  const selectedVariantOpt = variants.find((v: any) => v.id === selectedVariantId) || (variants.length > 0 ? variants[0] : null);
+  
+  // Try to split variants if all of them contain ' - ' (e.g., "S - Blächbläser")
+  const canSplitVariants = variants.length > 0 && variants.every((v: any) => v.title.includes(' - '));
+  
+  const parsedVariants = canSplitVariants 
+    ? variants.map((v: any) => {
+        const parts = v.title.split(' - ').map((p: string) => p.trim());
+        return {
+          ...v,
+          size: parts[0],
+          print: parts[1]
+        };
+      })
+    : [];
 
-  const [selectedSize, setSelectedSize] = useState<string>(product.sizes.length > 0 ? product.sizes[0] : '');
-  const [selectedColor, setSelectedColor] = useState<string>(product.colors.length > 0 ? product.colors[0] : '');
+  const uniqueSizes: string[] = canSplitVariants ? Array.from(new Set(parsedVariants.map((pv: any) => pv.size as string))) : [];
+  const uniquePrints: string[] = canSplitVariants ? Array.from(new Set(parsedVariants.map((pv: any) => pv.print as string))) : [];
+
+  // Local state for selected attributes (direct initialization to satisfy TS)
+  const [selectedSize, setSelectedSize] = useState<string>(
+    (canSplitVariants && uniqueSizes.length > 0) ? uniqueSizes[0] : (product.sizes.length > 0 ? product.sizes[0] : '')
+  );
+
+  const [selectedColor, setSelectedColor] = useState<string>(
+    (canSplitVariants && uniquePrints.length > 0) ? uniquePrints[0] : (product.colors.length > 0 ? product.colors[0] : '')
+  );
+
+  const [selectedVariantId, setSelectedVariantId] = useState<string>(
+    (variants.length > 0 && !canSplitVariants) ? variants[0].id : ''
+  );
+
   const [quantity, setQuantity] = useState<number>(1);
 
-  // If we have distinct child variants, use their specific price/stock/SKU
+  // Determine current active variant based on selection mode
+  let selectedVariantOpt: any = null;
+  if (canSplitVariants) {
+    selectedVariantOpt = parsedVariants.find((pv: any) => pv.size === selectedSize && pv.print === selectedColor);
+    if (!selectedVariantOpt) {
+      selectedVariantOpt = parsedVariants.find((pv: any) => pv.size === selectedSize) || parsedVariants[0];
+    }
+  } else if (variants.length > 0) {
+    selectedVariantOpt = variants.find((v: any) => v.id === selectedVariantId) || variants[0];
+  }
+
+  // Active price, stock and SKU
   const currentPrice = selectedVariantOpt ? selectedVariantOpt.price : product.price;
   const currentStockStatus = selectedVariantOpt ? selectedVariantOpt.stockStatus : product.stockStatus;
   const cartSku = selectedVariantOpt ? selectedVariantOpt.sku : undefined;
@@ -38,20 +75,48 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
            v.includes('/') || 
            /^\d+$/.test(v);
   };
-  const hasActualSizes = product.sizes.some(isSizeOption);
+  const hasActualSizes = canSplitVariants 
+    ? uniqueSizes.some((v: string) => isSizeOption(v))
+    : product.sizes.some((v: string) => isSizeOption(v));
   const sizeLabel = hasActualSizes ? "Größe" : "Ausführung";
 
   // Bestimme, ob es sich um tatsächliche Farben oder sonstige Varianten (z.B. Aufdrucke) handelt
   const isColorOption = (val: string) => {
     const v = val.toLowerCase().trim();
-    return ['schwarz', 'weiß', 'weiss', 'blau', 'rot', 'grün', 'gruen', 'gelb', 'grau', 'navy', 'anthrazit', 'khaki', 'oliv', 'rosa', 'pink', 'türkis', 'bunt', 'gold', 'silber', 'bronze'].includes(v);
+    return ['schwarz', 'weiß', 'weiss', 'blau', 'rot', 'grün', 'gruen', 'gelb', 'grau', 'navy', 'anthrazit', 'khaki', 'oliv', 'rosa', 'pink', 'türkis', 'bunt', 'gold', 'silber', 'bronze', 'graphit'].includes(v);
   };
-  const hasActualColors = product.colors.some(isColorOption);
+  const hasActualColors = canSplitVariants
+    ? uniquePrints.some((v: string) => isColorOption(v))
+    : product.colors.some((v: string) => isColorOption(v));
   const colorLabel = hasActualColors ? "Farbe" : "Aufdruck";
+
+  // Actions for split variant selections
+  const handleSizeClick = (size: string) => {
+    setSelectedSize(size);
+    const availableForSize = parsedVariants.filter((pv: any) => pv.size === size);
+    const hasCurrentPrint = availableForSize.some((pv: any) => pv.print === selectedColor);
+    if (!hasCurrentPrint && availableForSize.length > 0) {
+      setSelectedColor(availableForSize[0].print);
+    }
+  };
+
+  const handlePrintClick = (print: string) => {
+    setSelectedColor(print);
+    const availableForPrint = parsedVariants.filter((pv: any) => pv.print === print);
+    const hasCurrentSize = availableForPrint.some((pv: any) => pv.size === selectedSize);
+    if (!hasCurrentSize && availableForPrint.length > 0) {
+      setSelectedSize(availableForPrint[0].size);
+    }
+  };
 
   // Determine the variant label to pass to cart
   let combinedVariant: string | undefined = undefined;
-  if (variants.length > 0 && selectedVariantOpt) {
+  if (canSplitVariants) {
+    const selectedVariantParts = [];
+    if (selectedSize) selectedVariantParts.push(`${sizeLabel}: ${selectedSize}`);
+    if (selectedColor) selectedVariantParts.push(`${colorLabel}: ${selectedColor}`);
+    combinedVariant = selectedVariantParts.length > 0 ? selectedVariantParts.join(', ') : undefined;
+  } else if (variants.length > 0 && selectedVariantOpt) {
     combinedVariant = selectedVariantOpt.title;
   } else {
     const selectedVariantParts = [];
@@ -90,8 +155,63 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
         </div>
       </div>
 
-      {/* Case 1: Product has defined child variants in variantsJson */}
-      {variants.length > 0 ? (
+      {/* Case 1: Split-able variants (e.g. "S - Blächbläser") */}
+      {canSplitVariants ? (
+        <>
+          {/* Size Selector */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{sizeLabel} wählen:</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {uniqueSizes.map((size: string) => (
+                <button
+                  key={size}
+                  onClick={() => handleSizeClick(size)}
+                  style={{
+                    padding: '0.6rem 1.2rem',
+                    border: selectedSize === size ? '2px solid var(--accent)' : '1px solid #ccc',
+                    background: selectedSize === size ? 'white' : '#fff',
+                    color: selectedSize === size ? 'var(--accent)' : '#333',
+                    fontWeight: selectedSize === size ? 700 : 500,
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: selectedSize === size ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
+                  }}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Print/Color Selector */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{colorLabel} wählen:</label>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {uniquePrints.map((print: string) => (
+                <button
+                  key={print}
+                  onClick={() => handlePrintClick(print)}
+                  style={{
+                    padding: '0.6rem 1.2rem',
+                    border: selectedColor === print ? '2px solid var(--accent)' : '1px solid #ccc',
+                    background: selectedColor === print ? 'white' : '#fff',
+                    color: selectedColor === print ? 'var(--accent)' : '#333',
+                    fontWeight: selectedColor === print ? 700 : 500,
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: selectedColor === print ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
+                  }}
+                >
+                  {print}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : variants.length > 0 ? (
+        /* Case 2: Non-splitable child variants (e.g. "Blächbläserin", "Blächbläser") */
         <div style={{ marginBottom: '1.5rem' }}>
           <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>Ausführung wählen:</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -117,9 +237,9 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
           </div>
         </div>
       ) : (
-        /* Case 2: Product uses flat parent sizes and colors attributes */
+        /* Case 3: Flat parent sizes and colors attributes */
         <>
-          {/* Size/Variant Selector */}
+          {/* Size Selector */}
           {product.sizes && product.sizes.length > 0 && (
             <div style={{ marginBottom: '1.5rem' }}>
               <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{sizeLabel} wählen:</label>
