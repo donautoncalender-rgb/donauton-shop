@@ -24,7 +24,6 @@ export default async function ImpressumPage() {
     <div className="container page-container" style={{ maxWidth: '800px', margin: '0 auto', paddingTop: '8rem', paddingBottom: '4rem' }}>
       <style dangerouslySetInnerHTML={{__html: `
         .strict-wrap-container * {
-          white-space: pre-wrap !important;
           word-break: break-word !important;
           overflow-wrap: anywhere !important;
           max-width: 100% !important;
