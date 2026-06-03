@@ -152,6 +152,30 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
     combinedVariant = selectedVariantParts.length > 0 ? selectedVariantParts.join(', ') : undefined;
   }
 
+  const dropdownSelectStyle: React.CSSProperties = {
+    width: '100%',
+    height: '42px',
+    padding: '0 0.8rem',
+    border: '1px solid #cbd5e1',
+    borderRadius: '6px',
+    background: 'white',
+    fontSize: '0.95rem',
+    fontWeight: 600,
+    color: '#1e293b',
+    outline: 'none',
+    cursor: 'pointer',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+    transition: 'border-color 0.2s',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: '0.85rem',
+    fontWeight: 700,
+    color: '#4a5568',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+  };
+
   return (
     <div style={{ background: '#f5f5f5', border: '1px solid #e1e1e1', borderRadius: '4px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
       
@@ -191,119 +215,79 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
             const selectedVal = selectedValues[idx];
 
             return (
-              <div key={idx} style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{label} wählen:</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div key={idx} style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <label style={labelStyle}>{label} wählen</label>
+                <select
+                  value={selectedVal}
+                  onChange={(e) => handlePartClick(idx, e.target.value)}
+                  style={dropdownSelectStyle}
+                >
                   {uniqueVals.map((val: string) => (
-                    <button
-                      key={val}
-                      onClick={() => handlePartClick(idx, val)}
-                      style={{
-                        padding: '0.6rem 1.2rem',
-                        border: selectedVal === val ? '2px solid var(--accent)' : '1px solid #ccc',
-                        background: selectedVal === val ? 'white' : '#fff',
-                        color: selectedVal === val ? 'var(--accent)' : '#333',
-                        fontWeight: selectedVal === val ? 700 : 500,
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        boxShadow: selectedVal === val ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
-                      }}
-                    >
+                    <option key={val} value={val}>
                       {val}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
             );
           })}
         </>
       ) : variants.length > 0 ? (
         /* Case 2: Non-splitable child variants (e.g. "Blächbläserin", "Blächbläser") */
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>Ausführung wählen:</label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <label style={labelStyle}>Ausführung wählen</label>
+          <select
+            value={selectedVariantId}
+            onChange={(e) => setSelectedVariantId(e.target.value)}
+            style={dropdownSelectStyle}
+          >
             {variants.map((v: any) => (
-              <button
-                key={v.id}
-                onClick={() => setSelectedVariantId(v.id)}
-                style={{
-                  padding: '0.6rem 1.2rem',
-                  border: selectedVariantId === v.id ? '2px solid var(--accent)' : '1px solid #ccc',
-                  background: selectedVariantId === v.id ? 'white' : '#fff',
-                  color: selectedVariantId === v.id ? 'var(--accent)' : '#333',
-                  fontWeight: selectedVariantId === v.id ? 700 : 500,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  boxShadow: selectedVariantId === v.id ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
-                }}
-              >
-                {v.title}
-              </button>
+              <option key={v.id} value={v.id}>
+                {v.title} ({v.price})
+              </option>
             ))}
-          </div>
+          </select>
         </div>
       ) : (
         /* Case 3: Flat parent sizes and colors attributes */
         <>
           {/* Size Selector */}
           {product.sizes && product.sizes.length > 0 && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>
-                {product.sizes.some((v: string) => isSizeOption(v)) ? "Größe" : "Ausführung"} wählen:
+            <div style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={labelStyle}>
+                {product.sizes.some((v: string) => isSizeOption(v)) ? "Größe" : "Ausführung"} wählen
               </label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <select
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                style={dropdownSelectStyle}
+              >
                 {product.sizes.map(size => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    style={{
-                      padding: '0.6rem 1.2rem',
-                      border: selectedSize === size ? '2px solid var(--accent)' : '1px solid #ccc',
-                      background: selectedSize === size ? 'white' : '#fff',
-                      color: selectedSize === size ? 'var(--accent)' : '#333',
-                      fontWeight: selectedSize === size ? 700 : 500,
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: selectedSize === size ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
-                    }}
-                  >
+                  <option key={size} value={size}>
                     {size}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
           )}
 
           {/* Color Selector */}
           {product.colors && product.colors.length > 0 && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>
-                {product.colors.some((v: string) => isColorOption(v)) ? "Farbe" : "Aufdruck"} wählen:
+            <div style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={labelStyle}>
+                {product.colors.some((v: string) => isColorOption(v)) ? "Farbe" : "Aufdruck"} wählen
               </label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <select
+                value={selectedColor}
+                onChange={(e) => setSelectedColor(e.target.value)}
+                style={dropdownSelectStyle}
+              >
                 {product.colors.map(color => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    style={{
-                      padding: '0.6rem 1.2rem',
-                      border: selectedColor === color ? '2px solid var(--accent)' : '1px solid #ccc',
-                      background: selectedColor === color ? 'white' : '#fff',
-                      color: selectedColor === color ? 'var(--accent)' : '#333',
-                      fontWeight: selectedColor === color ? 700 : 500,
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: selectedColor === color ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
-                    }}
-                  >
+                  <option key={color} value={color}>
                     {color}
-                  </button>
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
           )}
         </>
