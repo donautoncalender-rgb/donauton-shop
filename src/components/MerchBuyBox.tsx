@@ -153,6 +153,7 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
   }
 
   const dropdownSelectStyle: React.CSSProperties = {
+    fontFamily: 'inherit',
     width: '100%',
     height: '42px',
     padding: '0 0.8rem',
@@ -206,91 +207,108 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
         </div>
       </div>
 
-      {/* Case 1: Split-able variants (e.g. "M - Schwarz - Male") */}
-      {canSplitVariants ? (
-        <>
-          {Array.from({ length: splitCount }).map((_, idx) => {
-            const uniqueVals: string[] = Array.from(new Set(parsedVariants.map((v: any) => v.parts[idx] as string)));
-            const label = getLabelForIndex(idx, uniqueVals);
-            const selectedVal = selectedValues[idx];
+      {/* Dropdown selectors grid container */}
+      {(canSplitVariants || (variants && variants.length > 0) || (product.sizes && product.sizes.length > 0) || (product.colors && product.colors.length > 0)) && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '1rem', marginBottom: '1.2rem' }}>
+          {/* Case 1: Split-able variants (e.g. "M - Schwarz - Male") */}
+          {canSplitVariants ? (
+            <>
+              {Array.from({ length: splitCount }).map((_, idx) => {
+                const uniqueVals: string[] = Array.from(new Set(parsedVariants.map((v: any) => v.parts[idx] as string)));
+                const label = getLabelForIndex(idx, uniqueVals);
+                const selectedVal = selectedValues[idx];
+                const isLastOdd = (splitCount % 2 !== 0) && (idx === splitCount - 1);
+                const gridColumnSpan = isLastOdd ? 'span 2' : 'span 1';
 
-            return (
-              <div key={idx} style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <label style={labelStyle}>{label} wählen</label>
-                <select
-                  value={selectedVal}
-                  onChange={(e) => handlePartClick(idx, e.target.value)}
-                  style={dropdownSelectStyle}
-                >
-                  {uniqueVals.map((val: string) => (
-                    <option key={val} value={val}>
-                      {val}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            );
-          })}
-        </>
-      ) : variants.length > 0 ? (
-        /* Case 2: Non-splitable child variants (e.g. "Blächbläserin", "Blächbläser") */
-        <div style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-          <label style={labelStyle}>Ausführung wählen</label>
-          <select
-            value={selectedVariantId}
-            onChange={(e) => setSelectedVariantId(e.target.value)}
-            style={dropdownSelectStyle}
-          >
-            {variants.map((v: any) => (
-              <option key={v.id} value={v.id}>
-                {v.title} ({v.price})
-              </option>
-            ))}
-          </select>
+                return (
+                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', gridColumn: gridColumnSpan }}>
+                    <label style={labelStyle}>{label} wählen</label>
+                    <select
+                      value={selectedVal}
+                      onChange={(e) => handlePartClick(idx, e.target.value)}
+                      style={dropdownSelectStyle}
+                    >
+                      {uniqueVals.map((val: string) => (
+                        <option key={val} value={val} style={{ fontFamily: 'inherit' }}>
+                          {val}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              })}
+            </>
+          ) : variants.length > 0 ? (
+            /* Case 2: Non-splitable child variants (e.g. "Blächbläserin", "Blächbläser") */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', gridColumn: 'span 2' }}>
+              <label style={labelStyle}>Ausführung wählen</label>
+              <select
+                value={selectedVariantId}
+                onChange={(e) => setSelectedVariantId(e.target.value)}
+                style={dropdownSelectStyle}
+              >
+                {variants.map((v: any) => (
+                  <option key={v.id} value={v.id} style={{ fontFamily: 'inherit' }}>
+                    {v.title} ({v.price})
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            /* Case 3: Flat parent sizes and colors attributes */
+            <>
+              {/* Size Selector */}
+              {product.sizes && product.sizes.length > 0 && (
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '0.4rem',
+                  gridColumn: (product.colors && product.colors.length > 0) ? 'span 1' : 'span 2'
+                }}>
+                  <label style={labelStyle}>
+                    {product.sizes.some((v: string) => isSizeOption(v)) ? "Größe" : "Ausführung"} wählen
+                  </label>
+                  <select
+                    value={selectedSize}
+                    onChange={(e) => setSelectedSize(e.target.value)}
+                    style={dropdownSelectStyle}
+                  >
+                    {product.sizes.map(size => (
+                      <option key={size} value={size} style={{ fontFamily: 'inherit' }}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Color Selector */}
+              {product.colors && product.colors.length > 0 && (
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: '0.4rem',
+                  gridColumn: (product.sizes && product.sizes.length > 0) ? 'span 1' : 'span 2'
+                }}>
+                  <label style={labelStyle}>
+                    {product.colors.some((v: string) => isColorOption(v)) ? "Farbe" : "Aufdruck"} wählen
+                  </label>
+                  <select
+                    value={selectedColor}
+                    onChange={(e) => setSelectedColor(e.target.value)}
+                    style={dropdownSelectStyle}
+                  >
+                    {product.colors.map(color => (
+                      <option key={color} value={color} style={{ fontFamily: 'inherit' }}>
+                        {color}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </>
+          )}
         </div>
-      ) : (
-        /* Case 3: Flat parent sizes and colors attributes */
-        <>
-          {/* Size Selector */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <label style={labelStyle}>
-                {product.sizes.some((v: string) => isSizeOption(v)) ? "Größe" : "Ausführung"} wählen
-              </label>
-              <select
-                value={selectedSize}
-                onChange={(e) => setSelectedSize(e.target.value)}
-                style={dropdownSelectStyle}
-              >
-                {product.sizes.map(size => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Color Selector */}
-          {product.colors && product.colors.length > 0 && (
-            <div style={{ marginBottom: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <label style={labelStyle}>
-                {product.colors.some((v: string) => isColorOption(v)) ? "Farbe" : "Aufdruck"} wählen
-              </label>
-              <select
-                value={selectedColor}
-                onChange={(e) => setSelectedColor(e.target.value)}
-                style={dropdownSelectStyle}
-              >
-                {product.colors.map(color => (
-                  <option key={color} value={color}>
-                    {color}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </>
       )}
 
       {/* Quantity Selector */}
