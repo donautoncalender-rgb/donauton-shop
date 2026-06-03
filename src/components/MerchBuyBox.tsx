@@ -12,13 +12,24 @@ interface MerchBuyBoxProps {
     stockStatus: string;
     sizes: string[];
     colors: string[];
+    variantsJson?: string | null;
   };
 }
 
 export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
+  // Parse variants if they exist
+  const variants = product.variantsJson ? JSON.parse(product.variantsJson) : [];
+  const [selectedVariantId, setSelectedVariantId] = useState<string>(variants.length > 0 ? variants[0].id : '');
+  const selectedVariantOpt = variants.find((v: any) => v.id === selectedVariantId) || (variants.length > 0 ? variants[0] : null);
+
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes.length > 0 ? product.sizes[0] : '');
   const [selectedColor, setSelectedColor] = useState<string>(product.colors.length > 0 ? product.colors[0] : '');
   const [quantity, setQuantity] = useState<number>(1);
+
+  // If we have distinct child variants, use their specific price/stock/SKU
+  const currentPrice = selectedVariantOpt ? selectedVariantOpt.price : product.price;
+  const currentStockStatus = selectedVariantOpt ? selectedVariantOpt.stockStatus : product.stockStatus;
+  const cartSku = selectedVariantOpt ? selectedVariantOpt.sku : undefined;
 
   // Bestimme, ob es sich um Kleidergrößen oder sonstige Varianten (z.B. Ausführungen) handelt
   const isSizeOption = (val: string) => {
@@ -38,18 +49,24 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
   const hasActualColors = product.colors.some(isColorOption);
   const colorLabel = hasActualColors ? "Farbe" : "Aufdruck";
 
-  // Helper object to override the AddToCart default logic slightly by passing selectedSize/selectedColor
-  const selectedVariantParts = [];
-  if (selectedSize) selectedVariantParts.push(`${sizeLabel}: ${selectedSize}`);
-  if (selectedColor) selectedVariantParts.push(`${colorLabel}: ${selectedColor}`);
-  const combinedVariant = selectedVariantParts.length > 0 ? selectedVariantParts.join(', ') : undefined;
+  // Determine the variant label to pass to cart
+  let combinedVariant: string | undefined = undefined;
+  if (variants.length > 0 && selectedVariantOpt) {
+    combinedVariant = selectedVariantOpt.title;
+  } else {
+    const selectedVariantParts = [];
+    if (selectedSize) selectedVariantParts.push(`${sizeLabel}: ${selectedSize}`);
+    if (selectedColor) selectedVariantParts.push(`${colorLabel}: ${selectedColor}`);
+    combinedVariant = selectedVariantParts.length > 0 ? selectedVariantParts.join(', ') : undefined;
+  }
 
   return (
     <div style={{ background: '#f5f5f5', border: '1px solid #e1e1e1', borderRadius: '4px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
       
+      {/* Product Price Display */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
         <div style={{ fontSize: '2.8rem', fontWeight: 900, color: '#111', lineHeight: 1 }}>
-          {product.price.replace(' €', '')} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
+          {currentPrice.replace(' €', '')} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
         </div>
       </div>
       
@@ -57,75 +74,107 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
         inkl. MwSt. <a href="/versand" style={{ color: '#0066cc', textDecoration: 'none' }}>zzgl. Versandkosten</a>
       </div>
 
+      {/* Stock Status Indicator */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '1.5rem' }}>
-        <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: product.stockStatus === 'instock' ? '#00a651' : '#eab308', flexShrink: 0, marginTop: '3px', position: 'relative' }}>
-          {product.stockStatus === 'instock' ? (
+        <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: currentStockStatus === 'instock' ? '#00a651' : '#eab308', flexShrink: 0, marginTop: '3px', position: 'relative' }}>
+          {currentStockStatus === 'instock' ? (
              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
           ) : (
              <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px' }}><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
           )}
         </div>
         <div>
-          <strong style={{ color: product.stockStatus === 'instock' ? '#00a651' : '#eab308', fontSize: '1rem', display: 'block', marginBottom: '2px' }}>
-            {product.stockStatus === 'instock' ? 'Sofort lieferbar' : 'Auf Anfrage'}
+          <strong style={{ color: currentStockStatus === 'instock' ? '#00a651' : '#eab308', fontSize: '1rem', display: 'block', marginBottom: '2px' }}>
+            {currentStockStatus === 'instock' ? 'Sofort lieferbar' : 'Auf Anfrage'}
           </strong>
         </div>
       </div>
 
-      {/* Size/Variant Selector */}
-      {product.sizes && product.sizes.length > 0 && (
+      {/* Case 1: Product has defined child variants in variantsJson */}
+      {variants.length > 0 ? (
         <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{sizeLabel} wählen:</label>
+          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>Ausführung wählen:</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {product.sizes.map(size => (
+            {variants.map((v: any) => (
               <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
+                key={v.id}
+                onClick={() => setSelectedVariantId(v.id)}
                 style={{
                   padding: '0.6rem 1.2rem',
-                  border: selectedSize === size ? '2px solid var(--accent)' : '1px solid #ccc',
-                  background: selectedSize === size ? 'white' : '#fff',
-                  color: selectedSize === size ? 'var(--accent)' : '#333',
-                  fontWeight: selectedSize === size ? 700 : 500,
+                  border: selectedVariantId === v.id ? '2px solid var(--accent)' : '1px solid #ccc',
+                  background: selectedVariantId === v.id ? 'white' : '#fff',
+                  color: selectedVariantId === v.id ? 'var(--accent)' : '#333',
+                  fontWeight: selectedVariantId === v.id ? 700 : 500,
                   borderRadius: '4px',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
-                  boxShadow: selectedSize === size ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
+                  boxShadow: selectedVariantId === v.id ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
                 }}
               >
-                {size}
+                {v.title}
               </button>
             ))}
           </div>
         </div>
-      )}
+      ) : (
+        /* Case 2: Product uses flat parent sizes and colors attributes */
+        <>
+          {/* Size/Variant Selector */}
+          {product.sizes && product.sizes.length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{sizeLabel} wählen:</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {product.sizes.map(size => (
+                  <button
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    style={{
+                      padding: '0.6rem 1.2rem',
+                      border: selectedSize === size ? '2px solid var(--accent)' : '1px solid #ccc',
+                      background: selectedSize === size ? 'white' : '#fff',
+                      color: selectedSize === size ? 'var(--accent)' : '#333',
+                      fontWeight: selectedSize === size ? 700 : 500,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: selectedSize === size ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
+                    }}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-      {/* Color Selector */}
-      {product.colors && product.colors.length > 0 && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{colorLabel} wählen:</label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {product.colors.map(color => (
-              <button
-                key={color}
-                onClick={() => setSelectedColor(color)}
-                style={{
-                  padding: '0.6rem 1.2rem',
-                  border: selectedColor === color ? '2px solid var(--accent)' : '1px solid #ccc',
-                  background: selectedColor === color ? 'white' : '#fff',
-                  color: selectedColor === color ? 'var(--accent)' : '#333',
-                  fontWeight: selectedColor === color ? 700 : 500,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  boxShadow: selectedColor === color ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
-                }}
-              >
-                {color}
-              </button>
-            ))}
-          </div>
-        </div>
+          {/* Color Selector */}
+          {product.colors && product.colors.length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: '#111', marginBottom: '0.6rem' }}>{colorLabel} wählen:</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {product.colors.map(color => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    style={{
+                      padding: '0.6rem 1.2rem',
+                      border: selectedColor === color ? '2px solid var(--accent)' : '1px solid #ccc',
+                      background: selectedColor === color ? 'white' : '#fff',
+                      color: selectedColor === color ? 'var(--accent)' : '#333',
+                      fontWeight: selectedColor === color ? 700 : 500,
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: selectedColor === color ? '0 2px 5px rgba(167, 25, 48, 0.1)' : 'none'
+                    }}
+                  >
+                    {color}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Quantity Selector */}
@@ -165,7 +214,18 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
-         <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: product.price, image: product.image }} selectedVariant={combinedVariant} quantity={quantity} />
+         <AddToCartButton 
+           size="large" 
+           product={{ 
+             id: product.id, 
+             title: product.title, 
+             price: currentPrice, 
+             image: product.image,
+             sku: cartSku
+           }} 
+           selectedVariant={combinedVariant} 
+           quantity={quantity} 
+         />
       </div>
 
       {/* Guarantees */}
