@@ -11,7 +11,7 @@ export default async function DatenschutzPage() {
   `;
 
   return (
-    <div className="container page-container" style={{ maxWidth: '800px', margin: '0 auto', paddingTop: '8rem', paddingBottom: '4rem' }}>
+    <div className="container page-container" style={{ maxWidth: '1200px', margin: '0 auto', paddingTop: '8rem', paddingBottom: '4rem' }}>
       <style dangerouslySetInnerHTML={{__html: `
         .strict-wrap-container * {
           word-break: break-word !important;
