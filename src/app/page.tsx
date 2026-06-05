@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import HeroSlider from '../components/HeroSlider';
+import NewsletterFormClient from '../components/NewsletterFormClient';
 import MiniProductSlider from '../components/MiniProductSlider';
 import DynamicIcon from '../components/DynamicIcon';
 import { prisma } from '../lib/prisma';
@@ -216,16 +217,10 @@ export default async function Home() {
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: 'url("https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=1600&q=80")', backgroundSize: 'cover', backgroundPosition: 'center', zIndex: -2 }}></div>
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to right, rgba(5,38,53, 0.95) 0%, rgba(5,38,53, 0.75) 100%)', zIndex: -1 }}></div>
         
-        <div className="container" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', color: 'white' }}>
-           <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>{s['home_newsletter_title'] || 'Werde Teil der Donauton-Familie'}</h2>
-           <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.8)', maxWidth: '600px', marginBottom: '2.5rem' }}>{s['home_newsletter_text'] || 'Trag dich jetzt für unseren Exklusiv-Verteiler ein und erhalte sofort 10% Willkommens-Rabatt sowie kostenlose Probe-Partituren für dein Orchester.'}</p>
-           
-           <form style={{ display: 'flex', width: '100%', maxWidth: '540px', background: 'rgba(255,255,255,0.1)', padding: '0.5rem', borderRadius: '50px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <input type="email" placeholder="Deine E-Mail Adresse..." required style={{ flex: 1, background: 'transparent', border: 'none', color: 'white', padding: '0 1.5rem', fontSize: '1rem', outline: 'none' }} />
-              <button type="button" className="btn btn-primary" style={{ padding: '1rem 2.5rem', borderRadius: '40px' }}>VIP werden</button>
-           </form>
-           <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginTop: '1rem' }}>100% Musik, 0% Spam. Abmeldung jederzeit möglich.</p>
-        </div>
+        <NewsletterFormClient 
+          title={s['home_newsletter_title'] || 'Werde Teil der Donauton-Familie'}
+          text={s['home_newsletter_text'] || 'Trag dich jetzt für unseren Exklusiv-Verteiler ein und erhalte sofort 10% Willkommens-Rabatt sowie kostenlose Probe-Partituren für dein Orchester.'}
+        />
       </section>
 
       {/* WHY SHOP AT DONAUTON */}

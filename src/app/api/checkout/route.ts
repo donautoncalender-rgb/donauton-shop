@@ -198,6 +198,30 @@ export async function POST(request: Request) {
     }
     // --- ERP SYNC END ---
 
+    // --- NEWSLETTER SYNC ---
+    if (formData.newsletter) {
+      try {
+        const protocol = request.headers.get('x-forwarded-proto') || 'http';
+        const host = request.headers.get('host') || 'localhost:3000';
+        const shopUrl = `${protocol}://${host}`;
+
+        await fetch(`${shopUrl}/api/newsletter/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: order.email,
+            firstName: order.firstName,
+            lastName: order.lastName,
+            source: 'CHECKOUT'
+          })
+        });
+      } catch (newsletterErr) {
+        console.error("Failed to sync newsletter subscription:", newsletterErr);
+        // We do not fail the checkout if newsletter fails
+      }
+    }
+    // --- NEWSLETTER SYNC END ---
+
     return NextResponse.json({ 
       success: true, 
       orderId: order.id,
