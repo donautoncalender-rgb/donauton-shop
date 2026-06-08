@@ -146,6 +146,10 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
 
       const data = await res.json();
       if (data.success) {
+        if (data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+          return;
+        }
         setSuccess(true);
         setOrderDetails(data);
         clearCart();

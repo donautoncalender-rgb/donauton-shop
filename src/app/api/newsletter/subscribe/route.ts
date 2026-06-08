@@ -4,10 +4,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     
-    // In production, this forwards the subscription to the DONAUTON Suite
-    const SUITE_URL = process.env.NODE_ENV === 'production' 
-      ? 'https://donauton-suite.de'
-      : 'http://localhost:3000'; // Default local suite port
+    const SUITE_URL = process.env.ERP_SUITE_URL || 'https://donauton-suite.de';
 
     const response = await fetch(`${SUITE_URL}/api/newsletter/subscribe`, {
       method: 'POST',

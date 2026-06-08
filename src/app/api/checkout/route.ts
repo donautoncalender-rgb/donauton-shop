@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
+import { syncOrderDetails } from './sync';
 
 export async function POST(request: Request) {
   try {
@@ -90,11 +91,13 @@ export async function POST(request: Request) {
     }
     const calculatedTotal = calculatedSubtotal + shipping;
 
+    const isPaid = (formData.payment === 'PayPal' && paymentStatus === 'paid');
+
     // Create the order in database
     const order = await prisma.order.create({
       data: {
         orderNumber,
-        status: finalPaymentStatus === 'paid' ? 'PAID' : 'PENDING',
+        status: isPaid ? 'PAID' : 'PENDING',
         
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -115,112 +118,89 @@ export async function POST(request: Request) {
       }
     });
 
-    // --- ERP SYNC START ---
-    // ERP BASE URL is already calculated above
-    const erpUrl = `${erpUrlBase}/api/v1/shop/orders`;
-    // FORCE fallback secret to bypass any corrupted database settings
-    // erpKey is already defined above
-    
-    if (erpKey) {
-        try {
-            // Fetch real SKUs from the database instead of falling back to the Prisma CUID
-            const productIds = orderItems.map((oi: any) => oi.productId).filter(Boolean);
-            const dbProducts = await prisma.product.findMany({
-              where: { id: { in: productIds } },
-              select: { id: true, sku: true, wooId: true }
-            });
-            const skuMap: Record<string, string> = {};
-            dbProducts.forEach(p => {
-              skuMap[p.id] = p.sku || (p.wooId ? p.wooId.toString() : p.id);
-            });
+    const protocol = request.headers.get('x-forwarded-proto') || 'http';
+    const host = request.headers.get('host') || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
 
-            const erpPayload = {
-                order_number: order.orderNumber,
-                customer: {
-                    email: order.email,
-                    first_name: order.firstName,
-                    last_name: order.lastName,
-                    password: formData.password || undefined,
-                    create_account: formData.createAccount,
-                    billing: {
-                        company: order.companyName,
-                        street: order.address,
-                        zip: order.zipCode,
-                        city: order.city,
-                        country: "DE"
-                    },
-                    shipping: {
-                        company: order.companyName,
-                        street: order.address,
-                        zip: order.zipCode,
-                        city: order.city,
-                        country: "DE"
-                    }
-                },
-                items: orderItems.map((oi: any) => ({
-                    sku: oi.sku || ((oi.productId && skuMap[oi.productId]) ? skuMap[oi.productId] : oi.productId), // Use REAL fetched SKU or variant-specific SKU
-                    title: (oi.variant && oi.variant !== 'Digital') ? `${oi.title} - ${oi.variant.replace(/,\s*/g, ' - ')}` : oi.title,
-                    quantity: oi.quantity,
-                    unit_price_gross: oi.price,
-                    unit_price_net: oi.price / 1.07, // roughly ~7% tax assumption
-                    tax_rate_percent: 7,
-                    attendee_names: oi.attendeeNames ? JSON.parse(oi.attendeeNames) : []
-                })),
-                totals: {
-                    total_gross: order.total,
-                    total_net: order.total / 1.07,
-                    shipping_cost_gross: order.shippingCost
-                },
-                customer_notes: formData.newsletter ? "Kunde möchte den Newsletter abonnieren." : "Kunde hat Newsletter-Anmeldung abgelehnt.",
-                payment: {
-                    method: order.paymentMethod,
-                    status: finalPaymentStatus
-                }
-            };
-
-            const erpRes = await fetch(erpUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${erpKey}`
-                },
-                body: JSON.stringify(erpPayload)
-            });
-
-            if (!erpRes.ok) {
-                const text = await erpRes.text();
-                throw new Error(`ERP Suite rejected the order (${erpRes.status}): ${text}`);
-            }
-        } catch (erpError: any) {
-            console.error("Failed to sync with ERP:", erpError);
-            throw new Error(`ERP Sync Failed: ${erpError.message}`);
-        }
-    }
-    // --- ERP SYNC END ---
-
-    // --- NEWSLETTER SYNC ---
-    if (formData.newsletter) {
-      try {
-        const protocol = request.headers.get('x-forwarded-proto') || 'http';
-        const host = request.headers.get('host') || 'localhost:3000';
-        const shopUrl = `${protocol}://${host}`;
-
-        await fetch(`${shopUrl}/api/newsletter/subscribe`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: order.email,
-            firstName: order.firstName,
-            lastName: order.lastName,
-            source: 'CHECKOUT'
-          })
-        });
-      } catch (newsletterErr) {
-        console.error("Failed to sync newsletter subscription:", newsletterErr);
-        // We do not fail the checkout if newsletter fails
+    if (formData.payment === 'Kreditkarte') {
+      const stripeSecretKeySetting = await prisma.shopSetting.findUnique({
+        where: { key: 'stripe_secret_key' }
+      });
+      const stripeSecretKey = stripeSecretKeySetting?.value || process.env.STRIPE_SECRET_KEY;
+      if (!stripeSecretKey) {
+        throw new Error('Stripe-Zugangsdaten (Secret Key) sind nicht in der Datenbank konfiguriert.');
       }
+
+      // Initialize stripe
+      const Stripe = require('stripe');
+      const stripe = new Stripe(stripeSecretKey);
+
+      // Create Stripe checkout session
+      const lineItems = items.map((item: any) => ({
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: item.title + (item.variant && item.variant !== 'Digital' ? ` (${item.variant})` : ''),
+            images: item.image ? [item.image] : [],
+          },
+          unit_amount: Math.round(parseFloat(item.price) * 100),
+        },
+        quantity: parseInt(item.quantity),
+      }));
+
+      // If shipping cost exists, add it as a separate line item
+      if (shipping > 0) {
+        lineItems.push({
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: 'Versandkosten',
+            },
+            unit_amount: Math.round(shipping * 100),
+          },
+          quantity: 1,
+        });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}&order_id=${order.id}`,
+        cancel_url: `${baseUrl}/checkout?payment_error=true`,
+        customer_email: order.email,
+        metadata: {
+          orderId: order.id,
+          password: formData.password || '',
+          createAccount: formData.createAccount ? 'true' : 'false',
+          newsletter: formData.newsletter ? 'true' : 'false',
+        },
+      });
+
+      return NextResponse.json({ 
+        success: true, 
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        redirectUrl: session.url
+      });
     }
-    // --- NEWSLETTER SYNC END ---
+
+    // Sync to ERP & Newsletter for PayPal / invoice / bank transfer
+    try {
+      await syncOrderDetails(
+        order.id,
+        {
+          password: formData.password,
+          createAccount: formData.createAccount,
+          newsletter: formData.newsletter,
+          finalPaymentStatus: isPaid ? 'paid' : 'pending'
+        },
+        baseUrl
+      );
+    } catch (syncError) {
+      console.error("Failed to sync checkout immediately:", syncError);
+      // We still return success since the order was successfully created in the shop DB
+    }
 
     return NextResponse.json({ 
       success: true, 
