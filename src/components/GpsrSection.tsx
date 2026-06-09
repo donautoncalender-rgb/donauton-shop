@@ -46,8 +46,8 @@ export default function GpsrSection({ publisher }: GpsrSectionProps) {
             <strong style={{ color: '#1e293b' }}>Hersteller:</strong><br />
             DONAUTON Music Publishing<br />
             Lukas Bruckmeyer<br />
-            Pfarrstraße 2<br />
-            89564 Nattheim<br />
+            Dorfstr. 24a<br />
+            86735 Forheim<br />
             Deutschland<br />
             E-Mail: l.bruckmeyer@donauton.de<br />
             Web: www.donauton.de
@@ -58,7 +58,7 @@ export default function GpsrSection({ publisher }: GpsrSectionProps) {
             {publisher}<br />
             (Vertrieb durch DONAUTON)<br /><br />
             Für Sicherheits- und Konformitätsfragen kontaktieren Sie bitte den Vertriebspartner:<br />
-            DONAUTON, Pfarrstraße 2, 89564 Nattheim, Deutschland<br />
+            DONAUTON, Dorfstr. 24a, 86735 Forheim, Deutschland<br />
             E-Mail: l.bruckmeyer@donauton.de
           </div>
         )}
