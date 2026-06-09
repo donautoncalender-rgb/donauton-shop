@@ -91,13 +91,14 @@ export async function GET() {
     const upsertPromises = parentWorks.map((work: any) => {
       const { title: finalTitle, slug: safeSlug } = getWorkDetails(work);
 
-      // Category Mapping based on CatalogCategory name
+      // Category Mapping based on CatalogCategory name and product_type
       const catName = (work.catalog_category?.name || '').toLowerCase();
+      const type = (work.product_type || '').toLowerCase();
       let category = "Noten";
-      if (catName.includes('cd') || catName.includes('audio')) category = "CDs";
-      else if (catName.includes('buch') || catName.includes('bücher')) category = "Bücher";
-      else if (catName.includes('merch') || catName.includes('shirt')) category = "Merch";
-      else if (catName.includes('ticket')) category = "Tickets";
+      if (catName.includes('cd') || catName.includes('audio') || type === 'cd' || type === 'dvd') category = "CDs";
+      else if (catName.includes('buch') || catName.includes('bücher') || type === 'buch') category = "Bücher";
+      else if (catName.includes('merch') || catName.includes('shirt') || type === 'merchandise') category = "Merch";
+      else if (catName.includes('ticket') || type === 'ticket') category = "Tickets";
 
       // Price Formatting
       const rawPrice = parseFloat(work.end_customer_price_gross || work.base_list_price_gross || 0);
