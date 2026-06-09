@@ -99,70 +99,85 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
            visibility: hidden;
            opacity: 0;
            position: absolute;
-           top: 100%;
-           left: -15px;
-           background-color: var(--accent);
+           top: calc(100% + 8px);
+           left: -10px;
+           background-color: rgba(255, 255, 255, 0.98);
+           backdrop-filter: blur(20px);
            min-width: 260px;
-           box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+           box-shadow: 0 15px 35px rgba(5, 38, 53, 0.12);
            z-index: 100;
-           padding: 0.5rem 0;
-           border-radius: 4px;
-           transition: all 0.2s ease;
-           transform: translateY(10px);
+           padding: 0.6rem 0;
+           border-radius: 16px;
+           border: 1px solid rgba(5, 38, 53, 0.08);
+           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+           transform: translateY(10px) scale(0.95);
+           transform-origin: top left;
         }
         .nav-item-dropdown:hover .dropdown-level-1 {
            visibility: visible;
            opacity: 1;
-           transform: translateY(0);
+           transform: translateY(0) scale(1);
         }
         .dropdown-item-has-flyout {
            position: relative;
         }
         .dropdown-link {
-           color: white !important;
-           padding: 12px 20px;
+           color: var(--primary) !important;
+           padding: 10px 20px;
            text-decoration: none;
            display: flex;
            justify-content: space-between;
            align-items: center;
-           font-weight: 500;
-           font-size: 0.95rem;
-           transition: background-color 0.2s;
+           font-weight: 600;
+           font-size: 0.85rem;
+           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+           border-radius: 8px;
+           margin: 2px 8px;
         }
         .dropdown-link:hover, .dropdown-item-has-flyout:hover > .dropdown-link {
-           background-color: rgba(0,0,0,0.15);
+           background-color: rgba(205, 23, 25, 0.05);
+           color: var(--accent) !important;
+           padding-left: 24px;
         }
         
         .dropdown-level-2 {
            visibility: hidden;
            opacity: 0;
            position: absolute;
-           top: -0.5rem;
-           left: 100%;
-           background-color: var(--accent);
+           top: -0.6rem;
+           left: calc(100% + 6px);
+           background-color: rgba(255, 255, 255, 0.98);
+           backdrop-filter: blur(20px);
            min-width: 220px;
-           box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+           box-shadow: 0 15px 35px rgba(5, 38, 53, 0.12);
            z-index: 101;
-           padding: 0.5rem 0;
-           border-radius: 4px;
-           transition: all 0.2s ease;
-           transform: translateX(-10px);
+           padding: 0.6rem 0;
+           border-radius: 16px;
+           border: 1px solid rgba(5, 38, 53, 0.08);
+           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+           transform: translateX(-10px) scale(0.95);
+           transform-origin: top left;
         }
         .dropdown-item-has-flyout:hover .dropdown-level-2 {
            visibility: visible;
            opacity: 1;
-           transform: translateX(0);
+           transform: translateX(0) scale(1);
         }
         .dropdown-link-sub {
-           color: white !important;
-           padding: 10px 20px;
+           color: var(--primary) !important;
+           padding: 8px 18px;
            text-decoration: none;
            display: block;
-           font-size: 0.9rem;
-           transition: background-color 0.2s;
+           font-size: 0.85rem;
+           font-weight: 500;
+           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+           border-radius: 8px;
+           margin: 2px 8px;
         }
         .dropdown-link-sub:hover {
-           background-color: rgba(0,0,0,0.15);
+           background-color: rgba(205, 23, 25, 0.05);
+           color: var(--accent) !important;
+           padding-left: 22px;
         }
         
         /* Global Search & Autocomplete Styles */
@@ -173,25 +188,27 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
            margin-right: 0.5rem;
         }
         .global-search-input {
-           width: 160px;
-           padding: 0.45rem 2.2rem 0.45rem 0.8rem;
-           border: 1.5px solid #e2e8f0;
-           border-radius: 20px;
+           width: 150px;
+           padding: 0.5rem 2.2rem 0.5rem 1rem;
+           border: 1.5px solid rgba(5, 38, 53, 0.1);
+           border-radius: 30px;
            font-size: 0.85rem;
            outline: none;
-           transition: all 0.2s ease;
+           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
            font-family: inherit;
            background: #f8fafc;
+           color: var(--primary);
+           font-weight: 500;
         }
         .global-search-input:focus {
-           width: 240px;
+           width: 260px;
            border-color: var(--accent);
            background: white;
-           box-shadow: 0 0 0 3px rgba(197, 48, 48, 0.15);
+           box-shadow: 0 4px 20px rgba(205, 23, 25, 0.08);
         }
         .global-search-btn {
            position: absolute;
-           right: 6px;
+           right: 8px;
            background: transparent;
            border: none;
            cursor: pointer;
@@ -200,37 +217,40 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
            display: flex;
            align-items: center;
            justify-content: center;
-           transition: color 0.2s;
+           transition: all 0.2s ease;
         }
         .global-search-btn:hover {
            color: var(--accent);
+           transform: scale(1.1);
         }
         .global-search-dropdown {
            position: absolute;
-           top: calc(100% + 8px);
+           top: calc(100% + 10px);
            right: 0;
            width: 440px;
-           background: white;
-           border-radius: 8px;
-           box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-           border: 1px solid #e2e8f0;
+           background: rgba(255, 255, 255, 0.98);
+           backdrop-filter: blur(20px);
+           border-radius: 16px;
+           box-shadow: 0 20px 40px rgba(5, 38, 53, 0.12);
+           border: 1px solid rgba(5, 38, 53, 0.08);
            z-index: 1000;
            overflow: hidden;
-           animation: searchSlideDown 0.15s ease-out;
+           transform-origin: top right;
+           animation: searchSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes searchSlideDown {
-           from { opacity: 0; transform: translateY(-5px); }
-           to { opacity: 1; transform: translateY(0); }
+           from { opacity: 0; transform: translateY(8px) scale(0.95); }
+           to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .search-dropdown-header {
-           padding: 0.6rem 1rem;
-           background: #f7fafc;
-           border-bottom: 1px solid #edf2f7;
+           padding: 0.8rem 1.2rem;
+           background: #fdfcf9;
+           border-bottom: 1px solid rgba(5, 38, 53, 0.05);
            display: flex;
            justify-content: space-between;
            align-items: center;
            font-size: 0.8rem;
-           color: #718096;
+           color: var(--text-light);
            font-weight: 600;
         }
         .search-dropdown-results {
@@ -239,10 +259,10 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
         }
         .search-result-item {
            display: flex;
-           gap: 0.8rem;
-           padding: 0.8rem 1rem;
-           border-bottom: 1px solid #edf2f7;
-           transition: background-color 0.15s;
+           gap: 1rem;
+           padding: 0.9rem 1.2rem;
+           border-bottom: 1px solid rgba(5, 38, 53, 0.04);
+           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
            text-decoration: none;
            color: inherit !important;
            text-align: left;
@@ -251,15 +271,17 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
            border-bottom: none;
         }
         .search-result-item:hover {
-           background-color: #f7fafc;
+           background-color: rgba(205, 23, 25, 0.03);
+           padding-left: 1.5rem;
         }
         .search-result-image {
-           width: 48px;
-           height: 68px;
+           width: 44px;
+           height: 62px;
            object-fit: cover;
-           border-radius: 4px;
-           border: 1px solid #e2e8f0;
+           border-radius: 6px;
+           border: 1px solid rgba(5, 38, 53, 0.08);
            flex-shrink: 0;
+           box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
         .search-result-info {
            display: flex;
@@ -279,7 +301,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
         .search-result-title {
            font-size: 0.9rem;
            font-weight: 600;
-           color: #2d3748;
+           color: var(--primary);
            margin-bottom: 0.15rem;
            white-space: nowrap;
            overflow: hidden;
@@ -287,7 +309,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
         }
         .search-result-meta {
            font-size: 0.75rem;
-           color: #718096;
+           color: var(--text-light);
            white-space: nowrap;
            overflow: hidden;
            text-overflow: ellipsis;
@@ -296,20 +318,23 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
         .search-result-price {
            font-size: 0.85rem;
            font-weight: 700;
-           color: #1a202c;
+           color: var(--primary);
         }
         .search-dropdown-footer {
-           padding: 0.6rem 1rem;
-           border-top: 1px solid #edf2f7;
+           padding: 0.8rem 1.2rem;
+           border-top: 1px solid rgba(5, 38, 53, 0.05);
            text-align: center;
-           background: #f7fafc;
+           background: #fdfcf9;
         }
         .search-dropdown-footer-link {
            font-size: 0.8rem;
-           font-weight: 600;
+           font-weight: 700;
            color: var(--accent) !important;
            text-decoration: none;
            transition: opacity 0.15s;
+        }
+        .search-dropdown-footer-link:hover {
+           opacity: 0.85;
         }
         .search-dropdown-footer-link:hover {
            opacity: 0.8;
