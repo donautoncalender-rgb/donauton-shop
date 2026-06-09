@@ -129,7 +129,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
            font-size: 0.95rem;
            transition: background-color 0.2s;
         }
-        .dropdown-item-has-flyout:hover > .dropdown-link {
+        .dropdown-link:hover, .dropdown-item-has-flyout:hover > .dropdown-link {
            background-color: rgba(0,0,0,0.15);
         }
         
