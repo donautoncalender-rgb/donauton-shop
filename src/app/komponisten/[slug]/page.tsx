@@ -140,7 +140,7 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
         <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{composer.name}</span>
       </nav>
 
-      {/* Profile Header */}
+      {/* Profile Header & Biography */}
       <div 
         style={{ 
           background: 'var(--surface)', 
@@ -152,7 +152,7 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
           display: 'flex',
           gap: '2.5rem',
           flexWrap: 'wrap',
-          alignItems: 'center'
+          alignItems: 'flex-start'
         }}
       >
         {/* Profile Image */}
@@ -184,73 +184,74 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
           )}
         </div>
 
-        {/* Profile Details */}
-        <div style={{ flex: '1 1 300px' }}>
-          <span 
-            style={{ 
-              display: 'inline-block',
-              padding: '0.3rem 0.8rem',
-              backgroundColor: 'rgba(205, 23, 25, 0.1)',
-              border: '1px solid rgba(205, 23, 25, 0.2)',
-              borderRadius: '20px',
-              color: 'var(--accent)',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              marginBottom: '0.8rem'
-            }}
-          >
-            Autor*innen-Portrait
-          </span>
-          <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px', lineHeight: 1.1 }}>
-            {composer.name}
-          </h1>
-          {hasDates && (
-            <div style={{ fontSize: '1.05rem', color: 'var(--text-light)', fontWeight: 500, display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-              {composer.birthDate && (
-                <span>
-                  <strong>Geboren:</strong> {formatDateGerman(composer.birthDate)}
-                </span>
-              )}
-              {composer.deathDate && (
-                <span>
-                  <strong>Gestorben:</strong> {formatDateGerman(composer.deathDate)}
-                </span>
-              )}
+        {/* Profile Details & Biography */}
+        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+          <div>
+            <span 
+              style={{ 
+                display: 'inline-block',
+                padding: '0.3rem 0.8rem',
+                backgroundColor: 'rgba(205, 23, 25, 0.1)',
+                border: '1px solid rgba(205, 23, 25, 0.2)',
+                borderRadius: '20px',
+                color: 'var(--accent)',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '0.8rem'
+              }}
+            >
+              Autor*innen-Portrait
+            </span>
+            <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+              {composer.name}
+            </h1>
+            {hasDates && (
+              <div style={{ fontSize: '1.05rem', color: 'var(--text-light)', fontWeight: 500, display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                {composer.birthDate && (
+                  <span>
+                    <strong>Geboren:</strong> {formatDateGerman(composer.birthDate)}
+                  </span>
+                )}
+                {composer.deathDate && (
+                  <span>
+                    <strong>Gestorben:</strong> {formatDateGerman(composer.deathDate)}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {composer.biography && (
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.2rem' }}>
+              <h2 
+                style={{ 
+                  fontSize: '1.2rem', 
+                  fontWeight: 800, 
+                  color: 'var(--primary)', 
+                  marginBottom: '0.6rem',
+                  border: 'none',
+                  padding: 0
+                }}
+              >
+                Biografie
+              </h2>
+              <div 
+                style={{ 
+                  fontSize: '1rem', 
+                  lineHeight: '1.7', 
+                  color: 'var(--text-light)', 
+                  whiteSpace: 'pre-line',
+                  textAlign: 'justify'
+                }}
+              >
+                {composer.biography}
+              </div>
             </div>
           )}
         </div>
       </div>
-
-      {/* Main Biography Content */}
-      {composer.biography && (
-        <div style={{ marginBottom: '4rem' }}>
-          <h2 
-            style={{ 
-              fontSize: '1.6rem', 
-              fontWeight: 800, 
-              color: 'var(--primary)', 
-              marginBottom: '1.2rem',
-              borderBottom: '2px solid var(--border)',
-              paddingBottom: '0.5rem'
-            }}
-          >
-            Biografie
-          </h2>
-          <div 
-            style={{ 
-              fontSize: '1.1rem', 
-              lineHeight: '1.8', 
-              color: 'var(--text-light)', 
-              whiteSpace: 'pre-line',
-              textAlign: 'justify'
-            }}
-          >
-            {composer.biography}
-          </div>
-        </div>
-      )}
 
       {/* Compositions List */}
       <div>
