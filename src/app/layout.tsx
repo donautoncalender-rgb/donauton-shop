@@ -40,6 +40,7 @@ export default async function RootLayout({
   let topBanner = null;
   let faviconUrl = '/favicon.ico';
   let notenTaxonomy: { besetzung: string; items: string[]; type: 'genre' | 'solist' }[] = [];
+  let publicComposers: { name: string; slug: string }[] = [];
 
   try {
     const settings = await prisma.shopSetting.findMany();
@@ -103,6 +104,11 @@ export default async function RootLayout({
       items: Array.from(data.items).sort()
     })).sort((a,b) => a.besetzung.localeCompare(b.besetzung));
 
+    publicComposers = await prisma.composer.findMany({
+      select: { name: true, slug: true },
+      orderBy: { name: 'asc' }
+    });
+
   } catch (e) {
     console.log("Database not initialized yet", e);
   }
@@ -120,7 +126,7 @@ export default async function RootLayout({
                 {topBanner}
               </div>
             )}
-            <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} />
+            <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} composers={publicComposers} />
             <CartDrawer />
             <main style={{ minHeight: '100vh' }}>
               {children}

@@ -259,13 +259,67 @@ export async function GET() {
     await Promise.all(upsertPromises);
     syncedCount = parentWorks.length;
 
+    // ----- SYNC COMPOSERS -----
+    const composers = Array.isArray(data) ? [] : (data.composers || []);
+    const validComposerIds = composers.map((c: any) => c.id);
+
+    // Clean up old composers
+    if (validComposerIds.length > 0) {
+      await prisma.composer.deleteMany({
+        where: {
+          id: { notIn: validComposerIds }
+        }
+      });
+    } else {
+      await prisma.composer.deleteMany({});
+    }
+
+    const getSlug = (name: string) => {
+      return name.toLowerCase()
+        .replace(/ä/g, 'ae')
+        .replace(/ö/g, 'oe')
+        .replace(/ü/g, 'ue')
+        .replace(/ß/g, 'ss')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    };
+
+    const composerUpserts = composers.map((c: any) => {
+      const name = c.name_anzeigen || `${c.vorname} ${c.nachname}`;
+      const slug = getSlug(name);
+      return prisma.composer.upsert({
+        where: { id: c.id },
+        update: {
+          name,
+          slug,
+          biography: c.biography || null,
+          birthDate: c.geburtsdatum ? new Date(c.geburtsdatum) : null,
+          deathDate: c.sterbedatum ? new Date(c.sterbedatum) : null,
+          portraitUrl: c.portrait_image_path || null,
+        },
+        create: {
+          id: c.id,
+          name,
+          slug,
+          biography: c.biography || null,
+          birthDate: c.geburtsdatum ? new Date(c.geburtsdatum) : null,
+          deathDate: c.sterbedatum ? new Date(c.sterbedatum) : null,
+          portraitUrl: c.portrait_image_path || null,
+        }
+      });
+    });
+
+    await Promise.all(composerUpserts);
+    // ---------------------------
+
     // Flush the global Next.js cache so the Storefront updates instantly
     revalidatePath('/', 'layout');
 
     return NextResponse.json({
       success: true,
-      message: `${syncedCount} Produkte erfolgreich direkt aus der Suite synchronisiert!`,
-      productsImported: syncedCount
+      message: `${syncedCount} Produkte und ${composers.length} Komponisten erfolgreich direkt aus der Suite synchronisiert!`,
+      productsImported: syncedCount,
+      composersImported: composers.length
     });
 
   } catch (error: any) {
