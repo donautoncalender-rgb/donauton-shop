@@ -154,7 +154,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
         setOrderDetails(data);
         clearCart();
       } else {
-        alert(data.error || 'Ein Fehler ist aufgetreten');
+        alert((data.error || 'Ein Fehler ist aufgetreten') + (data.details ? '\nDetails: ' + data.details : ''));
       }
     } catch (error) {
       alert('Fehler bei der Verbindung zum Server');

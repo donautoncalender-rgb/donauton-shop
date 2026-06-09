@@ -141,7 +141,7 @@ export async function POST(request: Request) {
           currency: 'eur',
           product_data: {
             name: item.title + (item.variant && item.variant !== 'Digital' ? ` (${item.variant})` : ''),
-            images: item.image ? [item.image] : [],
+            images: (item.image && typeof item.image === 'string' && item.image.startsWith('http')) ? [item.image] : [],
           },
           unit_amount: Math.round(parseFloat(item.price) * 100),
         },
