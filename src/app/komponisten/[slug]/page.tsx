@@ -16,17 +16,17 @@ export async function generateMetadata({ params }: ComposerPageProps): Promise<M
 
   if (!composer) {
     return {
-      title: 'Komponist nicht gefunden | DONAUTON Shop'
+      title: 'Autor*in nicht gefunden | DONAUTON Shop'
     };
   }
 
   return {
-    title: `${composer.name} - Komponisten-Portrait | DONAUTON Shop`,
+    title: `${composer.name} - Autor*innen-Portrait | DONAUTON Shop`,
     description: composer.biography 
       ? composer.biography.substring(0, 160) + '...' 
       : `Entdecken Sie das Profil und die Werke von ${composer.name} im DONAUTON Shop.`,
     openGraph: {
-      title: `${composer.name} - Komponisten-Portrait`,
+      title: `${composer.name} - Autor*innen-Portrait`,
       description: composer.biography ? composer.biography.substring(0, 160) + '...' : undefined,
       type: 'profile',
       images: composer.portraitUrl ? [{ url: composer.portraitUrl }] : undefined
@@ -44,10 +44,29 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
     notFound();
   }
 
-  // Fetch all products by this composer
+  // Split the name by whitespace to match on parts of the name (handles middle initials)
+  const nameParts = composer.name.trim().split(/\s+/).filter(part => part.length > 1);
+
+  // Fetch all products by this composer/author
   const dbProducts = await prisma.product.findMany({
     where: {
-      composer: composer.name
+      OR: [
+        {
+          AND: nameParts.map(part => ({
+            composer: { contains: part, mode: 'insensitive' }
+          }))
+        },
+        {
+          AND: nameParts.map(part => ({
+            artist: { contains: part, mode: 'insensitive' }
+          }))
+        },
+        {
+          AND: nameParts.map(part => ({
+            author: { contains: part, mode: 'insensitive' }
+          }))
+        }
+      ]
     },
     orderBy: {
       createdAt: 'desc'
@@ -116,7 +135,7 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
       <nav style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '2rem' }}>
         <Link href="/" className="hover:text-accent">Startseite</Link>
         <span style={{ margin: '0 0.5rem' }}>&gt;</span>
-        <span style={{ color: 'var(--text-light)' }}>Unsere Komponisten</span>
+        <span style={{ color: 'var(--text-light)' }}>Unsere Autor*innen</span>
         <span style={{ margin: '0 0.5rem' }}>&gt;</span>
         <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{composer.name}</span>
       </nav>
@@ -182,7 +201,7 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
               marginBottom: '0.8rem'
             }}
           >
-            Komponisten-Portrait
+            Autor*innen-Portrait
           </span>
           <h1 style={{ fontSize: '2.8rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px', lineHeight: 1.1 }}>
             {composer.name}
@@ -245,7 +264,7 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
             paddingBottom: '0.5rem'
           }}
         >
-          Werke im Shop von {composer.name}
+          Veröffentlichungen im Shop von {composer.name}
         </h2>
 
         {products.length === 0 ? (
@@ -260,7 +279,7 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
             }}
           >
             <p style={{ margin: 0, fontWeight: 500 }}>
-              Aktuell sind keine separaten Notenausgaben für diesen Komponisten im Shop gelistet.
+              Aktuell sind keine Werke für diese*n Autor*in im Shop gelistet.
             </p>
           </div>
         ) : (

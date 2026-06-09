@@ -287,7 +287,7 @@ export default function NotenfinderClient({
               <input 
                 type="text" 
                 className="search-input" 
-                placeholder="Nach Titel, Komponist oder Genre suchen..." 
+                placeholder="Nach Titel, Autor*in oder Genre suchen..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ fontSize: '0.95rem', padding: '0.8rem 1.5rem 0.8rem 3rem', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit' }}

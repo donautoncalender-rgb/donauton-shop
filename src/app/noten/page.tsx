@@ -72,7 +72,7 @@ export default async function Notenfinder() {
     <div className="container page-container">
       <CategoryBanner 
         title="Notenfinder"
-        subtitle="Entdecke unser Repertoire. Filtere ganz einfach nach Genre, Schwierigkeitsgrad oder Komponist, um genau das richtige Stück für dein Orchester zu finden."
+        subtitle="Entdecke unser Repertoire. Filtere ganz einfach nach Genre, Schwierigkeitsgrad oder Autor*in, um genau das richtige Stück für dein Orchester zu finden."
         imageUrl="https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=1200&q=80"
         gradient="linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)"
       />

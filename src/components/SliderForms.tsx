@@ -90,7 +90,7 @@ export function SliderEditForm({ slider }: { slider: any }) {
                 <select name="filterType" className="admin-input" defaultValue={slider.filterType}>
                   <option value="LATEST">Automatisch: Letzte Neuerscheinungen</option>
                   <option value="BESTSELLER">Automatisch: Meistverkauft</option>
-                  <option value="CATEGORY">Nach Kategorie / Verlag / Komponist</option>
+                  <option value="CATEGORY">Nach Kategorie / Verlag / Autor*in</option>
                   <option value="MANUAL">Manuelle Artikelliste (IDs)</option>
                 </select>
              </div>

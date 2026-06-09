@@ -39,7 +39,7 @@ export default function Footer() {
           <div className="footer-col">
             <h3>Newsletter abonnieren</h3>
             <p style={{ color: '#a0a0a0', marginBottom: '1rem', fontSize: '0.9rem' }}>
-              Erhalte Neuigkeiten zu unseren Komponisten und neuen Publikationen direkt ins Postfach!
+              Erhalte Neuigkeiten zu unseren Autor*innen und neuen Publikationen direkt ins Postfach!
             </p>
             <form className="newsletter-form">
               <input type="email" placeholder="Deine E-Mail-Adresse" className="newsletter-input" required />

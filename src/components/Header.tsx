@@ -375,28 +375,27 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
                 </div>
               )}
             </div>
-            
-            {composers && composers.length > 0 && (
-              <div className="nav-item-dropdown">
-                <span className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-                  Unsere Komponisten
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                </span>
-                
-                <div className="dropdown-level-1" style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                  {composers.map((c) => (
-                    <Link key={c.slug} href={`/komponisten/${c.slug}`} className="dropdown-link">
-                      {c.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-            
             <Link href="/cds" className="nav-link">CDs & Audio</Link>
           <Link href="/merch" className="nav-link">Merchandise</Link>
           <Link href="/buecher" className="nav-link">Bücher</Link>
           <Link href="/tickets" className="nav-link">Tickets</Link>
+
+          {composers && composers.length > 0 && (
+            <div className="nav-item-dropdown">
+              <span className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                Unsere Autor*innen
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              </span>
+              
+              <div className="dropdown-level-1" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+                {composers.map((c) => (
+                  <Link key={c.slug} href={`/komponisten/${c.slug}`} className="dropdown-link">
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </nav>
 
         <div className="header-actions">
