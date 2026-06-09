@@ -5,11 +5,11 @@ import { prisma } from '../../../lib/prisma';
 import ProductCard from '../../../components/ProductCard';
 
 interface ComposerPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: ComposerPageProps): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const composer = await prisma.composer.findUnique({
     where: { slug }
   });
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: ComposerPageProps): Promise<M
 }
 
 export default async function ComposerPage({ params }: ComposerPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const composer = await prisma.composer.findUnique({
     where: { slug }
   });
