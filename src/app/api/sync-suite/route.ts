@@ -35,6 +35,27 @@ export async function GET() {
           create: { key: 'shipping_zones', value: data.settings.shippingZones }
         });
       }
+      if (data.settings.companySettings) {
+        const comp = data.settings.companySettings;
+        const companyMapping: Record<string, any> = {
+          'company_name': comp.name,
+          'company_street': comp.street,
+          'company_zip': comp.postal_code,
+          'company_city': comp.city,
+          'company_country': comp.country,
+          'company_email': comp.contact_email,
+          'company_website': comp.website
+        };
+        for (const [key, value] of Object.entries(companyMapping)) {
+          if (value !== undefined && value !== null) {
+            await prisma.shopSetting.upsert({
+              where: { key },
+              update: { value: String(value) },
+              create: { key, value: String(value) }
+            });
+          }
+        }
+      }
     }
     // ------------------------------------------------
 

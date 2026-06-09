@@ -1,11 +1,54 @@
 import React from 'react';
+import { prisma } from '../lib/prisma';
 
 interface GpsrSectionProps {
   publisher: string | null;
 }
 
-export default function GpsrSection({ publisher }: GpsrSectionProps) {
+export default async function GpsrSection({ publisher }: GpsrSectionProps) {
   const isDonauton = !publisher || publisher.trim() === '' || publisher.toLowerCase().includes('donauton');
+
+  // Dynamische Stammdaten aus der Datenbank abrufen mit Fallback-Werten aus der Suite
+  let name = 'DONAUTON GmbH';
+  let street = 'Dorfstraße 24a';
+  let zip = '86735';
+  let city = 'Forheim';
+  let country = 'Deutschland';
+  let email = 'vertrieb@donauton.de';
+  let website = 'www.donauton.de';
+
+  try {
+    const settings = await prisma.shopSetting.findMany({
+      where: {
+        key: {
+          in: [
+            'company_name',
+            'company_street',
+            'company_zip',
+            'company_city',
+            'company_country',
+            'company_email',
+            'company_website'
+          ]
+        }
+      }
+    });
+
+    const settingsMap = settings.reduce((acc, current) => {
+      acc[current.key] = current.value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    if (settingsMap['company_name']) name = settingsMap['company_name'];
+    if (settingsMap['company_street']) street = settingsMap['company_street'];
+    if (settingsMap['company_zip']) zip = settingsMap['company_zip'];
+    if (settingsMap['company_city']) city = settingsMap['company_city'];
+    if (settingsMap['company_country']) country = settingsMap['company_country'];
+    if (settingsMap['company_email']) email = settingsMap['company_email'];
+    if (settingsMap['company_website']) website = settingsMap['company_website'];
+  } catch (e) {
+    console.error('Failed to load dynamic company settings for GPSR:', e);
+  }
 
   return (
     <details style={{
@@ -44,22 +87,21 @@ export default function GpsrSection({ publisher }: GpsrSectionProps) {
         {isDonauton ? (
           <div>
             <strong style={{ color: '#1e293b' }}>Hersteller:</strong><br />
-            DONAUTON Music Publishing<br />
-            Lukas Bruckmeyer<br />
-            Dorfstr. 24a<br />
-            86735 Forheim<br />
-            Deutschland<br />
-            E-Mail: l.bruckmeyer@donauton.de<br />
-            Web: www.donauton.de
+            {name}<br />
+            {street}<br />
+            {zip} {city}<br />
+            {country}<br />
+            E-Mail: {email}<br />
+            Web: {website}
           </div>
         ) : (
           <div>
             <strong style={{ color: '#1e293b' }}>Hersteller / Lizenzgeber:</strong><br />
             {publisher}<br />
-            (Vertrieb durch DONAUTON)<br /><br />
+            (Vertrieb durch {name})<br /><br />
             Für Sicherheits- und Konformitätsfragen kontaktieren Sie bitte den Vertriebspartner:<br />
-            DONAUTON, Dorfstr. 24a, 86735 Forheim, Deutschland<br />
-            E-Mail: l.bruckmeyer@donauton.de
+            {name}, {street}, {zip} {city}, {country}<br />
+            E-Mail: {email}
           </div>
         )}
       </div>
