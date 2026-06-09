@@ -183,13 +183,13 @@ ul {
 
 .nav-links {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: center;
 }
 
 .nav-link {
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
