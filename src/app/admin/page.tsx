@@ -1,5 +1,6 @@
 import { prisma } from '../../lib/prisma';
 import SyncButton from './SyncButton';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -54,11 +55,11 @@ export default async function AdminDashboard() {
         <div className="admin-card" style={{ marginBottom: 0, backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>
           <div style={{ color: '#166534', fontWeight: 600, marginBottom: '0.5rem' }}>Shop-Backup</div>
           <div style={{ fontSize: '0.9rem', color: '#14532d', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
-            Lade den aktuellen Stand als physische ZIP-Datei herunter. 
+            Sichere oder stelle Einstellungen, Slider und Kategorien deines Shops wieder her.
           </div>
-          <a href="https://github.com/donautoncalender-rgb/donauton-shop/archive/refs/heads/main.zip" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ display: 'inline-block', backgroundColor: '#16a34a', border: 'none', padding: '0.6rem 1rem', fontSize: '0.9rem' }}>
-            ZIP-Archiv herunterladen
-          </a>
+          <Link href="/admin/backups" className="btn btn-primary" style={{ display: 'inline-block', backgroundColor: '#16a34a', border: 'none', padding: '0.6rem 1rem', fontSize: '0.9rem', color: 'white', textDecoration: 'none', borderRadius: '4px', textAlign: 'center' }}>
+            Backup-Verwaltung öffnen
+          </Link>
         </div>
       </div>
     </>
