@@ -8,10 +8,17 @@ export default function KontoDashboard() {
 
   useEffect(() => {
     const data = localStorage.getItem('donauton_customer');
-    if (!data) {
+    if (!data || data === 'undefined') {
+      localStorage.removeItem('donauton_customer');
       window.location.href = '/login-customer';
     } else {
-      setCustomer(JSON.parse(data));
+      try {
+        setCustomer(JSON.parse(data));
+      } catch (err) {
+        console.error('Failed to parse customer session:', err);
+        localStorage.removeItem('donauton_customer');
+        window.location.href = '/login-customer';
+      }
     }
   }, []);
 

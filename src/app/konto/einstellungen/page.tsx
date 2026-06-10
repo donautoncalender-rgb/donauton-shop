@@ -25,7 +25,16 @@ export default function SettingsPage() {
       return;
     }
 
-    const localCustomer = JSON.parse(dataStr);
+    let localCustomer;
+    try {
+      localCustomer = JSON.parse(dataStr);
+      if (!localCustomer) throw new Error('Empty customer data');
+    } catch (err) {
+      console.error('Failed to parse customer session:', err);
+      localStorage.removeItem('donauton_customer');
+      window.location.href = '/login-customer';
+      return;
+    }
     
     // Zuerst lokale Daten setzen (für schnelles UI)
     setFormData(prev => ({

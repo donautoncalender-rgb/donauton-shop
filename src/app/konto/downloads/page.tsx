@@ -16,8 +16,16 @@ export default function DownloadsPage() {
           return;
         }
 
-        const customer = JSON.parse(customerDataStr);
-        if (!customer.email) throw new Error("Keine E-Mail gefunden.");
+        let customer;
+        try {
+          customer = JSON.parse(customerDataStr);
+          if (!customer || !customer.email) throw new Error("Keine E-Mail gefunden.");
+        } catch (err) {
+          console.error("Failed to parse customer session:", err);
+          localStorage.removeItem('donauton_customer');
+          window.location.href = '/login-customer';
+          return;
+        }
 
         const res = await fetch(`/api/customer/downloads?email=${encodeURIComponent(customer.email)}`);
         const data = await res.json();

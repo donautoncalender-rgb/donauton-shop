@@ -29,6 +29,15 @@ export async function POST(request: Request) {
 
     const customerData = await erpRes.json();
 
+    if (customerData.error === "migration_required") {
+        return NextResponse.json({
+            success: false,
+            error: "migration_required",
+            message: customerData.message,
+            email: customerData.email
+        });
+    }
+
     // Wir geben die Kundendaten an den Client (localStorage) zurück, 
     // OHNE sie lokal im Prisma des Shops zu speichern!
     return NextResponse.json({

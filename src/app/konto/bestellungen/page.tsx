@@ -15,7 +15,16 @@ export default function OrdersPage() {
       window.location.href = '/login-customer';
       return;
     }
-    const localCustomer = JSON.parse(dataStr);
+    let localCustomer;
+    try {
+      localCustomer = JSON.parse(dataStr);
+      if (!localCustomer) throw new Error('Empty customer session');
+    } catch (err) {
+      console.error('Failed to parse customer session:', err);
+      localStorage.removeItem('donauton_customer');
+      window.location.href = '/login-customer';
+      return;
+    }
     setCustomerEmail(localCustomer.email || '');
 
     const fetchOrders = async () => {
