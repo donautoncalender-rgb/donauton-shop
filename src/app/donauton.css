@@ -845,8 +845,8 @@ ul {
 /* Product Detail Page */
 .product-detail-layout {
   display: grid;
-  grid-template-columns: 450px 1fr;
-  gap: 6rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 4rem;
   margin-top: 3rem;
   align-items: start;
 }

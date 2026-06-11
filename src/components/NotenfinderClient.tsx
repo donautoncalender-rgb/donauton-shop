@@ -266,11 +266,9 @@ export default function NotenfinderClient({
           marginBottom: '2rem',
           borderBottom: '1px solid #e2e8f0',
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-          width: '100vw',
-          marginLeft: 'calc(50% - 50vw)',
         }}
       >
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           
           {/* Row 1: Title, Subtitle & Search */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
@@ -374,7 +372,7 @@ export default function NotenfinderClient({
         </div>
       </div>
 
-    <div className="shop-layout" style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="shop-layout">
       {/* Sidebar - Category Navigation */}
       <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s', borderRight: '1px solid #e2e8f0', paddingRight: '2rem' }}>
         <div style={{ position: 'sticky', top: '12rem' }}>

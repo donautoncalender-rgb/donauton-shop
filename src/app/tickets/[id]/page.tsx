@@ -64,7 +64,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
         <Link href="/">Startseite</Link> &rsaquo; <Link href={`/${product.category.toLowerCase()}`}>{product.category}</Link> &rsaquo; <span style={{ color: 'var(--text)', fontWeight: 600 }}>{title}</span>
       </div>
 
-      <div className="product-detail-layout animate-fade-in" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(0, 1fr)', gap: '4rem', alignItems: 'start' }}>
+      <div className="product-detail-layout animate-fade-in">
         
         {/* Left Column - Gallery, Audio/PDF, Action Buttons, Product Info */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
