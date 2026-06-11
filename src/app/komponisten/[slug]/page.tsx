@@ -160,15 +160,15 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
           style={{ 
             width: '180px', 
             height: '180px', 
-            borderRadius: '50%', 
+            borderRadius: '16px', 
             overflow: 'hidden',
             flexShrink: 0,
-            border: '3px solid var(--border)',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+            border: '1px solid var(--border)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)'
+            background: 'var(--surface)'
           }}
         >
           {composer.portraitUrl ? (
@@ -178,9 +178,18 @@ export default async function ComposerPage({ params }: ComposerPageProps) {
               style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
             />
           ) : (
-            <span style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--text-light)', opacity: 0.6 }}>
-              {composer.name.split(' ').map(n => n[0]).join('')}
-            </span>
+            <div style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)'
+            }}>
+              <span style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--text-light)', opacity: 0.6 }}>
+                {composer.name.split(' ').map(n => n[0]).join('')}
+              </span>
+            </div>
           )}
         </div>
 
