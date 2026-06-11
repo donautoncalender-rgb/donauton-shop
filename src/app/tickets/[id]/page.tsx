@@ -6,6 +6,7 @@ import ActionButtons from '../../../components/ActionButtons';
 import ProductGallery from '../../../components/ProductGallery';
 import SimpleBuyBox from '../../../components/SimpleBuyBox';
 import GpsrSection from '../../../components/GpsrSection';
+import ProductDetailsList from '../../../components/ProductDetailsList';
 import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 
@@ -124,35 +125,13 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               </div>
             )}
             
-            {/* Bullet List */}
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.8rem', fontSize: '1rem', color: '#333' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-                <strong style={{ color: '#111' }}>Kategorie:</strong> {product.category} {product.genre ? `- ${product.genre}` : ''}
-              </li>
-              {product.grade && product.grade !== product.composer && product.grade !== product.artist && (
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                  <strong style={{ color: '#111' }}>
-                    {product.grade.toLowerCase().includes('schwierig') || product.grade.toLowerCase().includes('grad') 
-                      ? 'Schwierigkeitsgrad:' 
-                      : (product.grade.toLowerCase().includes('von ') ? 'Autor/in:' : 'Info:')}
-                  </strong> {product.grade.replace(/Schwierigkeitsgrad/ig, '').replace(/^[:-]\s*/, '').trim()}
-                </li>
-              )}
-              {product.duration && (
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                  <strong style={{ color: '#111' }}>Spieldauer:</strong> {product.duration}
-                </li>
-              )}
-              {product.sku && (
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
-                  <strong style={{ color: '#111' }}>Artikelnummer:</strong> {product.sku}
-                </li>
-              )}
-            </ul>
+            {/* Dynamic Product Details */}
+            <ProductDetailsList 
+              detailsJson={product.detailsJson} 
+              category={product.category} 
+              genre={product.genre} 
+              sku={product.sku} 
+            />
           </div>
 
           {/* BUY BOX */}

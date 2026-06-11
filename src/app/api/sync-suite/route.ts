@@ -212,6 +212,20 @@ export async function GET() {
       if (work.key_signature) detailsList.push({ label: 'Tonart', value: work.key_signature });
       if (work.meter_time_signature) detailsList.push({ label: 'Taktart', value: work.meter_time_signature });
 
+      // Append Event details for TICKET items
+      if (work.product_type === 'TICKET') {
+        if (work.event_date) {
+          const d = new Date(work.event_date);
+          const dateStr = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          detailsList.push({ label: 'Event-Datum', value: dateStr });
+        }
+        if (work.event_start) detailsList.push({ label: 'Beginn', value: work.event_start });
+        if (work.event_admission) detailsList.push({ label: 'Einlass', value: work.event_admission });
+        if (work.event_location) detailsList.push({ label: 'Veranstaltungsort', value: work.event_location });
+        if (work.event_location_address) detailsList.push({ label: 'Adresse', value: work.event_location_address });
+        if (work.event_extra_info) detailsList.push({ label: 'Zusatzinfo', value: work.event_extra_info });
+      }
+
       const detailsJson = JSON.stringify(detailsList);
 
       return prisma.product.upsert({
