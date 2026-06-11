@@ -12,6 +12,8 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -69,6 +71,11 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
       return 0; // 'newest' uses default database order (creation order)
     });
   }, [searchQuery, selectedTypes, selectedSizes, sortBy, initialProducts]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredProducts, currentPage, itemsPerPage]);
 
   return (
     <div className="shop-layout">
@@ -227,9 +234,53 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
               })
             }}
           >
-            {filteredProducts.map((product) => (
+            {paginatedProducts.map((product) => (
               <ProductCard key={product.id} product={product} viewMode={viewMode} />
             ))}
+          </div>
+        )}
+
+        {/* Pagination UI */}
+        {filteredProducts.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e2e8f0', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ color: 'var(--text-light)', fontSize: '0.95rem' }}>
+              Zeige {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, filteredProducts.length)} von {filteredProducts.length} Ergebnissen
+            </div>
+            
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button 
+                disabled={currentPage === 1}
+                onClick={() => { setCurrentPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                style={{ padding: '0.5rem 1rem', background: currentPage === 1 ? '#f1f5f9' : 'white', border: '1px solid #e2e8f0', borderRadius: '6px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', color: currentPage === 1 ? '#94a3b8' : 'var(--text)', transition: 'all 0.2s' }}
+              >
+                Zurück
+              </button>
+              <div style={{ padding: '0.5rem 1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', fontWeight: 600 }}>
+                {currentPage} / {Math.ceil(filteredProducts.length / itemsPerPage)}
+              </div>
+              <button 
+                disabled={currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0}
+                onClick={() => { setCurrentPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                style={{ padding: '0.5rem 1rem', background: currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0 ? '#f1f5f9' : 'white', border: '1px solid #e2e8f0', borderRadius: '6px', cursor: currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0 ? 'not-allowed' : 'pointer', color: currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0 ? '#94a3b8' : 'var(--text)', transition: 'all 0.2s' }}
+              >
+                Weiter
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.95rem', color: 'var(--text-light)' }}>Artikel pro Seite:</span>
+              <select 
+                value={itemsPerPage} 
+                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
           </div>
         )}
       </div>

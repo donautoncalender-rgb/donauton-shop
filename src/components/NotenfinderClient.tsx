@@ -594,12 +594,13 @@ export default function NotenfinderClient({
               <span style={{ fontSize: '0.95rem', color: 'var(--text-light)' }}>Artikel pro Seite:</span>
               <select 
                 value={itemsPerPage} 
-                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
                 style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontFamily: 'inherit' }}
               >
-                <option value={12}>12</option>
-                <option value={24}>24</option>
-                <option value={48}>48</option>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
                 <option value={100}>100</option>
               </select>
             </div>
