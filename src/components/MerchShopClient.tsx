@@ -72,36 +72,36 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
 
   return (
     <div className="shop-layout">
-      {/* Sidebar */}
-      <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        {availableTypes.length > 0 && (
-          <div className="filter-group">
-            <h3 className="filter-title">Kategorie</h3>
-            <div className="filter-chip-group">
-              {availableTypes.map(type => (
-                <label className={`filter-chip ${selectedTypes.includes(type) ? 'active' : ''}`} key={type}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedTypes.includes(type)} onChange={() => toggleType(type)} /> 
-                  {type}
-                </label>
-              ))}
+      {/* Sidebar - Desktop Only */}
+      <div className="desktop-only">
+        <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          {availableTypes.length > 0 && (
+            <div className="filter-group">
+              <h3 className="filter-title">Kategorie</h3>
+              <div className="filter-list">
+                {availableTypes.map(type => (
+                  <label className="filter-label" key={type}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedTypes.includes(type)} onChange={() => toggleType(type)} /> {type}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {availableSizes.length > 0 && (
-          <div className="filter-group">
-            <h3 className="filter-title">Verfügbare Größen</h3>
-            <div className="filter-chip-group">
-              {availableSizes.map(size => (
-                <label className={`filter-chip ${selectedSizes.includes(size) ? 'active' : ''}`} key={size}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedSizes.includes(size)} onChange={() => toggleSize(size)} /> 
-                  {size}
-                </label>
-              ))}
+          {availableSizes.length > 0 && (
+            <div className="filter-group">
+              <h3 className="filter-title">Verfügbare Größen</h3>
+              <div className="filter-list">
+                {availableSizes.map(size => (
+                  <label className="filter-label" key={size}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedSizes.includes(size)} onChange={() => toggleSize(size)} /> {size}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </aside>
+          )}
+        </aside>
+      </div>
 
       {/* Main Content */}
       <div className="shop-main">
@@ -117,6 +117,30 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        {/* Mobile Filters */}
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+          {availableTypes.length > 0 && (
+            <div className="filter-chip-group">
+              {availableTypes.map(type => (
+                <label className={`filter-chip ${selectedTypes.includes(type) ? 'active' : ''}`} key={type}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedTypes.includes(type)} onChange={() => toggleType(type)} /> 
+                  {type}
+                </label>
+              ))}
+            </div>
+          )}
+          {availableSizes.length > 0 && (
+            <div className="filter-chip-group">
+              {availableSizes.map(size => (
+                <label className={`filter-chip ${selectedSizes.includes(size) ? 'active' : ''}`} key={size}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedSizes.includes(size)} onChange={() => toggleSize(size)} /> 
+                  {size}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="toolbar animate-fade-in" style={{ animationDelay: '0.3s' }}>

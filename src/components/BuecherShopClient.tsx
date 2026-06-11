@@ -73,36 +73,36 @@ export default function BuecherShopClient({ initialProducts }: { initialProducts
 
   return (
     <div className="shop-layout">
-      {/* Sidebar */}
-      <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        {availableGenres.length > 0 && (
-          <div className="filter-group">
-            <h3 className="filter-title">Thema / Genre</h3>
-            <div className="filter-chip-group">
-              {availableGenres.map(genre => (
-                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
-                  {genre}
-                </label>
-              ))}
+      {/* Sidebar - Desktop Only */}
+      <div className="desktop-only">
+        <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          {availableGenres.length > 0 && (
+            <div className="filter-group">
+              <h3 className="filter-title">Thema / Genre</h3>
+              <div className="filter-list">
+                {availableGenres.map(genre => (
+                  <label className="filter-label" key={genre}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> {genre}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {availableAuthors.length > 0 && (
-          <div className="filter-group">
-            <h3 className="filter-title">Autor</h3>
-            <div className="filter-chip-group">
-              {availableAuthors.map(author => (
-                <label className={`filter-chip ${selectedAuthors.includes(author) ? 'active' : ''}`} key={author}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedAuthors.includes(author)} onChange={() => toggleAuthor(author)} /> 
-                  {author}
-                </label>
-              ))}
+          {availableAuthors.length > 0 && (
+            <div className="filter-group">
+              <h3 className="filter-title">Autor</h3>
+              <div className="filter-list">
+                {availableAuthors.map(author => (
+                  <label className="filter-label" key={author}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedAuthors.includes(author)} onChange={() => toggleAuthor(author)} /> {author}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </aside>
+          )}
+        </aside>
+      </div>
 
       {/* Main Content */}
       <div className="shop-main">
@@ -118,6 +118,30 @@ export default function BuecherShopClient({ initialProducts }: { initialProducts
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        {/* Mobile Filters */}
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+          {availableGenres.length > 0 && (
+            <div className="filter-chip-group">
+              {availableGenres.map(genre => (
+                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
+                  {genre}
+                </label>
+              ))}
+            </div>
+          )}
+          {availableAuthors.length > 0 && (
+            <div className="filter-chip-group">
+              {availableAuthors.map(author => (
+                <label className={`filter-chip ${selectedAuthors.includes(author) ? 'active' : ''}`} key={author}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedAuthors.includes(author)} onChange={() => toggleAuthor(author)} /> 
+                  {author}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="toolbar animate-fade-in" style={{ animationDelay: '0.3s' }}>

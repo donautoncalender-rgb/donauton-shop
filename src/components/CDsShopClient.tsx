@@ -73,36 +73,36 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
 
   return (
     <div className="shop-layout">
-      {/* Sidebar */}
-      <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        {availableGenres.length > 0 && (
-          <div className="filter-group">
-            <h3 className="filter-title">Genre / Medium</h3>
-            <div className="filter-chip-group">
-              {availableGenres.map(genre => (
-                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
-                  {genre}
-                </label>
-              ))}
+      {/* Sidebar - Desktop Only */}
+      <div className="desktop-only">
+        <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          {availableGenres.length > 0 && (
+            <div className="filter-group">
+              <h3 className="filter-title">Genre / Medium</h3>
+              <div className="filter-list">
+                {availableGenres.map(genre => (
+                  <label className="filter-label" key={genre}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> {genre}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {availableArtists.length > 0 && (
-          <div className="filter-group">
-            <h3 className="filter-title">Interpret / Künstler</h3>
-            <div className="filter-chip-group">
-              {availableArtists.map(artist => (
-                <label className={`filter-chip ${selectedArtists.includes(artist) ? 'active' : ''}`} key={artist}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedArtists.includes(artist)} onChange={() => toggleArtist(artist)} /> 
-                  {artist}
-                </label>
-              ))}
+          {availableArtists.length > 0 && (
+            <div className="filter-group">
+              <h3 className="filter-title">Interpret / Künstler</h3>
+              <div className="filter-list">
+                {availableArtists.map(artist => (
+                  <label className="filter-label" key={artist}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedArtists.includes(artist)} onChange={() => toggleArtist(artist)} /> {artist}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </aside>
+          )}
+        </aside>
+      </div>
 
       {/* Main Content */}
       <div className="shop-main">
@@ -118,6 +118,30 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        {/* Mobile Filters */}
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+          {availableGenres.length > 0 && (
+            <div className="filter-chip-group">
+              {availableGenres.map(genre => (
+                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
+                  {genre}
+                </label>
+              ))}
+            </div>
+          )}
+          {availableArtists.length > 0 && (
+            <div className="filter-chip-group">
+              {availableArtists.map(artist => (
+                <label className={`filter-chip ${selectedArtists.includes(artist) ? 'active' : ''}`} key={artist}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedArtists.includes(artist)} onChange={() => toggleArtist(artist)} /> 
+                  {artist}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="toolbar animate-fade-in" style={{ animationDelay: '0.3s' }}>

@@ -56,36 +56,36 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
 
   return (
     <div className="shop-layout">
-      {/* Sidebar */}
-      <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        {availableLocations.length > 0 && (
-          <div className="filter-group">
-            <h3 className="filter-title">Ort / Region</h3>
-            <div className="filter-chip-group">
-              {availableLocations.map(loc => (
-                <label className={`filter-chip ${selectedLocations.includes(loc) ? 'active' : ''}`} key={loc}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedLocations.includes(loc)} onChange={() => toggleLocation(loc)} /> 
-                  {loc}
-                </label>
-              ))}
+      {/* Sidebar - Desktop Only */}
+      <div className="desktop-only">
+        <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          {availableLocations.length > 0 && (
+            <div className="filter-group">
+              <h3 className="filter-title">Ort / Region</h3>
+              <div className="filter-list">
+                {availableLocations.map(loc => (
+                  <label className="filter-label" key={loc}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedLocations.includes(loc)} onChange={() => toggleLocation(loc)} /> {loc}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {availableGroups.length > 0 && (
-          <div className="filter-group" style={{ marginTop: '2rem' }}>
-            <h3 className="filter-title">Gruppe / Interpret</h3>
-            <div className="filter-chip-group">
-              {availableGroups.map(group => (
-                <label className={`filter-chip ${selectedGroups.includes(group) ? 'active' : ''}`} key={group}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedGroups.includes(group)} onChange={() => toggleGroup(group)} /> 
-                  {group}
-                </label>
-              ))}
+          {availableGroups.length > 0 && (
+            <div className="filter-group" style={{ marginTop: '2rem' }}>
+              <h3 className="filter-title">Gruppe / Interpret</h3>
+              <div className="filter-list">
+                {availableGroups.map(group => (
+                  <label className="filter-label" key={group}>
+                    <input type="checkbox" className="filter-checkbox" checked={selectedGroups.includes(group)} onChange={() => toggleGroup(group)} /> {group}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </aside>
+          )}
+        </aside>
+      </div>
 
       {/* Main Content */}
       <div className="shop-main">
@@ -101,6 +101,30 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        {/* Mobile Filters */}
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+          {availableLocations.length > 0 && (
+            <div className="filter-chip-group">
+              {availableLocations.map(loc => (
+                <label className={`filter-chip ${selectedLocations.includes(loc) ? 'active' : ''}`} key={loc}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedLocations.includes(loc)} onChange={() => toggleLocation(loc)} /> 
+                  {loc}
+                </label>
+              ))}
+            </div>
+          )}
+          {availableGroups.length > 0 && (
+            <div className="filter-chip-group">
+              {availableGroups.map(group => (
+                <label className={`filter-chip ${selectedGroups.includes(group) ? 'active' : ''}`} key={group}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedGroups.includes(group)} onChange={() => toggleGroup(group)} /> 
+                  {group}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="toolbar animate-fade-in" style={{ animationDelay: '0.3s' }}>
