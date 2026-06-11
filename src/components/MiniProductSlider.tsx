@@ -41,7 +41,7 @@ export default function MiniProductSlider({ title, linkAll, products }: { title:
         <div 
           ref={sliderRef}
           className="product-slider" 
-          style={{ display: 'flex', overflowX: 'auto', gap: '2rem', padding: '1rem 3%', scrollBehavior: 'smooth', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          style={{ display: 'flex', overflowX: 'auto', gap: '2rem', padding: '1rem 3%', scrollBehavior: 'smooth', scrollbarWidth: 'none', msOverflowStyle: 'none', scrollSnapType: 'x mandatory' }}
         >
           <style dangerouslySetInnerHTML={{__html: `
             .product-slider::-webkit-scrollbar { display: none; }
@@ -49,7 +49,7 @@ export default function MiniProductSlider({ title, linkAll, products }: { title:
           {products.map((product) => {
             const pType = product.type || 'noten';
             return (
-              <Link href={`/${pType.toLowerCase()}/${product.id}`} key={product.id} className="product-card" style={{ flex: '0 0 auto', width: '230px', textDecoration: 'none', color: 'inherit' }}>
+              <Link href={`/${pType.toLowerCase()}/${product.id}`} key={product.id} className="product-card" style={{ flex: '0 0 auto', width: '230px', textDecoration: 'none', color: 'inherit', scrollSnapAlign: 'center' }}>
                 <div className="product-image-container" style={{ 
                   aspectRatio: '1/1', 
                   padding: '1.2rem',
