@@ -28,6 +28,8 @@ export default function NotenfinderClient({
   const [selectedSoloinstruments, setSelectedSoloinstruments] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('newest');
+  const [itemsPerPage, setItemsPerPage] = useState(24);
+  const [currentPage, setCurrentPage] = useState(1);
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -83,6 +85,11 @@ export default function NotenfinderClient({
     }
 
   }, [searchParams]);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, selectedSoloinstruments, sortBy, itemsPerPage]);
 
   const taxonomy = useMemo(() => {
     const taxonomyMap = new Map<string, { type: 'genre' | 'solist', items: Set<string> }>();
@@ -251,6 +258,10 @@ export default function NotenfinderClient({
     });
   }, [searchQuery, selectedBesetzungen, selectedGenres, selectedGrades, selectedPublishers, selectedSoloinstruments, sortBy, initialProducts]);
 
+  const paginatedProducts = useMemo(() => {
+    return filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  }, [filteredProducts, currentPage, itemsPerPage]);
+
   return (
     <div style={{ position: 'relative' }}>
       {/* Unified Sticky Header */}
@@ -272,31 +283,11 @@ export default function NotenfinderClient({
       >
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           
-          {/* Row 1: Title, Subtitle & Search */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
-            <div style={{ flex: '1 1 500px' }}>
-              {title && <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem 0', color: 'var(--primary)', letterSpacing: '-0.5px' }}>{title}</h1>}
-              {description && <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-light)', lineHeight: 1.4 }}>{description}</p>}
-            </div>
+          {/* Unified Filter Toolbar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap-reverse', gap: '1.5rem' }}>
             
-            <div className="search-box" style={{ width: '100%', maxWidth: '350px', margin: 0, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '50px' }}>
-              <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ left: '1.2rem', color: '#94a3b8' }}>
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input 
-                type="text" 
-                className="search-input" 
-                placeholder="Nach Titel, Autor*in oder Genre suchen..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ fontSize: '0.95rem', padding: '0.8rem 1.5rem 0.8rem 3rem', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit' }}
-              />
-            </div>
-          </div>
-          
-          {/* Row 2: Filter Dropdowns */}
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Filter Dropdowns (Left) */}
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', flex: '1 1 auto' }}>
 
 
             {availableBesetzungen.length > 0 && (
@@ -370,6 +361,23 @@ export default function NotenfinderClient({
                  Filter löschen
                </button>
             )}
+            </div>
+            
+            {/* Search Box (Right) */}
+            <div className="search-box" style={{ width: '100%', maxWidth: '350px', margin: 0, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '50px' }}>
+              <svg className="search-icon" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ left: '1.2rem', color: '#94a3b8' }}>
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input 
+                type="text" 
+                className="search-input" 
+                placeholder="Nach Titel, Autor*in oder Genre suchen..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ fontSize: '0.95rem', padding: '0.8rem 1.5rem 0.8rem 3rem', background: 'transparent', border: 'none', width: '100%', fontFamily: 'inherit' }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -550,9 +558,52 @@ export default function NotenfinderClient({
               })
             }}
           >
-            {filteredProducts.map((product) => (
+            {paginatedProducts.map((product) => (
               <ProductCard key={product.id} product={product} viewMode={viewMode} />
             ))}
+          </div>
+        )}
+
+        {/* Pagination UI */}
+        {filteredProducts.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid #e2e8f0', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ color: 'var(--text-light)', fontSize: '0.95rem' }}>
+              Zeige {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, filteredProducts.length)} von {filteredProducts.length} Ergebnissen
+            </div>
+            
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <button 
+                disabled={currentPage === 1}
+                onClick={() => { setCurrentPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                style={{ padding: '0.5rem 1rem', background: currentPage === 1 ? '#f1f5f9' : 'white', border: '1px solid #e2e8f0', borderRadius: '6px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', color: currentPage === 1 ? '#94a3b8' : 'var(--text)', transition: 'all 0.2s' }}
+              >
+                Zurück
+              </button>
+              <div style={{ padding: '0.5rem 1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', fontWeight: 600 }}>
+                {currentPage} / {Math.ceil(filteredProducts.length / itemsPerPage)}
+              </div>
+              <button 
+                disabled={currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0}
+                onClick={() => { setCurrentPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                style={{ padding: '0.5rem 1rem', background: currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0 ? '#f1f5f9' : 'white', border: '1px solid #e2e8f0', borderRadius: '6px', cursor: currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0 ? 'not-allowed' : 'pointer', color: currentPage === Math.ceil(filteredProducts.length / itemsPerPage) || filteredProducts.length === 0 ? '#94a3b8' : 'var(--text)', transition: 'all 0.2s' }}
+              >
+                Weiter
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.95rem', color: 'var(--text-light)' }}>Artikel pro Seite:</span>
+              <select 
+                value={itemsPerPage} 
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                <option value={12}>12</option>
+                <option value={24}>24</option>
+                <option value={48}>48</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
           </div>
         )}
       </div>
