@@ -78,10 +78,11 @@ export default function BuecherShopClient({ initialProducts }: { initialProducts
         {availableGenres.length > 0 && (
           <div className="filter-group">
             <h3 className="filter-title">Thema / Genre</h3>
-            <div className="filter-list">
+            <div className="filter-chip-group">
               {availableGenres.map(genre => (
-                <label className="filter-label" key={genre}>
-                  <input type="checkbox" className="filter-checkbox" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> {genre}
+                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
+                  {genre}
                 </label>
               ))}
             </div>
@@ -91,10 +92,11 @@ export default function BuecherShopClient({ initialProducts }: { initialProducts
         {availableAuthors.length > 0 && (
           <div className="filter-group">
             <h3 className="filter-title">Autor</h3>
-            <div className="filter-list">
+            <div className="filter-chip-group">
               {availableAuthors.map(author => (
-                <label className="filter-label" key={author}>
-                  <input type="checkbox" className="filter-checkbox" checked={selectedAuthors.includes(author)} onChange={() => toggleAuthor(author)} /> {author}
+                <label className={`filter-chip ${selectedAuthors.includes(author) ? 'active' : ''}`} key={author}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedAuthors.includes(author)} onChange={() => toggleAuthor(author)} /> 
+                  {author}
                 </label>
               ))}
             </div>

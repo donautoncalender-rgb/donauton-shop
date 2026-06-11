@@ -499,6 +499,47 @@ ul {
   background: var(--accent-hover);
 }
 
+@media (max-width: 768px) {
+  .footer-col {
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 2rem;
+  }
+  .footer-col:last-child {
+    border-bottom: none;
+  }
+  
+  .footer-col h3 {
+    margin-bottom: 1rem;
+    color: var(--accent);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-grid {
+    gap: 2rem;
+  }
+  
+  .newsletter-form {
+    flex-direction: column;
+  }
+  
+  .newsletter-input {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+  }
+  
+  .newsletter-btn {
+    width: 100%;
+    border-radius: 8px;
+  }
+}
+
 .footer-bottom {
   text-align: center;
   padding-top: 2rem;
@@ -1113,6 +1154,46 @@ ul {
   text-align: justify;
 }
 
+/* =========================================
+   Filter Chips (Replaces Checkboxes)
+   ========================================= */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-light);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.filter-chip:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.filter-chip.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: 0 4px 10px rgba(205,23,25,0.3);
+}
+
+.filter-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-chip-input {
+  display: none;
+}
+
 /* Global Sleek Dropdown Select styles */
 .sleek-select {
   appearance: none;
@@ -1149,7 +1230,47 @@ ul {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
 
+/* =========================================
+   VIP Newsletter Form
+   ========================================= */
+.vip-newsletter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 700px;
+  background: rgba(255,255,255,0.1);
+  padding: 0.5rem;
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
 
+.vip-newsletter-input {
+  flex: 1;
+  min-width: 150px;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0 1.5rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+.vip-newsletter-input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+.vip-newsletter-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.2);
+  margin: 0.5rem 0;
+}
+
+.vip-newsletter-btn {
+  padding: 1rem 2.5rem;
+  border-radius: 40px;
+}
 /* =========================================
    Hero Slider Base Styles
    ========================================= */
@@ -1333,17 +1454,74 @@ ul {
   .product-slider {
     gap: 1rem;
     padding-bottom: 1rem;
+    scroll-padding: 0 10vw;
   }
   .product-slider .product-card {
     min-width: 80vw;
     width: 80vw;
+    scroll-snap-align: center;
   }
   
+  /* VIP Newsletter adjustments */
+  .vip-newsletter-form {
+    flex-direction: column;
+    border-radius: 20px;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    gap: 1rem;
+  }
+  
+  .vip-newsletter-input {
+    padding: 1rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .vip-newsletter-divider {
+    display: none;
+  }
+
+  .vip-newsletter-btn {
+    width: 100%;
+    padding: 1.2rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+  }
   .category-card {
     height: 280px;
   }
   
   .page-title {
     font-size: 2rem;
+  }
+  
+  .category-banner {
+    flex-direction: column;
+    padding: 2.5rem 1.5rem;
+    align-items: flex-start;
+  }
+  
+  .category-banner-content {
+    max-width: 100%;
+  }
+  
+  .category-banner-title {
+    font-size: 2.2rem;
+  }
+  
+  .category-banner-graphic {
+    width: 100%;
+    left: 0;
+    right: 0;
+    opacity: 0.3;
+    z-index: 1;
+  }
+
+  .category-banner-image {
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 }

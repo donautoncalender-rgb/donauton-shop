@@ -75,7 +75,7 @@ export default function NewsletterFormClient({
       )}
 
       {status !== 'success' && status !== 'already_subscribed' && (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', width: '100%', maxWidth: '700px', background: 'rgba(255,255,255,0.1)', padding: '0.5rem', borderRadius: '50px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
+        <form onSubmit={handleSubmit} className="vip-newsletter-form">
           <input 
             type="text" 
             placeholder="Dein Name *" 
@@ -83,9 +83,9 @@ export default function NewsletterFormClient({
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={status === 'loading'}
-            style={{ flex: 1, minWidth: '150px', background: 'transparent', border: 'none', color: 'white', padding: '0 1.5rem', fontSize: '1rem', outline: 'none' }} 
+            className="vip-newsletter-input"
           />
-          <div style={{ width: '1px', background: 'rgba(255,255,255,0.2)', margin: '0.5rem 0' }}></div>
+          <div className="vip-newsletter-divider"></div>
           <input 
             type="email" 
             placeholder="Deine E-Mail Adresse *" 
@@ -93,9 +93,9 @@ export default function NewsletterFormClient({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={status === 'loading'}
-            style={{ flex: 2, minWidth: '200px', background: 'transparent', border: 'none', color: 'white', padding: '0 1.5rem', fontSize: '1rem', outline: 'none' }} 
+            className="vip-newsletter-input"
           />
-          <button type="submit" disabled={status === 'loading'} className="btn btn-primary" style={{ padding: '1rem 2.5rem', borderRadius: '40px', opacity: status === 'loading' ? 0.7 : 1 }}>
+          <button type="submit" disabled={status === 'loading'} className="btn btn-primary vip-newsletter-btn" style={{ opacity: status === 'loading' ? 0.7 : 1 }}>
             {status === 'loading' ? 'Wird eingetragen...' : 'VIP werden'}
           </button>
         </form>

@@ -78,10 +78,11 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
         {availableGenres.length > 0 && (
           <div className="filter-group">
             <h3 className="filter-title">Genre / Medium</h3>
-            <div className="filter-list">
+            <div className="filter-chip-group">
               {availableGenres.map(genre => (
-                <label className="filter-label" key={genre}>
-                  <input type="checkbox" className="filter-checkbox" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> {genre}
+                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
+                  {genre}
                 </label>
               ))}
             </div>
@@ -91,10 +92,11 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
         {availableArtists.length > 0 && (
           <div className="filter-group">
             <h3 className="filter-title">Interpret / Künstler</h3>
-            <div className="filter-list">
+            <div className="filter-chip-group">
               {availableArtists.map(artist => (
-                <label className="filter-label" key={artist}>
-                  <input type="checkbox" className="filter-checkbox" checked={selectedArtists.includes(artist)} onChange={() => toggleArtist(artist)} /> {artist}
+                <label className={`filter-chip ${selectedArtists.includes(artist) ? 'active' : ''}`} key={artist}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedArtists.includes(artist)} onChange={() => toggleArtist(artist)} /> 
+                  {artist}
                 </label>
               ))}
             </div>

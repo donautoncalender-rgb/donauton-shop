@@ -61,10 +61,11 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
         {availableLocations.length > 0 && (
           <div className="filter-group">
             <h3 className="filter-title">Ort / Region</h3>
-            <div className="filter-list">
+            <div className="filter-chip-group">
               {availableLocations.map(loc => (
-                <label className="filter-label" key={loc}>
-                  <input type="checkbox" className="filter-checkbox" checked={selectedLocations.includes(loc)} onChange={() => toggleLocation(loc)} /> {loc}
+                <label className={`filter-chip ${selectedLocations.includes(loc) ? 'active' : ''}`} key={loc}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedLocations.includes(loc)} onChange={() => toggleLocation(loc)} /> 
+                  {loc}
                 </label>
               ))}
             </div>
@@ -74,10 +75,11 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
         {availableGroups.length > 0 && (
           <div className="filter-group" style={{ marginTop: '2rem' }}>
             <h3 className="filter-title">Gruppe / Interpret</h3>
-            <div className="filter-list">
+            <div className="filter-chip-group">
               {availableGroups.map(group => (
-                <label className="filter-label" key={group}>
-                  <input type="checkbox" className="filter-checkbox" checked={selectedGroups.includes(group)} onChange={() => toggleGroup(group)} /> {group}
+                <label className={`filter-chip ${selectedGroups.includes(group) ? 'active' : ''}`} key={group}>
+                  <input type="checkbox" className="filter-chip-input" checked={selectedGroups.includes(group)} onChange={() => toggleGroup(group)} /> 
+                  {group}
                 </label>
               ))}
             </div>
