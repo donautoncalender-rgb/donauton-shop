@@ -121,26 +121,38 @@ export default function BuecherShopClient({ initialProducts }: { initialProducts
         </div>
 
         {/* Mobile Filters */}
-        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {availableGenres.length > 0 && (
-            <div className="filter-chip-group">
-              {availableGenres.map(genre => (
-                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
-                  {genre}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedGenres.length === 1 ? selectedGenres[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedGenres([e.target.value]);
+                } else {
+                  setSelectedGenres([]);
+                }
+              }}
+            >
+              <option value="">Alle Genres</option>
+              {availableGenres.map(genre => <option key={genre} value={genre}>{genre}</option>)}
+            </select>
           )}
           {availableAuthors.length > 0 && (
-            <div className="filter-chip-group">
-              {availableAuthors.map(author => (
-                <label className={`filter-chip ${selectedAuthors.includes(author) ? 'active' : ''}`} key={author}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedAuthors.includes(author)} onChange={() => toggleAuthor(author)} /> 
-                  {author}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedAuthors.length === 1 ? selectedAuthors[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedAuthors([e.target.value]);
+                } else {
+                  setSelectedAuthors([]);
+                }
+              }}
+            >
+              <option value="">Alle Autoren</option>
+              {availableAuthors.map(author => <option key={author} value={author}>{author}</option>)}
+            </select>
           )}
         </div>
 

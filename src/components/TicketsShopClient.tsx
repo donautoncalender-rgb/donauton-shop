@@ -11,7 +11,7 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
   const { addToCart, toggleCart } = useCart();
 
   const availableLocations = useMemo(() => {
@@ -111,26 +111,38 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
         </div>
 
         {/* Mobile Filters */}
-        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {availableLocations.length > 0 && (
-            <div className="filter-chip-group">
-              {availableLocations.map(loc => (
-                <label className={`filter-chip ${selectedLocations.includes(loc) ? 'active' : ''}`} key={loc}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedLocations.includes(loc)} onChange={() => toggleLocation(loc)} /> 
-                  {loc}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedLocations.length === 1 ? selectedLocations[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedLocations([e.target.value]);
+                } else {
+                  setSelectedLocations([]);
+                }
+              }}
+            >
+              <option value="">Alle Orte</option>
+              {availableLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+            </select>
           )}
           {availableGroups.length > 0 && (
-            <div className="filter-chip-group">
-              {availableGroups.map(group => (
-                <label className={`filter-chip ${selectedGroups.includes(group) ? 'active' : ''}`} key={group}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedGroups.includes(group)} onChange={() => toggleGroup(group)} /> 
-                  {group}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedGroups.length === 1 ? selectedGroups[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedGroups([e.target.value]);
+                } else {
+                  setSelectedGroups([]);
+                }
+              }}
+            >
+              <option value="">Alle Gruppen</option>
+              {availableGroups.map(group => <option key={group} value={group}>{group}</option>)}
+            </select>
           )}
         </div>
 
@@ -256,12 +268,12 @@ export default function TicketsShopClient({ initialProducts }: { initialProducts
               <select 
                 value={itemsPerPage} 
                 onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="sleek-select"
                 style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontFamily: 'inherit' }}
               >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
+                <option value={12}>12</option>
+                <option value={24}>24</option>
+                <option value={48}>48</option>
                 <option value={100}>100</option>
               </select>
             </div>

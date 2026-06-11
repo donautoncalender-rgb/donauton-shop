@@ -13,7 +13,7 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
   const { addToCart, toggleCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
@@ -127,26 +127,38 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
         </div>
 
         {/* Mobile Filters */}
-        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {availableTypes.length > 0 && (
-            <div className="filter-chip-group">
-              {availableTypes.map(type => (
-                <label className={`filter-chip ${selectedTypes.includes(type) ? 'active' : ''}`} key={type}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedTypes.includes(type)} onChange={() => toggleType(type)} /> 
-                  {type}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedTypes.length === 1 ? selectedTypes[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedTypes([e.target.value]);
+                } else {
+                  setSelectedTypes([]);
+                }
+              }}
+            >
+              <option value="">Alle Kategorien</option>
+              {availableTypes.map(type => <option key={type} value={type}>{type}</option>)}
+            </select>
           )}
           {availableSizes.length > 0 && (
-            <div className="filter-chip-group">
-              {availableSizes.map(size => (
-                <label className={`filter-chip ${selectedSizes.includes(size) ? 'active' : ''}`} key={size}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedSizes.includes(size)} onChange={() => toggleSize(size)} /> 
-                  {size}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedSizes.length === 1 ? selectedSizes[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedSizes([e.target.value]);
+                } else {
+                  setSelectedSizes([]);
+                }
+              }}
+            >
+              <option value="">Alle Größen</option>
+              {availableSizes.map(size => <option key={size} value={size}>{size}</option>)}
+            </select>
           )}
         </div>
 
@@ -272,12 +284,12 @@ export default function MerchShopClient({ initialProducts }: { initialProducts: 
               <select 
                 value={itemsPerPage} 
                 onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="sleek-select"
                 style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontFamily: 'inherit' }}
               >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
+                <option value={12}>12</option>
+                <option value={24}>24</option>
+                <option value={48}>48</option>
                 <option value={100}>100</option>
               </select>
             </div>

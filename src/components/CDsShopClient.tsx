@@ -12,7 +12,7 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage, setItemsPerPage] = useState(24);
   const { addToCart, toggleCart } = useCart();
 
   const availableGenres = useMemo(() => {
@@ -128,26 +128,38 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
         </div>
 
         {/* Mobile Filters */}
-        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem' }}>
+        <div className="mobile-only animate-fade-in" style={{ animationDelay: '0.2s', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {availableGenres.length > 0 && (
-            <div className="filter-chip-group">
-              {availableGenres.map(genre => (
-                <label className={`filter-chip ${selectedGenres.includes(genre) ? 'active' : ''}`} key={genre}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedGenres.includes(genre)} onChange={() => toggleGenre(genre)} /> 
-                  {genre}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedGenres.length === 1 ? selectedGenres[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedGenres([e.target.value]);
+                } else {
+                  setSelectedGenres([]);
+                }
+              }}
+            >
+              <option value="">Alle Genres</option>
+              {availableGenres.map(genre => <option key={genre} value={genre}>{genre}</option>)}
+            </select>
           )}
           {availableArtists.length > 0 && (
-            <div className="filter-chip-group">
-              {availableArtists.map(artist => (
-                <label className={`filter-chip ${selectedArtists.includes(artist) ? 'active' : ''}`} key={artist}>
-                  <input type="checkbox" className="filter-chip-input" checked={selectedArtists.includes(artist)} onChange={() => toggleArtist(artist)} /> 
-                  {artist}
-                </label>
-              ))}
-            </div>
+            <select 
+              className="sleek-select"
+              value={selectedArtists.length === 1 ? selectedArtists[0] : ''}
+              onChange={(e) => {
+                if (e.target.value) {
+                  setSelectedArtists([e.target.value]);
+                } else {
+                  setSelectedArtists([]);
+                }
+              }}
+            >
+              <option value="">Alle Interpreten</option>
+              {availableArtists.map(artist => <option key={artist} value={artist}>{artist}</option>)}
+            </select>
           )}
         </div>
 
@@ -274,12 +286,12 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
               <select 
                 value={itemsPerPage} 
                 onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                className="sleek-select"
                 style={{ padding: '0.4rem', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontFamily: 'inherit' }}
               >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
+                <option value={12}>12</option>
+                <option value={24}>24</option>
+                <option value={48}>48</option>
                 <option value={100}>100</option>
               </select>
             </div>
