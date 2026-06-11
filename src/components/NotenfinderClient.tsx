@@ -266,9 +266,11 @@ export default function NotenfinderClient({
           marginBottom: '2rem',
           borderBottom: '1px solid #e2e8f0',
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+          width: '100vw',
+          marginLeft: 'calc(50% - 50vw)',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           
           {/* Row 1: Title, Subtitle & Search */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
