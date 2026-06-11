@@ -277,8 +277,7 @@ export default function NotenfinderClient({
           marginBottom: '2rem',
           borderBottom: '1px solid #e2e8f0',
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-          width: '100vw',
-          marginLeft: 'calc(50% - 50vw)',
+          width: '100%',
         }}
       >
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>

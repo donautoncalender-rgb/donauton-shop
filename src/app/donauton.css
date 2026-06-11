@@ -44,6 +44,12 @@ body {
   padding: 0 5%;
 }
 
+@media (max-width: 900px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -813,6 +819,8 @@ ul {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
