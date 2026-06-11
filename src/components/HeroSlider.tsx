@@ -42,13 +42,13 @@ export default function HeroSlider({ slides }: { slides: any[] }) {
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url("${slide.image}")`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.4 }}></div>
           
           <div className="container" style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '1rem', transform: currentSlide === index ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 1s ease-out' }}>
-            <div style={{ background: 'var(--accent)', color: 'white', padding: '0.3rem 0.8rem', display: 'inline-block', alignSelf: 'flex-start', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.8rem' }}>
+            <div className="hero-slider-tagline">
               {slide.tagline}
             </div>
-            <h1 style={{ color: 'white', fontSize: '3rem', fontWeight: 900, lineHeight: 1.1, textTransform: 'uppercase', textShadow: '0 4px 20px rgba(0,0,0,0.5)', margin: 0 }}>
+            <h1 className="hero-slider-title">
               {slide.title} <br/> <span style={{ color: '#f0f0f0', fontWeight: 300 }}>{slide.subtitle}</span>
             </h1>
-            <p style={{ color: '#ddd', fontSize: '1.1rem', maxWidth: '500px', margin: 0, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+            <p className="hero-slider-text">
               {slide.text}
             </p>
             <div style={{ marginTop: '0.5rem' }}>
@@ -82,6 +82,7 @@ export default function HeroSlider({ slides }: { slides: any[] }) {
       
       {/* Navigation Arrows */}
       <button 
+        className="hero-slider-arrow"
         onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
         style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', width: '50px', height: '50px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.3s' }}
         onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent)'}
@@ -90,6 +91,7 @@ export default function HeroSlider({ slides }: { slides: any[] }) {
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
       <button 
+        className="hero-slider-arrow"
         onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
         style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', width: '50px', height: '50px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.3s' }}
         onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent)'}

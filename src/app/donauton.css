@@ -37,13 +37,14 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; }
 body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
   overflow-x: hidden;
+  width: 100%;
 }
 
 /* Visibility Utilities */
@@ -1149,7 +1150,42 @@ ul {
 }
 
 
+/* =========================================
+   Hero Slider Base Styles
+   ========================================= */
+.hero-slider-tagline {
+  background: var(--accent);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  display: inline-block;
+  align-self: flex-start;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+}
 
+.hero-slider-title {
+  color: white;
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  margin: 0;
+}
+
+.hero-slider-text {
+  color: #ddd;
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.hero-slider-arrow {
+  display: flex;
+}
 
 /* =========================================
    Mobile Optimization
@@ -1182,6 +1218,10 @@ ul {
 
   .header {
     padding: 0.8rem 0;
+  }
+  
+  .header-actions {
+    gap: 0.5rem;
   }
   
   .logo {
@@ -1236,7 +1276,7 @@ ul {
   }
 
   .global-search-container {
-    display: none; /* Hide desktop search */
+    display: none !important; /* Hide desktop search */
   }
 
   /* Hero adjustments */
@@ -1248,6 +1288,17 @@ ul {
     font-size: 1.05rem;
     margin-bottom: 1.5rem;
   }
+  
+  .hero-slider-title {
+    font-size: 2rem !important;
+  }
+  .hero-slider-text {
+    font-size: 1rem !important;
+  }
+  .hero-slider-arrow {
+    display: none !important;
+  }
+
   .hero {
     min-height: auto;
     padding: 120px 0 60px 0;
