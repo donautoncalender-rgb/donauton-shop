@@ -266,7 +266,7 @@ export default function NotenfinderClient({
     <div style={{ position: 'relative' }}>
       {/* Unified Sticky Header */}
       <div 
-        className="animate-fade-in"
+        className="mobile-toolbar animate-fade-in"
         style={{ 
           position: 'sticky', 
           top: '0', 
@@ -381,9 +381,10 @@ export default function NotenfinderClient({
         </div>
       </div>
 
-    <div className="shop-layout">
-      {/* Sidebar - Category Navigation */}
-      <aside className="sidebar animate-fade-in" style={{ animationDelay: '0.1s', borderRight: '1px solid #e2e8f0', paddingRight: '2rem' }}>
+    <div className="container">
+      <div className="shop-layout">
+        {/* Sidebar - Category Navigation */}
+        <aside className="sidebar desktop-sidebar animate-fade-in" style={{ animationDelay: '0.1s', borderRight: '1px solid #e2e8f0', paddingRight: '2rem' }}>
         <div style={{ position: 'sticky', top: '12rem' }}>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', display: 'inline-block' }}>
             Notenkategorien
@@ -607,6 +608,7 @@ export default function NotenfinderClient({
           </div>
         )}
       </div>
+     </div>
     </div>
     </div>
   );

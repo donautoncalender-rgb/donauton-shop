@@ -1550,3 +1550,18 @@ ul {
     margin-bottom: 0.5rem !important;
   }
 }
+
+.shop-main { min-width: 0; }
+
+
+@media (min-width: 901px) {
+  .mobile-toolbar {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .desktop-sidebar {
+    display: none !important;
+  }
+}
