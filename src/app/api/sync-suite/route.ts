@@ -243,7 +243,8 @@ export async function GET() {
           instrumentation: work.instrumentation || null,
           isExternal: Boolean(work.is_external),
           variantsJson,
-          partsListJson: work.parts_list_json || null
+          partsListJson: work.parts_list_json || null,
+          trackListJson: work.track_list_json || null
         },
         create: {
           title: finalTitle,
@@ -273,7 +274,8 @@ export async function GET() {
           instrumentation: work.instrumentation || null,
           isExternal: Boolean(work.is_external),
           variantsJson,
-          partsListJson: work.parts_list_json || null
+          partsListJson: work.parts_list_json || null,
+          trackListJson: work.track_list_json || null
         }
       });
     });

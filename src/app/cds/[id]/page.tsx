@@ -9,6 +9,7 @@ import ProductDetailsList from '../../../components/ProductDetailsList';
 import MiniProductSlider from '../../../components/MiniProductSlider';
 import SimpleBuyBox from '../../../components/SimpleBuyBox';
 import GpsrSection from '../../../components/GpsrSection';
+import TracklistPlayer from '../../../components/TracklistPlayer';
 import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 
@@ -181,6 +182,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           <div>
             <h3 style={{ fontSize: '1.2rem', marginBottom: '0.8rem', fontWeight: 800 }}>Informationen zum Produkt</h3>
             <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#333' }} dangerouslySetInnerHTML={{ __html: product.description || 'Keine Beschreibung verfügbar.' }} />
+            <TracklistPlayer tracksJson={product.trackListJson} />
             <GpsrSection publisher={product.publisher} />
           </div>
         </div>
