@@ -24,6 +24,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -519,9 +520,49 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </button>
+          
+          <button className="hamburger-btn" onClick={() => setIsMobileMenuOpen(true)} aria-label="Menü öffnen">
+            <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
         </div>
       </div>
     </header>
+
+    {/* Mobile Menu Overlay */}
+    {isMobileMenuOpen && (
+      <div className="mobile-menu-overlay animate-fade-in">
+        <div className="mobile-menu-header">
+          <div className="logo" style={{ fontSize: '1.8rem', letterSpacing: '1px' }}>
+            {shopTitle.replace('.', '')}<span>.</span>
+          </div>
+          <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)} aria-label="Menü schließen">
+            &times;
+          </button>
+        </div>
+        
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
+          <input 
+            type="text" 
+            className="global-search-input" 
+            placeholder="Suchen..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ width: '100%' }}
+          />
+          <button type="submit" className="global-search-btn" aria-label="Suchen">
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </button>
+        </form>
+
+        <nav className="mobile-nav-links">
+          <Link href="/noten?reset=true" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Noten</Link>
+          <Link href="/cds" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>CDs & Audio</Link>
+          <Link href="/merch" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Merchandise</Link>
+          <Link href="/buecher" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Bücher</Link>
+          <Link href="/tickets" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Tickets</Link>
+        </nav>
+      </div>
+    )}
   </>
   );
 }
