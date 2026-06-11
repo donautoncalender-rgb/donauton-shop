@@ -128,37 +128,16 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
     return (
       <Link href={`/${getProductRoute(product.category)}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <div 
-          className="product-card-list RundelLayout"
-          style={{ 
-            display: 'flex', 
-            flexDirection: 'row',
-            alignItems: 'stretch',
-            gap: '2rem',
-            padding: '1.5rem',
-            backgroundColor: 'white',
-            border: '1px solid #eee',
-            borderTop: '3px solid transparent',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
-            transition: 'border-color 0.3s, box-shadow 0.3s'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderTopColor = 'var(--accent)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.08)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderTopColor = 'transparent';
-            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.03)';
-          }}
-        >
+        <div className="product-card-list">
           {/* LEFT: IMAGE */}
-          <div style={{ width: '180px', flexShrink: 0, position: 'relative', minHeight: '220px', display: 'flex', alignItems: 'flex-start' }}>
+          <div className="product-card-list-img">
             {product.badge && <span className="product-badge" style={{ position: 'absolute', top: 0, left: 0, zIndex: 2 }}>{product.badge}</span>}
             <img src={product.image} alt={product.title} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
           </div>
 
-          {/* MIDDLE: INFO */}
-          <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <div className="product-card-list-content">
+            {/* MIDDLE: INFO */}
+            <div className="product-card-list-info">
             {product.besetzung && (
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#666', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
                 {product.besetzung}{product.soloinstrument ? `, ${product.soloinstrument}` : ''}
@@ -199,8 +178,8 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
           </div>
 
           {/* RIGHT: BUTTONS */}
-          <div style={{ width: '220px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {/* Main Buy Button */}
+          <div className="product-card-list-actions">
+              {/* Main Buy Button */}
             <button 
               onClick={handleAddToCart}
               style={{
@@ -257,6 +236,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
               onClick={shareProduct} 
               icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>} 
             />
+            </div>
           </div>
         </div>
       </Link>
