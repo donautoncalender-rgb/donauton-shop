@@ -1558,8 +1558,8 @@ ul {
   }
   
   .product-card-list-img {
-    width: 90px;
-    min-height: 120px;
+    width: 130px;
+    min-height: 160px;
     flex-shrink: 0;
   }
 
@@ -1575,7 +1575,7 @@ ul {
 
   .product-card-list-actions {
     width: 100%;
-    margin-top: 0.5rem;
+    margin-top: auto;
   }
   
   .rundel-secondary-actions {
@@ -1598,13 +1598,13 @@ ul {
 
   .product-card-list-composer,
   .product-card-list-desc {
-    display: none;
+    display: none !important;
   }
 
   .product-card-list-info h3 {
-    font-size: 1.1rem !important;
+    font-size: 1.15rem !important;
     line-height: 1.3;
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.3rem !important;
   }
 }
 
