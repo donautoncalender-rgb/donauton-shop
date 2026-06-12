@@ -111,6 +111,7 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
       <div className="container" style={{ opacity: isReady ? 1 : 0, transition: 'opacity 1s ease', zIndex: 1, position: 'relative' }}>
         <div 
           ref={containerRef}
+          className="daily-highlight-box"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           onMouseEnter={handleMouseEnter}
@@ -124,7 +125,6 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
             `,
             overflow: 'hidden',
             display: 'flex',
-            flexDirection: 'row',
             alignItems: 'center',
             gap: '0',
             minHeight: '480px',
@@ -143,7 +143,7 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
           }} />
 
           {/* LEFT SIDE: Dramatic 3D Mockup */}
-          <div style={{ 
+          <div className="daily-highlight-left" style={{ 
             flex: '0 0 45%', 
             display: 'flex', 
             justifyContent: 'center', 
@@ -242,7 +242,7 @@ export default function DailyHighlight({ product }: DailyHighlightProps) {
           </div>
 
           {/* RIGHT SIDE: Content Area */}
-          <div style={{ 
+          <div className="daily-highlight-right" style={{ 
             flex: '1', 
             padding: '3rem 5rem 3rem 1rem', 
             position: 'relative', 

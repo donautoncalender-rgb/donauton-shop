@@ -1622,3 +1622,48 @@ ul {
     display: none !important;
   }
 }
+
+/* Daily Highlight Responsive */
+.daily-highlight-box {
+  flex-direction: row;
+}
+
+@media (max-width: 900px) {
+  .daily-highlight-box {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  .daily-highlight-left {
+    flex: none !important;
+    width: 100% !important;
+    padding: 2rem 1.5rem 0 1.5rem !important;
+  }
+  .daily-highlight-right {
+    flex: none !important;
+    width: 100% !important;
+    padding: 1rem 1.5rem 2.5rem 1.5rem !important;
+    text-align: center;
+    align-items: center;
+  }
+  .daily-highlight-right h2 {
+    font-size: 1.8rem !important;
+  }
+  .daily-highlight-right .highlight-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .daily-highlight-right > div:last-child {
+    flex-direction: column;
+    gap: 1.5rem !important;
+    width: 100%;
+  }
+  .daily-highlight-right > div:last-child > div {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 2px solid #f1f5f9;
+    padding-top: 1rem;
+    width: 100%;
+    align-items: center;
+  }
+}
+
