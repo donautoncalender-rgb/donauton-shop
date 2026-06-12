@@ -190,6 +190,10 @@ async function saveSettings(formData: FormData) {
   await handleBannerUpload('bannerFileBuecher', 'banner_url_buecher');
   await handleBannerUpload('bannerFileTickets', 'banner_url_tickets');
   await handleBannerUpload('signetFile', 'newsletter_signet_url');
+  await handleBannerUpload('partner1File', 'partner_1_logo');
+  await handleBannerUpload('partner2File', 'partner_2_logo');
+  await handleBannerUpload('partner3File', 'partner_3_logo');
+  await handleBannerUpload('partner4File', 'partner_4_logo');
 
   revalidatePath('/admin/settings');
   revalidatePath('/'); // update frontend too
@@ -224,6 +228,41 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <strong>Fehler beim Upload:</strong> {decodeURIComponent(resolvedSearchParams.error)}
         </div>
       )}
+
+          <div className="admin-card">
+            <h2 className="admin-section-title">Partner Logos</h2>
+            <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1.5rem' }}>Lade hier die vier Partner-Logos für die Startseite hoch.</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
+              {[1, 2, 3, 4].map(num => (
+                <div key={num} className="admin-form-group" style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <label className="admin-label">Partner {num} Logo</label>
+                  {settings[`partner_${num}_logo`] && (
+                    <div style={{ marginBottom: '1rem', padding: '1rem', background: '#fff', borderRadius: '6px', textAlign: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                      <img src={settings[`partner_${num}_logo`]} alt={`Partner ${num}`} style={{ maxHeight: '60px', maxWidth: '100%', objectFit: 'contain' }} />
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <input 
+                      name={`partner${num}File`} 
+                      type="file" 
+                      accept="image/*"
+                      className="admin-input" 
+                      style={{ cursor: 'pointer', padding: '0.5rem', fontSize: '0.85rem' }}
+                    />
+                    <input 
+                      name={`partner_${num}_logo_url`} 
+                      type="text" 
+                      className="admin-input" 
+                      placeholder="ODER Bild-URL"
+                      defaultValue={settings[`partner_${num}_logo`] || ''} 
+                      style={{ fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
       <div className="admin-card">
         <h3 className="admin-card-title">Shop Basisdaten</h3>
