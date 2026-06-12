@@ -266,7 +266,7 @@ export default function NotenfinderClient({
     <div style={{ position: 'relative' }}>
       {/* Unified Sticky Header */}
       <div 
-        className="mobile-toolbar animate-fade-in"
+        className="unified-toolbar animate-fade-in"
         style={{ 
           position: 'sticky', 
           top: '0', 
@@ -280,7 +280,7 @@ export default function NotenfinderClient({
           width: '100%',
         }}
       >
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           
           {/* Unified Filter Toolbar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap-reverse', gap: '1.5rem' }}>
@@ -381,11 +381,11 @@ export default function NotenfinderClient({
         </div>
       </div>
 
-    <div className="container">
+    <div style={{ paddingTop: '1rem' }}>
       <div className="shop-layout">
         {/* Sidebar - Category Navigation */}
         <aside className="sidebar desktop-sidebar animate-fade-in" style={{ animationDelay: '0.1s', borderRight: '1px solid #e2e8f0', paddingRight: '2rem' }}>
-        <div style={{ position: 'sticky', top: '12rem' }}>
+        <div style={{ position: 'sticky', top: '8rem' }}>
           <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '1.5rem', color: 'var(--primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', display: 'inline-block' }}>
             Notenkategorien
           </h3>
