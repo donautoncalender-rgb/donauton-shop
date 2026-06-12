@@ -233,35 +233,38 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             <h2 className="admin-section-title">Partner Logos</h2>
             <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1.5rem' }}>Lade hier die vier Partner-Logos für die Startseite hoch.</p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
-              {[1, 2, 3, 4].map(num => (
-                <div key={num} className="admin-form-group" style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <label className="admin-label">Partner {num} Logo</label>
-                  {settings[`partner_${num}_logo`] && (
-                    <div style={{ marginBottom: '1rem', padding: '1rem', background: '#fff', borderRadius: '6px', textAlign: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                      <img src={settings[`partner_${num}_logo`]} alt={`Partner ${num}`} style={{ maxHeight: '60px', maxWidth: '100%', objectFit: 'contain' }} />
+            <form action={saveSettings} encType="multipart/form-data">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
+                {[1, 2, 3, 4].map(num => (
+                  <div key={num} className="admin-form-group" style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <label className="admin-label">Partner {num} Logo</label>
+                    {settings[`partner_${num}_logo`] && (
+                      <div style={{ marginBottom: '1rem', padding: '1rem', background: '#fff', borderRadius: '6px', textAlign: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                        <img src={settings[`partner_${num}_logo`]} alt={`Partner ${num}`} style={{ maxHeight: '60px', maxWidth: '100%', objectFit: 'contain' }} />
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      <input 
+                        name={`partner${num}File`} 
+                        type="file" 
+                        accept="image/*"
+                        className="admin-input" 
+                        style={{ cursor: 'pointer', padding: '0.5rem', fontSize: '0.85rem' }}
+                      />
+                      <input 
+                        name={`partner${num}FileUrl`} 
+                        type="text" 
+                        className="admin-input" 
+                        placeholder="ODER Bild-URL"
+                        defaultValue={settings[`partner_${num}_logo`] || ''} 
+                        style={{ fontSize: '0.85rem' }}
+                      />
                     </div>
-                  )}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <input 
-                      name={`partner${num}File`} 
-                      type="file" 
-                      accept="image/*"
-                      className="admin-input" 
-                      style={{ cursor: 'pointer', padding: '0.5rem', fontSize: '0.85rem' }}
-                    />
-                    <input 
-                      name={`partner${num}FileUrl`} 
-                      type="text" 
-                      className="admin-input" 
-                      placeholder="ODER Bild-URL"
-                      defaultValue={settings[`partner_${num}_logo`] || ''} 
-                      style={{ fontSize: '0.85rem' }}
-                    />
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+              <button type="submit" className="admin-btn" style={{ marginTop: '1.5rem', background: '#3b82f6' }}>Partner Logos speichern</button>
+            </form>
           </div>
 
       <div className="admin-card">
