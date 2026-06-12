@@ -6,7 +6,7 @@ export default function NewsletterFormClient({
   title,
   text,
 }: {
-  title: string;
+  title: React.ReactNode;
   text: string;
 }) {
   const [email, setEmail] = useState('');
@@ -58,7 +58,7 @@ export default function NewsletterFormClient({
       
       {status === 'success' && (
         <div style={{ background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '1rem' }}>
-          <strong>Erfolgreich eingetragen!</strong> Willkommen in der Donauton-Familie.
+          <strong>Erfolgreich eingetragen!</strong> Willkommen in der DONAUTON Community.
         </div>
       )}
       

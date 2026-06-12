@@ -20,8 +20,9 @@ export default async function Home() {
   });
   
   const activeSliders = dbSliders.length > 0 ? dbSliders : [
-    { title: 'Werke vom Alpen-Sound Musikverlag', linkUrl: '/noten', filterType: 'CATEGORY', filterValue: 'alpen-sound' },
-    { title: 'Neu im Sortiment', linkUrl: '/noten?sort=new', filterType: 'LATEST', filterValue: null }
+    { title: 'Top-Banger', linkUrl: '/noten?sort=bestseller', filterType: 'BESTSELLER', filterValue: null },
+    { title: 'Frisch Gebackenes', linkUrl: '/noten?sort=new', filterType: 'LATEST', filterValue: null },
+    { title: 'Rettet den 3/4 Takt', linkUrl: '/noten?q=Walzer', filterType: 'CATEGORY', filterValue: 'Walzer' }
   ];
 
   const productsDb = await prisma.product.findMany();
@@ -219,7 +220,12 @@ export default async function Home() {
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to right, rgba(5,38,53, 0.95) 0%, rgba(5,38,53, 0.75) 100%)', zIndex: -1 }}></div>
         
         <NewsletterFormClient 
-          title={s['home_newsletter_title'] || 'Werde Teil der Donauton-Familie'}
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+              <img src="https://donauton.de/wp-content/uploads/2024/04/D-Signet-100x100.png" alt="DONAUTON Signet" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+              {s['home_newsletter_title'] || 'Werde Teil der DONAUTON Community'}
+            </div>
+          }
           text={s['home_newsletter_text'] || 'Trag dich jetzt für unseren Exklusiv-Verteiler ein und erhalte sofort 10% Willkommens-Rabatt sowie kostenlose Probe-Partituren für dein Orchester.'}
         />
       </section>
