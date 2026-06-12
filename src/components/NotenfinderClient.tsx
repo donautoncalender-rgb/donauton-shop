@@ -280,7 +280,7 @@ export default function NotenfinderClient({
           width: '100%',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', padding: '0 1.5rem' }}>
           
           {/* Unified Filter Toolbar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap-reverse', gap: '1.5rem' }}>
