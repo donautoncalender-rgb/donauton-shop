@@ -280,28 +280,28 @@ export default async function Home() {
         </div>
       </section>
       {/* PARTNER SECTION */}
-      <section style={{ backgroundColor: 'var(--surface)', padding: '5rem 0' }}>
+      <section style={{ backgroundColor: 'var(--surface)', padding: '3rem 0' }}>
         <div className="container">
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '3rem', textAlign: 'center' }}>Unsere Partner</h2>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '2rem', textAlign: 'center' }}>Unsere Partner</h2>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', alignItems: 'center', justifyItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', alignItems: 'center', justifyItems: 'center' }}>
             {[1, 2, 3, 4].map(num => {
               const partnerUrl = s[`partner_${num}_logo`];
               const defaultNames = ['DVO Fachverlag', 'MON', 'Allgäu-Schwäbischer Musikbund', 'HeBu Musikverlag'];
 
               return (
-                <div key={num} style={{ width: '100%', maxWidth: '250px', height: '120px', backgroundColor: 'white', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', transition: 'transform 0.3s ease, filter 0.3s ease', cursor: 'pointer', filter: 'grayscale(100%) opacity(0.8)' }} className="partner-logo-box">
+                <div key={num} style={{ width: '100%', maxWidth: '220px', height: '80px', backgroundColor: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', transition: 'transform 0.3s ease, filter 0.3s ease', cursor: 'pointer', filter: 'grayscale(100%) opacity(0.8)' }} className="partner-logo-box">
                   <style dangerouslySetInnerHTML={{__html: `
                     .partner-logo-box:hover {
                       filter: grayscale(0%) opacity(1) !important;
-                      transform: translateY(-5px);
-                      box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+                      transform: translateY(-3px);
+                      box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
                     }
                   `}} />
                   {partnerUrl ? (
                     <img src={partnerUrl} alt={`Partner ${num}`} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                   ) : (
-                    <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-light)', textAlign: 'center' }}>{defaultNames[num - 1]}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-light)', textAlign: 'center' }}>{defaultNames[num - 1]}</span>
                   )}
                 </div>
               );
