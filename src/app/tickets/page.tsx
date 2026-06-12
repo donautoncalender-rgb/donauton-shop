@@ -1,4 +1,5 @@
 import TicketsShopClient from '../../components/TicketsShopClient';
+import CategoryBanner from '../../components/CategoryBanner';
 import { prisma } from '../../lib/prisma';
 
 export default async function TicketsPage() {
@@ -26,14 +27,17 @@ export default async function TicketsPage() {
     composer: p.composer || p.artist || 'Event'
   }));
 
+  const bannerSetting = await prisma.shopSetting.findUnique({ where: { key: 'banner_url_tickets' } });
+  const customBannerUrl = bannerSetting?.value;
+
   return (
     <div className="container page-container">
-      <div className="page-header animate-fade-in">
-        <h1 className="page-title">Live Konzerte & Tickets</h1>
-        <p className="page-subtitle">
-          Besuchen Sie uns live. Sichern Sie sich Tickets für unsere kommenden Touren und Konzerte in Ihrer Nähe.
-        </p>
-      </div>
+      <CategoryBanner 
+        title="Live Konzerte & Tickets"
+        subtitle="Besuchen Sie uns live. Sichern Sie sich Tickets für unsere kommenden Touren und Konzerte in Ihrer Nähe."
+        imageUrl={customBannerUrl || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&q=80"}
+        gradient="linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%)"
+      />
 
       <TicketsShopClient initialProducts={products} />
     </div>

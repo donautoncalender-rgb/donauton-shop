@@ -188,6 +188,7 @@ async function saveSettings(formData: FormData) {
   await handleBannerUpload('bannerFileNoten', 'banner_url_noten');
   await handleBannerUpload('bannerFileMerch', 'banner_url_merch');
   await handleBannerUpload('bannerFileBuecher', 'banner_url_buecher');
+  await handleBannerUpload('bannerFileTickets', 'banner_url_tickets');
 
   revalidatePath('/admin/settings');
   revalidatePath('/'); // update frontend too
@@ -373,6 +374,18 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               )}
               <input name="bannerFileBuecher" type="file" accept="image/*" className="admin-input" style={{ marginBottom: '0.5rem', padding: '0.5rem' }} />
               <input name="bannerFileBuecherUrl" type="text" className="admin-input" placeholder="Oder Bild-URL einfügen" defaultValue={settings['banner_url_buecher'] || ''} />
+            </div>
+
+            {/* Tickets Banner */}
+            <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <h4 style={{ marginBottom: '1rem', color: '#333' }}>Tickets</h4>
+              {settings['banner_url_tickets'] && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <img src={settings['banner_url_tickets']} alt="Tickets Banner" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                </div>
+              )}
+              <input name="bannerFileTickets" type="file" accept="image/*" className="admin-input" style={{ marginBottom: '0.5rem', padding: '0.5rem' }} />
+              <input name="bannerFileTicketsUrl" type="text" className="admin-input" placeholder="Oder Bild-URL einfügen" defaultValue={settings['banner_url_tickets'] || ''} />
             </div>
 
           </div>
