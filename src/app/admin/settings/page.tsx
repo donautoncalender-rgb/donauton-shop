@@ -251,7 +251,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                       style={{ cursor: 'pointer', padding: '0.5rem', fontSize: '0.85rem' }}
                     />
                     <input 
-                      name={`partner_${num}_logo_url`} 
+                      name={`partner${num}FileUrl`} 
                       type="text" 
                       className="admin-input" 
                       placeholder="ODER Bild-URL"
