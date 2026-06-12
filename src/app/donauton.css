@@ -499,7 +499,8 @@ ul {
 
 /* Notenfinder Layout */
 .page-container {
-  padding: 2rem 0 6rem;
+  padding-top: 2rem;
+  padding-bottom: 6rem;
 }
 
 .page-header {
