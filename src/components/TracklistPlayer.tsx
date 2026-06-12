@@ -173,6 +173,15 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
         .eq-col-1 { animation-delay: 0.1s; }
         .eq-col-2 { animation-delay: 0.35s; }
         .eq-col-3 { animation-delay: 0.2s; }
+
+        .tracklist-item {
+          padding: 1rem 1.5rem;
+        }
+        @media (max-width: 600px) {
+          .tracklist-item {
+            padding: 1rem 0.8rem;
+          }
+        }
       `}} />
 
       {/* Hidden HTML5 Audio Element */}
@@ -221,10 +230,10 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
           return (
             <div
               key={track.id}
+              className="tracklist-item"
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                padding: '1rem 1.5rem',
                 borderBottom: index < tracks.length - 1 ? '1px solid #f3f4f6' : 'none',
                 background: isCurrent ? 'rgba(205, 23, 25, 0.03)' : 'transparent',
                 transition: 'background 0.2s ease',
@@ -280,9 +289,12 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
               </div>
 
               {/* Title & Status */}
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '1rem', gap: '0.6rem' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '0.5rem', gap: '0.4rem' }}>
                 <span 
                   style={{
+                    display: 'block',
+                    flex: '0 1 auto',
+                    minWidth: 0,
                     fontSize: '0.95rem',
                     fontWeight: isCurrent ? 700 : 500,
                     color: isCurrent ? 'var(--accent, #cd1719)' : '#333',
