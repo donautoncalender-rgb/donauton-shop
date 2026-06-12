@@ -222,7 +222,9 @@ export default async function Home() {
         <NewsletterFormClient 
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-              <img src="https://donauton.de/wp-content/uploads/2024/04/D-Signet-100x100.png" alt="DONAUTON Signet" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+              {s['newsletter_signet_url'] && (
+                <img src={s['newsletter_signet_url']} alt="DONAUTON Signet" style={{ width: '48px', height: '48px', objectFit: 'contain' }} />
+              )}
               {s['home_newsletter_title'] || 'Werde Teil der DONAUTON Community'}
             </div>
           }
