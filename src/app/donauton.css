@@ -21,13 +21,12 @@
 
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; }
+html { scroll-behavior: smooth; width: 100%; }
 body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
-  overflow-x: hidden;
   width: 100%;
 }
 

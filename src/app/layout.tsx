@@ -129,10 +129,12 @@ export default async function RootLayout({
             )}
             <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} composers={publicComposers} />
             <CartDrawer />
-            <main style={{ minHeight: '100vh' }}>
-              {children}
-            </main>
-            <Footer />
+            <div style={{ overflowX: 'hidden' }}>
+              <main style={{ minHeight: '100vh' }}>
+                {children}
+              </main>
+              <Footer />
+            </div>
             <CookieBanner />
             <Toaster position="bottom-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
           </CartProvider>
