@@ -158,19 +158,24 @@ async function saveSettings(formData: FormData) {
   // Handle Banner Uploads
   const handleBannerUpload = async (fileKey: string, dbKey: string) => {
     const file = formData.get(fileKey) as File | null;
-    let url = formData.get(`${fileKey}Url`) as string;
-    if (file && file.size > 0) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const extMatch = file.name.match(/\.[0-9a-z]+$/i);
-      const ext = extMatch ? extMatch[0] : '.jpg';
-      const filename = `banner-${dbKey}-${Date.now()}${ext}`;
-      try {
-        const blob = await put(filename, buffer, { access: 'public', contentType: file.type });
-        url = blob.url;
-      } catch(e) { console.error('Blob upload failed for banner', e); }
-    }
-    if (url != null && url !== "") {
+    let url = formData.get(`${fileKey}Url`) as string | null;
+    
+    // Wenn das Formular für Banner abgeschickt wurde, ist url nicht null (sondern mindestens ein leerer String)
+    if (url != null) {
+      if (file && file.size > 0) {
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const fileName = file.name || 'image.jpg';
+        const extMatch = fileName.match(/\.[0-9a-z]+$/i);
+        const ext = extMatch ? extMatch[0] : '.jpg';
+        const finalFilename = `banner-${dbKey}-${Date.now()}${ext}`;
+        try {
+          const blob = await put(finalFilename, buffer, { access: 'public', contentType: file.type || 'image/jpeg' });
+          url = blob.url; // Überschreibe die URL mit der neuen Blob URL
+        } catch(e) { console.error('Blob upload failed for banner', e); }
+      }
+      
+      // Upsert: Auch leere Strings ("") speichern, damit man Banner wieder entfernen kann!
       await prisma.shopSetting.upsert({
         where: { key: dbKey },
         update: { value: url },
