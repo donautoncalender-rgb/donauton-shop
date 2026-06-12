@@ -117,7 +117,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
   const handleSubmit = async (e?: React.FormEvent, paymentStatus: string = 'pending') => {
     if (e) e.preventDefault();
     
-    if (formData.createAccount && !isLoggedIn && !formData.password) {
+    if (formData.payment !== 'PayPal' && formData.createAccount && !isLoggedIn && !formData.password) {
       alert('Bitte lege ein Passwort für dein neues Kundenkonto fest.');
       return;
     }
@@ -410,6 +410,18 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
               <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "EUR", intent: "capture" }}>
                 <PayPalButtons
                   style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
+                  onClick={(data, actions) => {
+                    const isValid = formData.firstName && formData.lastName && formData.address && formData.zip && formData.city && formData.email;
+                    if (!isValid) {
+                      alert("Bitte füllen Sie alle erforderlichen Rechnungsdetails aus.");
+                      return actions.reject();
+                    }
+                    if (formData.createAccount && !isLoggedIn && !formData.password) {
+                      alert("Bitte legen Sie ein Passwort für Ihr neues Kundenkonto fest.");
+                      return actions.reject();
+                    }
+                    return actions.resolve();
+                  }}
                   createOrder={(data, actions) => {
                     return actions.order.create({
                       intent: "CAPTURE",
