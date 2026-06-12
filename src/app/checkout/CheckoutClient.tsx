@@ -122,7 +122,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
       return;
     }
 
-    if (turnstileSiteKey && !turnstileToken) {
+    if (formData.payment !== 'PayPal' && turnstileSiteKey && !turnstileToken) {
       alert('Bitte bestätigen Sie, dass Sie kein Roboter sind.');
       return;
     }
