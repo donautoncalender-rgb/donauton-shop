@@ -189,6 +189,7 @@ async function saveSettings(formData: FormData) {
   await handleBannerUpload('bannerFileMerch', 'banner_url_merch');
   await handleBannerUpload('bannerFileBuecher', 'banner_url_buecher');
   await handleBannerUpload('bannerFileTickets', 'banner_url_tickets');
+  await handleBannerUpload('signetFile', 'newsletter_signet_url');
 
   revalidatePath('/admin/settings');
   revalidatePath('/'); // update frontend too
@@ -268,6 +269,39 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             
             <small style={{ color: '#718096', display: 'block', marginTop: '0.5rem' }}>
               Dies ersetzt den Text "DONAUTON." im Headerbereich. Wähle einfach ein Bild von deinem PC aus.
+            </small>
+          </div>
+
+          <div className="admin-form-group">
+            <label className="admin-label">Newsletter Signet (D-Signet)</label>
+            
+            {settings['newsletter_signet_url'] && (
+              <div style={{ marginBottom: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '8px', display: 'inline-block' }}>
+                <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.5rem' }}>Aktuelles Signet:</p>
+                <img src={settings['newsletter_signet_url']} alt="Current Signet" style={{ maxHeight: '60px', maxWidth: '100px', objectFit: 'contain' }} />
+              </div>
+            )}
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <input 
+                name="signetFile" 
+                type="file" 
+                accept="image/*"
+                className="admin-input" 
+                style={{ cursor: 'pointer', padding: '0.8rem' }}
+              />
+              <span style={{ fontSize: '0.85rem', color: '#64748b', alignSelf: 'center' }}>- ODER alternative Bild-URL -</span>
+              <input 
+                name="signetFileUrl" 
+                type="text" 
+                className="admin-input" 
+                placeholder="https://... (Leer lassen falls Datei hochgeladen wird)"
+                defaultValue={settings['newsletter_signet_url'] || ''} 
+              />
+            </div>
+            
+            <small style={{ color: '#718096', display: 'block', marginTop: '0.5rem' }}>
+              Das kleine Icon neben dem "Werde Teil der DONAUTON Community" Newsletter-Titel.
             </small>
           </div>
 
