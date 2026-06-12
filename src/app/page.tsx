@@ -287,12 +287,13 @@ export default async function Home() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', alignItems: 'center', justifyItems: 'center' }}>
             {[1, 2, 3, 4].map(num => {
               const partnerUrl = s[`partner_${num}_logo`];
+              const partnerLink = s[`partner_${num}_link`];
               const defaultNames = ['DVO Fachverlag', 'MON', 'Allgäu-Schwäbischer Musikbund', 'HeBu Musikverlag'];
 
-              return (
-                <div key={num} style={{ width: '100%', maxWidth: '220px', height: '80px', backgroundColor: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', transition: 'transform 0.3s ease, filter 0.3s ease', cursor: 'pointer', filter: 'grayscale(100%) opacity(0.8)' }} className="partner-logo-box">
+              const innerContent = (
+                <div style={{ width: '100%', maxWidth: '220px', height: '80px', backgroundColor: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', boxShadow: '0 4px 15px rgba(0,0,0,0.03)', transition: 'transform 0.3s ease, filter 0.3s ease', cursor: partnerLink ? 'pointer' : 'default', filter: 'grayscale(100%) opacity(0.8)' }} className={`partner-logo-box partner-box-${num}`}>
                   <style dangerouslySetInnerHTML={{__html: `
-                    .partner-logo-box:hover {
+                    .partner-box-${num}:hover {
                       filter: grayscale(0%) opacity(1) !important;
                       transform: translateY(-3px);
                       box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
@@ -304,6 +305,16 @@ export default async function Home() {
                     <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-light)', textAlign: 'center' }}>{defaultNames[num - 1]}</span>
                   )}
                 </div>
+              );
+
+              return partnerLink ? (
+                <a key={num} href={partnerLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block', width: '100%', maxWidth: '220px' }}>
+                  {innerContent}
+                </a>
+              ) : (
+                <React.Fragment key={num}>
+                  {innerContent}
+                </React.Fragment>
               );
             })}
           </div>

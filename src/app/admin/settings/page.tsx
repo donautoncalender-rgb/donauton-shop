@@ -195,6 +195,18 @@ async function saveSettings(formData: FormData) {
   await handleBannerUpload('partner3File', 'partner_3_logo');
   await handleBannerUpload('partner4File', 'partner_4_logo');
 
+  // Handle Partner Links
+  for (let i = 1; i <= 4; i++) {
+    const link = formData.get(`partner${i}Link`) as string | null;
+    if (link != null) {
+      await prisma.shopSetting.upsert({
+        where: { key: `partner_${i}_link` },
+        update: { value: link },
+        create: { key: `partner_${i}_link`, value: link }
+      });
+    }
+  }
+
   revalidatePath('/admin/settings');
   revalidatePath('/'); // update frontend too
   redirect('/admin/settings?success=1');
@@ -257,6 +269,15 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                         className="admin-input" 
                         placeholder="ODER Bild-URL"
                         defaultValue={settings[`partner_${num}_logo`] || ''} 
+                        style={{ fontSize: '0.85rem' }}
+                      />
+                      <div style={{ height: '1px', background: '#e2e8f0', margin: '0.5rem 0' }} />
+                      <input 
+                        name={`partner${num}Link`} 
+                        type="url" 
+                        className="admin-input" 
+                        placeholder="Ziel-Link (https://...)"
+                        defaultValue={settings[`partner_${num}_link`] || ''} 
                         style={{ fontSize: '0.85rem' }}
                       />
                     </div>
