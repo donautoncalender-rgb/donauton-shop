@@ -1667,3 +1667,28 @@ ul {
   }
 }
 
+/* Checkout Responsive Layout */
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 4rem;
+  align-items: start;
+}
+
+.checkout-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .checkout-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+

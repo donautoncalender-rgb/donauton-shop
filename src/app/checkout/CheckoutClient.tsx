@@ -196,7 +196,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
     <div className="container page-container animate-fade-in" style={{ padding: '4rem 2rem' }}>
       <h1 className="page-title" style={{ fontSize: '2.5rem', marginBottom: '3rem' }}>Kasse</h1>
 
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 400px', gap: '4rem', alignItems: 'start' }}>
+      <form className="checkout-layout" onSubmit={handleSubmit}>
         
         {/* Left Side: Forms */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -231,7 +231,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
           {/* Step 1 */}
           <section>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 600, borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '2rem' }}>1. Rechnungsdetails</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="checkout-form-grid">
               <div><label style={labelStyle}>Vorname</label><input required name="firstName" value={formData.firstName} onChange={handleInputChange} type="text" style={inputStyle} /></div>
               <div><label style={labelStyle}>Nachname</label><input required name="lastName" value={formData.lastName} onChange={handleInputChange} type="text" style={inputStyle} /></div>
               <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>Firma (optional)</label><input name="companyName" value={formData.companyName} onChange={handleInputChange} type="text" style={inputStyle} /></div>
