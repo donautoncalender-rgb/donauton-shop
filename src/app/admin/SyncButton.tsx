@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 
+import { useRouter } from "next/navigation";
+
 export default function SyncButton() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
   const handleSync = async () => {
     setLoading(true);
@@ -16,6 +19,7 @@ export default function SyncButton() {
       const data = await response.json();
       if (data.success) {
         setMessage(data.message);
+        router.refresh();
       } else {
         setMessage("Fehler: " + data.error);
       }
