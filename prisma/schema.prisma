@@ -107,6 +107,7 @@ model Order {
   address         String
   zipCode         String
   city            String
+  country         String   @default("DE")
   email           String
   
   // Payment & Totals

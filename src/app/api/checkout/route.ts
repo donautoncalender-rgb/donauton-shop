@@ -105,6 +105,7 @@ export async function POST(request: Request) {
         address: formData.address,
         zipCode: formData.zip,
         city: formData.city,
+        country: formData.country || 'DE',
         email: formData.email,
         
         paymentMethod: formData.payment,
@@ -186,20 +187,24 @@ export async function POST(request: Request) {
     }
 
     // Sync to ERP & Newsletter for PayPal / invoice / bank transfer
-    try {
-      await syncOrderDetails(
-        order.id,
-        {
-          password: formData.password,
-          createAccount: formData.createAccount,
-          newsletter: formData.newsletter,
-          finalPaymentStatus: isPaid ? 'paid' : 'pending'
-        },
-        baseUrl
-      );
-    } catch (syncError) {
-      console.error("Failed to sync checkout immediately:", syncError);
-      // We still return success since the order was successfully created in the shop DB
+    // Skip immediate sync for PayPal if it's pending (we sync it after payment capture)
+    const skipSync = (formData.payment === 'PayPal' && !isPaid);
+    if (!skipSync) {
+      try {
+        await syncOrderDetails(
+          order.id,
+          {
+            password: formData.password,
+            createAccount: formData.createAccount,
+            newsletter: formData.newsletter,
+            finalPaymentStatus: isPaid ? 'paid' : 'pending'
+          },
+          baseUrl
+        );
+      } catch (syncError) {
+        console.error("Failed to sync checkout immediately:", syncError);
+        // We still return success since the order was successfully created in the shop DB
+      }
     }
 
     return NextResponse.json({ 
