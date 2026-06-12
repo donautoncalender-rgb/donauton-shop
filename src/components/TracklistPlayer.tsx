@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, Music } from 'lucide-react';
+import { Play, Pause, Volume2, Music, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Track {
   id: string;
@@ -23,6 +23,7 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -178,14 +179,19 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
       <audio ref={audioRef} />
 
       {/* Header */}
-      <div style={{
-        background: '#fafafa',
-        borderBottom: '1px solid #f3f4f6',
-        padding: '1.2rem 1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.8rem'
-      }}>
+      <div 
+        onClick={() => setIsExpanded(!isExpanded)}
+        style={{
+          background: '#fafafa',
+          borderBottom: isExpanded ? '1px solid #f3f4f6' : 'none',
+          padding: '1.2rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.8rem',
+          cursor: 'pointer',
+          userSelect: 'none'
+        }}
+      >
         <Music style={{ width: '20px', height: '20px', color: 'var(--accent, #cd1719)' }} />
         <h3 style={{
           fontSize: '1rem',
@@ -193,15 +199,22 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
           margin: 0,
-          color: '#111'
+          color: '#111',
+          flex: 1
         }}>
           Titelliste & Hörproben
         </h3>
+        {isExpanded ? (
+          <ChevronUp style={{ width: '20px', height: '20px', color: '#555' }} />
+        ) : (
+          <ChevronDown style={{ width: '20px', height: '20px', color: '#555' }} />
+        )}
       </div>
 
       {/* List */}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {tracks.map((track, index) => {
+      {isExpanded && (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {tracks.map((track, index) => {
           const isCurrent = currentTrackIndex === index;
           const hasAudio = !!track.audioPath;
 
@@ -267,17 +280,26 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
               </div>
 
               {/* Title & Status */}
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '1rem' }}>
-                <span style={{
-                  fontSize: '0.95rem',
-                  fontWeight: isCurrent ? 700 : 500,
-                  color: isCurrent ? 'var(--accent, #cd1719)' : '#333',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', minWidth: 0, paddingRight: '1rem', gap: '0.6rem' }}>
+                <span 
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: isCurrent ? 700 : 500,
+                    color: isCurrent ? 'var(--accent, #cd1719)' : '#333',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) => { if (hasAudio) e.currentTarget.style.textDecoration = 'underline'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
+                >
                   {track.title}
                 </span>
+
+                {hasAudio && !isCurrent && (
+                  <Volume2 style={{ width: '15px', height: '15px', color: '#9ca3af', flexShrink: 0 }} />
+                )}
 
                 {/* Animated Waveform */}
                 {isCurrent && isPlaying && (
@@ -291,9 +313,6 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
 
               {/* Duration / Audio Indicator */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                {hasAudio && !isCurrent && (
-                  <Volume2 style={{ width: '16px', height: '16px', color: '#bbb' }} />
-                )}
                 <span style={{
                   fontSize: '0.85rem',
                   fontFamily: 'monospace',
@@ -306,7 +325,8 @@ export default function TracklistPlayer({ tracksJson }: TracklistPlayerProps) {
             </div>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* Global Mini Player Control (renders if a track is active) */}
       {currentTrack && (
