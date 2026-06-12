@@ -29,14 +29,15 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const isTicket = product.category?.toLowerCase() === 'tickets';
+    const isTicket = product.category?.toLowerCase() === 'tickets' || product.category?.toLowerCase() === 'ticket';
     addToCart({
       id: product.id.toString(),
       title: product.title,
       price: parseFloat(product.price.replace(',', '.')),
       quantity: 1,
       variant: isTicket ? 'Digital' : 'Gedruckte Ausgabe',
-      image: product.image
+      image: product.image,
+      category: product.category
     });
     toggleCart();
   };

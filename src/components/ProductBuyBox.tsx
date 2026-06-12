@@ -15,6 +15,7 @@ interface ProductBuyBoxProps {
     publisher?: string | null;
     variantsJson?: string | null;
     sku?: string | null;
+    category?: string | null;
   };
 }
 
@@ -178,7 +179,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
-          <AddToCartButton size="large" product={{ id: product.id, title: cartTitle, price: currentPriceStr, image: product.image, publisher: product.publisher || null, sku: cartSku }} selectedVariant={variant} quantity={variant === 'Digital' ? 1 : quantity} />
+          <AddToCartButton size="large" product={{ id: product.id, title: cartTitle, price: currentPriceStr, image: product.image, publisher: product.publisher || null, sku: cartSku, category: product.category }} selectedVariant={variant} quantity={variant === 'Digital' ? 1 : quantity} />
       </div>
 
       {/* Guarantees */}

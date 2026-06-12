@@ -142,7 +142,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               price: product.price,
               image: image,
               stockStatus: product.stockStatus,
-              isTicket: true
+              isTicket: true,
+              category: product.category
             }}
             selectedVariant="Digital"
           />

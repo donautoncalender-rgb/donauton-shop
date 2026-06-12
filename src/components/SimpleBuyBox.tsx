@@ -11,6 +11,7 @@ interface SimpleBuyBoxProps {
     image: string;
     stockStatus: string;
     isTicket?: boolean;
+    category?: string | null;
   };
   selectedVariant?: string;
 }
@@ -87,7 +88,7 @@ export default function SimpleBuyBox({ product, selectedVariant }: SimpleBuyBoxP
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
-         <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: product.price, image: product.image }} selectedVariant={selectedVariant} quantity={quantity} />
+         <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: product.price, image: product.image, category: product.isTicket ? 'Tickets' : product.category }} selectedVariant={selectedVariant} quantity={quantity} />
       </div>
 
       {/* Guarantees */}

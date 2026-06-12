@@ -11,6 +11,7 @@ export interface CartItem {
   image: string;
   publisher?: string | null;
   sku?: string | null;
+  category?: string | null;
 }
 
 interface CartContextType {

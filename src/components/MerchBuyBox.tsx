@@ -13,6 +13,7 @@ interface MerchBuyBoxProps {
     sizes: string[];
     colors: string[];
     variantsJson?: string | null;
+    category?: string | null;
   };
 }
 
@@ -355,7 +356,8 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
              title: product.title, 
              price: currentPrice, 
              image: product.image,
-             sku: cartSku
+             sku: cartSku,
+             category: product.category
            }} 
            selectedVariant={combinedVariant} 
            quantity={quantity} 
