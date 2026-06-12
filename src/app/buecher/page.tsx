@@ -36,12 +36,15 @@ export default async function BuecherPage() {
     category: p.category || 'Bücher'
   }));
 
+  const bannerSetting = await prisma.shopSetting.findUnique({ where: { key: 'banner_url_buecher' } });
+  const customBannerUrl = bannerSetting?.value;
+
   return (
     <div className="container page-container">
       <CategoryBanner 
         title="Bücher & Literatur"
         subtitle="Fachliteratur, Lehrwerke, und humorvolle Geschichten für jeden Blasmusiker."
-        imageUrl="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=1200&q=80"
+        imageUrl={customBannerUrl || "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=1200&q=80"}
         gradient="linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)"
       />
 

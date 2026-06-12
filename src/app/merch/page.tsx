@@ -37,12 +37,15 @@ export default async function MerchPage() {
     category: p.category || 'Merch'
   }));
 
+  const bannerSetting = await prisma.shopSetting.findUnique({ where: { key: 'banner_url_merch' } });
+  const customBannerUrl = bannerSetting?.value;
+
   return (
     <div className="container page-container">
       <CategoryBanner 
         title="Merchandise"
         subtitle="Zeige deine Liebe zur Blasmusik. Hochwertige Kleidung und Accessoires im Donauton-Design."
-        imageUrl="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1200&q=80"
+        imageUrl={customBannerUrl || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1200&q=80"}
         gradient="linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 100%)"
       />
 

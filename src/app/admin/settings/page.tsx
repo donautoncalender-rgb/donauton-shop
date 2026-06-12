@@ -155,6 +155,35 @@ async function saveSettings(formData: FormData) {
     });
   }
 
+  // Handle Banner Uploads
+  const handleBannerUpload = async (fileKey: string, dbKey: string) => {
+    const file = formData.get(fileKey) as File | null;
+    let url = formData.get(`${fileKey}Url`) as string;
+    if (file && file.size > 0) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const extMatch = file.name.match(/\.[0-9a-z]+$/i);
+      const ext = extMatch ? extMatch[0] : '.jpg';
+      const filename = `banner-${dbKey}-${Date.now()}${ext}`;
+      try {
+        const blob = await put(filename, buffer, { access: 'public', contentType: file.type });
+        url = blob.url;
+      } catch(e) { console.error('Blob upload failed for banner', e); }
+    }
+    if (url != null && url !== "") {
+      await prisma.shopSetting.upsert({
+        where: { key: dbKey },
+        update: { value: url },
+        create: { key: dbKey, value: url }
+      });
+    }
+  };
+
+  await handleBannerUpload('bannerFileCDs', 'banner_url_cds');
+  await handleBannerUpload('bannerFileNoten', 'banner_url_noten');
+  await handleBannerUpload('bannerFileMerch', 'banner_url_merch');
+  await handleBannerUpload('bannerFileBuecher', 'banner_url_buecher');
+
   revalidatePath('/admin/settings');
   revalidatePath('/'); // update frontend too
   redirect('/admin/settings?success=1');
@@ -281,6 +310,68 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </div>
 
           <button type="submit" className="admin-btn">Einstellungen speichern</button>
+        </form>
+      </div>
+
+      <div className="admin-card" style={{ marginTop: '2rem' }}>
+        <h3 className="admin-card-title">🖼️ Kategorie-Banner Bilder</h3>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1.5rem' }}>
+          Lade hier eigene Hintergrundbilder für die Kopfzeilen der jeweiligen Kategorien hoch. Wenn du kein Bild hinterlegst, wird das Standard-Hintergrundbild verwendet.
+        </p>
+        
+        <form action={saveSettings} encType="multipart/form-data">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            
+            {/* Noten Banner */}
+            <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <h4 style={{ marginBottom: '1rem', color: '#333' }}>Noten</h4>
+              {settings['banner_url_noten'] && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <img src={settings['banner_url_noten']} alt="Noten Banner" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                </div>
+              )}
+              <input name="bannerFileNoten" type="file" accept="image/*" className="admin-input" style={{ marginBottom: '0.5rem', padding: '0.5rem' }} />
+              <input name="bannerFileNotenUrl" type="text" className="admin-input" placeholder="Oder Bild-URL einfügen" defaultValue={settings['banner_url_noten'] || ''} />
+            </div>
+
+            {/* CDs Banner */}
+            <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <h4 style={{ marginBottom: '1rem', color: '#333' }}>CDs & Audio</h4>
+              {settings['banner_url_cds'] && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <img src={settings['banner_url_cds']} alt="CDs Banner" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                </div>
+              )}
+              <input name="bannerFileCDs" type="file" accept="image/*" className="admin-input" style={{ marginBottom: '0.5rem', padding: '0.5rem' }} />
+              <input name="bannerFileCDsUrl" type="text" className="admin-input" placeholder="Oder Bild-URL einfügen" defaultValue={settings['banner_url_cds'] || ''} />
+            </div>
+
+            {/* Merchandise Banner */}
+            <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <h4 style={{ marginBottom: '1rem', color: '#333' }}>Merchandise</h4>
+              {settings['banner_url_merch'] && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <img src={settings['banner_url_merch']} alt="Merch Banner" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                </div>
+              )}
+              <input name="bannerFileMerch" type="file" accept="image/*" className="admin-input" style={{ marginBottom: '0.5rem', padding: '0.5rem' }} />
+              <input name="bannerFileMerchUrl" type="text" className="admin-input" placeholder="Oder Bild-URL einfügen" defaultValue={settings['banner_url_merch'] || ''} />
+            </div>
+
+            {/* Bücher Banner */}
+            <div style={{ padding: '1rem', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+              <h4 style={{ marginBottom: '1rem', color: '#333' }}>Bücher</h4>
+              {settings['banner_url_buecher'] && (
+                <div style={{ marginBottom: '1rem' }}>
+                  <img src={settings['banner_url_buecher']} alt="Bücher Banner" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '4px' }} />
+                </div>
+              )}
+              <input name="bannerFileBuecher" type="file" accept="image/*" className="admin-input" style={{ marginBottom: '0.5rem', padding: '0.5rem' }} />
+              <input name="bannerFileBuecherUrl" type="text" className="admin-input" placeholder="Oder Bild-URL einfügen" defaultValue={settings['banner_url_buecher'] || ''} />
+            </div>
+
+          </div>
+          <button type="submit" className="admin-btn" style={{ marginTop: '1.5rem', background: '#3b82f6' }}>Banner speichern</button>
         </form>
       </div>
       <div className="admin-card" style={{ marginTop: '2rem' }}>

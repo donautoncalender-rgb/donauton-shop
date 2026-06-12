@@ -43,12 +43,15 @@ export default async function CDsShop() {
     composer: p.artist || p.composer || ''
   }));
 
+  const bannerSetting = await prisma.shopSetting.findUnique({ where: { key: 'banner_url_cds' } });
+  const customBannerUrl = bannerSetting?.value;
+
   return (
     <div className="container page-container">
       <CategoryBanner 
         title="CDs & Tonträger"
         subtitle="Lauschen Sie unseren Meisterwerken in bester Qualität – auf CD, edler Schallplatte oder direkt als digitaler USB-Stick."
-        imageUrl="https://images.unsplash.com/photo-1619983081563-430f63602796?w=1200&q=80"
+        imageUrl={customBannerUrl || "https://images.unsplash.com/photo-1619983081563-430f63602796?w=1200&q=80"}
         gradient="linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)"
       />
 
