@@ -126,7 +126,7 @@ export default function SettingsPage() {
         
         <section>
           <h3 style={{ fontSize: '1.3rem', fontWeight: 600, borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>Persönliche Daten</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="konto-form-grid">
             <div><label style={labelStyle}>Vorname</label><input type="text" name="first_name" style={inputStyle} value={formData.first_name} onChange={handleChange} /></div>
             <div><label style={labelStyle}>Nachname</label><input type="text" name="last_name" style={inputStyle} value={formData.last_name} onChange={handleChange} /></div>
             <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>E-Mail Adresse (Login)</label><input type="email" name="email" style={inputStyle} value={formData.email} disabled title="E-Mail kann nur vom Support geändert werden" /></div>
@@ -135,7 +135,7 @@ export default function SettingsPage() {
 
         <section>
           <h3 style={{ fontSize: '1.3rem', fontWeight: 600, borderBottom: '1px solid var(--border)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>Standard-Adresse (Für den Checkout)</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="konto-form-grid">
             <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>Firma / Verein (optional)</label><input type="text" name="company" style={inputStyle} value={formData.company} onChange={handleChange} /></div>
             <div style={{ gridColumn: '1 / -1' }}><label style={labelStyle}>Straße & Hausnummer</label><input type="text" name="street" style={inputStyle} value={formData.street} onChange={handleChange} /></div>
             <div><label style={labelStyle}>PLZ</label><input type="text" name="zip" style={inputStyle} value={formData.zip} onChange={handleChange} /></div>

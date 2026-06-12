@@ -89,7 +89,7 @@ export default function OrdersPage() {
           {orders.map(order => {
             const statusConfig = getStatusColor(order.status);
             return (
-              <div key={order.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.5rem' }}>
+              <div className="order-list-item" key={order.id}>
                 
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
@@ -102,7 +102,7 @@ export default function OrdersPage() {
                   <p style={{ color: '#64748b', fontSize: '0.9rem' }}>{order.items.join(', ')}</p>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div className="order-list-item-actions">
                   <a 
                     href={`/api/customer/invoice?email=${encodeURIComponent(customerEmail)}&orderId=${order.real_id}`}
                     download

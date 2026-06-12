@@ -1691,4 +1691,57 @@ ul {
   }
 }
 
+/* Konto Responsive Layout */
+.konto-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.konto-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.order-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.order-list-item-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .konto-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .konto-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .order-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  .order-list-item-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  .order-list-item-actions a {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
 

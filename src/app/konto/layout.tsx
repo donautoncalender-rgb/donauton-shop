@@ -11,7 +11,7 @@ export default function KontoLayout({ children }: { children: React.ReactNode })
     <div className="container animate-fade-in" style={{ paddingTop: '10rem', paddingBottom: '6rem' }}>
       <h1 className="page-title" style={{ fontSize: '2.8rem', marginBottom: '3rem', fontWeight: 800 }}>Mein Konto</h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '5rem', alignItems: 'start' }}>
+      <div className="konto-layout">
         
         {/* Sidebar Navigation */}
         <aside style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', position: 'sticky', top: '120px', backgroundColor: '#f8fafc', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
