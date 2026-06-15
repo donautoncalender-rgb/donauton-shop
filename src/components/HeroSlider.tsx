@@ -52,8 +52,9 @@ export default function HeroSlider({ slides }: { slides: any[] }) {
               {slide.text}
             </p>
             <div style={{ marginTop: '0.5rem' }}>
-              <Link href={slide.link} className="btn btn-primary" style={{ padding: '0.9rem 2.5rem', fontSize: '1.1rem', boxShadow: '0 10px 30px rgba(205,23,25,0.5)' }}>
+              <Link href={slide.link} className="btn btn-primary" style={{ padding: '0.9rem 2.5rem', fontSize: '1.1rem', boxShadow: '0 10px 30px rgba(205,23,25,0.5)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                 {slide.btnText}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
               </Link>
             </div>
           </div>
