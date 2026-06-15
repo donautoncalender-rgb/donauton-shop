@@ -4,7 +4,9 @@ import { prisma } from '../../../../lib/prisma';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password, redirectUrl } = body;
+    const email = body.email?.trim().toLowerCase();
+    const password = body.password;
+    const redirectUrl = body.redirectUrl;
 
     if (!email || !password) {
       return NextResponse.json({ error: "E-Mail und Passwort erforderlich" }, { status: 400 });

@@ -4,7 +4,8 @@ import { prisma } from '../../../../lib/prisma';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const email = body.email?.trim().toLowerCase();
+    const password = body.password;
 
     // Hole ggf. die Suite URL aus den Shop-Settings (gleiche Logik wie beim ERP Sync)
     const erpUrlSetting = await prisma.shopSetting.findUnique({ where: { key: 'erp_suite_url' }});
