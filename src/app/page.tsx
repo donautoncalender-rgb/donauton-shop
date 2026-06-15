@@ -240,15 +240,15 @@ export default async function Home() {
             {[1, 2, 3, 4].map(uspNum => {
               const defaultTitles = [
                'Europas größte Noten-Auswahl',
-               '30 Tage Money-Back',
+               'Sichere Bezahlung',
                'Blitzversand',
                'Noten sofort digital'
              ];
              const defaultTexts = [
                'Hunderte Stücke direkt digital verfügbar oder auf dem reinen Postweg direkt aufs Pult geliefert.',
-               'Passt der Sound doch nicht zur Kapelle? Geld zurück. Ganz ohne große Fragen.',
+               'Bezahlen Sie sicher und bequem per PayPal, Kreditkarte oder Apple Pay. Käuferschutz inklusive.',
                'Wir verpacken täglich. Viele Audio-Drucke und Noten sind bereits in 48 Stunden im Briefkasten.',
-               'Erstelle dir sofort einen Account und greife ohne Umwege auf digitale Partituren zu.'
+               'Unsere Produkte gibt es bei uns alle zum Sofort-Download! Kundenkonto erstellen und los gehts!'
              ];
              const defaultIcons = [
                '<svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>',
