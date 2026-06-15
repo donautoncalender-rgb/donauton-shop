@@ -94,7 +94,7 @@ export async function POST(request: Request) {
     }
     const calculatedTotal = calculatedSubtotal + shipping;
 
-    const isPaid = (formData.payment === 'PayPal' && paymentStatus === 'paid');
+    const isPaid = calculatedTotal === 0 || (formData.payment === 'PayPal' && paymentStatus === 'paid');
 
     // Create the order in database
     const order = await prisma.order.create({
