@@ -94,7 +94,9 @@ export default async function RootLayout({
       } else {
         const genre = p.genre ? p.genre.trim() : 'Ohne Genre';
         if (genre !== 'Ohne Genre') {
-          taxonomyMap.get(mainBesetzung)!.items.add(genre);
+          genre.split(';').forEach((g: string) => {
+            if (g.trim()) taxonomyMap.get(mainBesetzung)!.items.add(g.trim());
+          });
         }
       }
     });

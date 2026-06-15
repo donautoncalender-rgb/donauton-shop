@@ -102,7 +102,9 @@ export default function NotenfinderClient({
          taxonomyMap.get(main)!.items.add(p.soloinstrument);
          taxonomyMap.get(main)!.type = 'solist';
       } else if (p.genre && p.genre !== 'Ohne Genre') {
-         taxonomyMap.get(main)!.items.add(p.genre);
+         p.genre.split(';').forEach((g: string) => {
+           if (g.trim()) taxonomyMap.get(main)!.items.add(g.trim());
+         });
       }
     });
     return Array.from(taxonomyMap.entries()).map(([b, data]) => ({
