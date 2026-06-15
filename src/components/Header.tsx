@@ -465,9 +465,11 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
 
           {composers && composers.length > 0 && (
             <div className="nav-item-dropdown">
-              <span className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', textAlign: 'center', whiteSpace: 'normal' }}>
-                <span style={{ textAlign: 'center' }}>Unsere Autor*innen</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
+              <span className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', whiteSpace: 'normal', textAlign: 'center' }}>
+                <span style={{ display: 'inline-block', textAlign: 'center' }}>
+                  Unsere Autor*innen
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: '4px', flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
+                </span>
               </span>
               
               <div className="dropdown-level-1" style={{ maxHeight: '350px', overflowY: 'auto' }}>
