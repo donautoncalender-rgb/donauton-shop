@@ -117,7 +117,8 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
 
   const handleSubmit = async (e?: React.FormEvent, paymentStatus: string = 'pending') => {
     if (e) e.preventDefault();
-    
+    if (formData.payment === 'PayPal' && paypalClientId && grandTotal > 0) return; // Prevent default submit for PayPal if total > 0
+
     if (formData.payment !== 'PayPal' && formData.createAccount && !isLoggedIn && !formData.password) {
       alert('Bitte lege ein Passwort für dein neues Kundenkonto fest.');
       return;
@@ -406,7 +407,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
             </div>
           </div>
 
-          {(formData.payment === 'PayPal' && paypalClientId) ? (
+          {(formData.payment === 'PayPal' && paypalClientId && grandTotal > 0) ? (
             <div style={{ marginTop: '1.5rem', zIndex: 0, position: 'relative' }}>
               <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "EUR", intent: "capture" }}>
                 <PayPalButtons
@@ -515,13 +516,25 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
                           })
                         });
 
-                        const confirmData = await confirmRes.json();
-                        if (confirmData.success) {
+                        let confirmData;
+                        const contentType = confirmRes.headers.get("content-type");
+                        if (confirmRes.ok && contentType && contentType.includes("application/json")) {
+                          confirmData = await confirmRes.json();
                           setSuccess(true);
                           setOrderDetails(confirmData);
                           clearCart();
                         } else {
-                          alert((confirmData.error || 'Fehler bei der Bestellungsbestätigung') + (confirmData.details ? '\nDetails: ' + confirmData.details : ''));
+                          let errorMsg = 'Fehler bei der Bestellungsbestätigung';
+                          try {
+                            const errBody = await confirmRes.json();
+                            errorMsg = errBody.error || errorMsg;
+                          } catch (e) {
+                            try {
+                              const text = await confirmRes.text();
+                              errorMsg += ` (Status: ${confirmRes.status}): ${text.substring(0, 100)}`;
+                            } catch (e2) {}
+                          }
+                          alert(errorMsg);
                         }
                       } catch (captureError: any) {
                         console.error('PayPal capture error:', captureError);
@@ -546,7 +559,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
                 </div>
               )}
               <button type="submit" disabled={loading || !!(turnstileSiteKey && !turnstileToken)} className="btn btn-primary" style={{ width: '100%', padding: '1.2rem', fontSize: '1.1rem', opacity: (loading || (turnstileSiteKey && !turnstileToken)) ? 0.7 : 1 }}>
-                {loading ? 'Verarbeite...' : 'Zahlungspflichtig bestellen'}
+                {loading ? 'Verarbeite...' : (grandTotal === 0 ? 'Kostenlos herunterladen' : 'Zahlungspflichtig bestellen')}
               </button>
             </>
           )}

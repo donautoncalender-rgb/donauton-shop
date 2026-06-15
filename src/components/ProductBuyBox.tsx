@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AddToCartButton from './AddToCartButton';
 
 interface ProductBuyBoxProps {
@@ -41,14 +41,30 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
   const selectedOption = options.find((opt: any) => opt.id === selectedOptionId) || options[0];
 
-  // Convert string price to number for physical
-  const physicalPriceStr = selectedOption.price.replace(' €', '').replace(',', '.');
-  const physicalPrice = parseFloat(physicalPriceStr);
+  // Convert string price to number for physical safely
+  const cleanPhysPrice = (selectedOption.price || '0').toString().toLowerCase().replace('kostenlos', '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, '');
+  let physicalPrice = parseFloat(cleanPhysPrice);
+  if (isNaN(physicalPrice)) physicalPrice = 0;
   
-  const digitalPrice = product.digitalPrice || parseFloat(product.price.replace(' €', '').replace(',', '.'));
+  let digitalPriceVal = 0;
+  if (product.digitalPrice !== null && product.digitalPrice !== undefined) {
+      digitalPriceVal = product.digitalPrice;
+  } else {
+      const cleanDigPrice = (product.price || '0').toString().toLowerCase().replace('kostenlos', '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, '');
+      digitalPriceVal = parseFloat(cleanDigPrice);
+      if (isNaN(digitalPriceVal)) digitalPriceVal = 0;
+  }
 
-  const currentPrice = variant === 'Physisch' ? physicalPrice : digitalPrice;
-  const currentPriceStr = currentPrice.toFixed(2).replace('.', ',');
+  const isDigitalOnly = product.hasDigitalDownload && physicalPrice === 0;
+
+  useEffect(() => {
+    if (isDigitalOnly && variant === 'Physisch') {
+        setVariant('Digital');
+    }
+  }, [isDigitalOnly, variant]);
+
+  const currentPrice = variant === 'Physisch' ? physicalPrice : digitalPriceVal;
+  const currentPriceStr = currentPrice === 0 ? "Kostenlos" : currentPrice.toFixed(2).replace('.', ',');
 
   const stockStatus = variant === 'Digital' ? 'instock' : selectedOption.stockStatus;
 
@@ -63,7 +79,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
     <div style={{ background: '#f5f5f5', border: '1px solid #e1e1e1', borderRadius: '4px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
       
       {/* Variant Selector */}
-      {product.hasDigitalDownload && (
+      {product.hasDigitalDownload && !isDigitalOnly && (
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', background: '#e2e8f0', padding: '4px', borderRadius: '8px' }}>
           <button 
             onClick={() => setVariant('Physisch')}
@@ -92,6 +108,13 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
         </div>
       )}
 
+      {/* When digital only, we can just show a small badge instead of a selector */}
+      {isDigitalOnly && (
+        <div style={{ marginBottom: '1.5rem', padding: '0.8rem', background: '#f0fdf4', color: '#166534', borderRadius: '6px', fontWeight: 600, fontSize: '0.95rem', border: '1px solid #bbf7d0', textAlign: 'center' }}>
+          Dieses Produkt ist ausschließlich als kostenloser digitaler Download (PDF) verfügbar.
+        </div>
+      )}
+
       {/* Voice Selection Dropdown */}
       {variants.length > 0 && variant === 'Physisch' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
@@ -117,7 +140,9 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
         <div style={{ fontSize: '2.8rem', fontWeight: 900, color: '#111', lineHeight: 1 }}>
-          {currentPriceStr} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
+          {currentPrice === 0 ? "Kostenlos" : (
+             <>{currentPriceStr} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span></>
+          )}
         </div>
       </div>
       
