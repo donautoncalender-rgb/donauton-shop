@@ -351,6 +351,33 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
         @keyframes searchSpin {
            to { transform: rotate(360deg); }
         }
+        .musikwelt-btn {
+           display: inline-flex;
+           align-items: center;
+           gap: 6px;
+           background-color: transparent;
+           color: var(--primary);
+           border: 1.5px solid var(--accent);
+           padding: 0.4rem 1rem;
+           border-radius: 30px;
+           font-size: 0.8rem;
+           font-weight: 700;
+           text-decoration: none;
+           transition: all 0.3s ease;
+           white-space: nowrap;
+           margin-right: 0.5rem;
+        }
+        .musikwelt-btn:hover {
+           background-color: var(--accent);
+           color: white !important;
+           box-shadow: 0 4px 15px rgba(205, 23, 25, 0.2);
+           transform: translateY(-1px);
+        }
+        @media (max-width: 900px) {
+           .musikwelt-btn {
+              display: none;
+           }
+        }
       `}} />
       <header className="header">
         <div className="container header-content">
@@ -507,6 +534,14 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
               </div>
             )}
           </div>
+          <a 
+            href="https://www.donauton.de" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="musikwelt-btn"
+          >
+            DONAUTON Musikwelt
+          </a>
           <Link href="/merkliste" className="icon-btn" aria-label="Merkliste" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -560,6 +595,16 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
           <Link href="/merch" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Merchandise</Link>
           <Link href="/buecher" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Bücher</Link>
           <Link href="/tickets" className="mobile-nav-link" onClick={() => setIsMobileMenuOpen(false)}>Tickets</Link>
+          <a 
+            href="https://www.donauton.de" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="mobile-nav-link" 
+            style={{ color: 'var(--accent)' }}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            DONAUTON Musikwelt ↗
+          </a>
         </nav>
       </div>
     )}
