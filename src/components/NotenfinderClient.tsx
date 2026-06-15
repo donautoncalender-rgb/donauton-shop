@@ -136,7 +136,7 @@ export default function NotenfinderClient({
     const genres = new Set<string>();
     initialProducts.forEach(p => {
       if (p.genre && p.genre.trim() !== '' && p.genre !== 'Ohne Genre') {
-        p.genre.split(';').forEach(g => {
+        p.genre.split(';').forEach((g: string) => {
           if (g.trim()) genres.add(g.trim());
         });
       }
@@ -229,9 +229,9 @@ export default function NotenfinderClient({
         (product.soloinstrument && selectedSoloinstruments.includes(product.soloinstrument.trim()));
 
       // 2. Genre filter (Exact mapping from Suite)
-      const pGenres = product.genre ? product.genre.split(';').map(g => g.trim()) : [];
+      const pGenres = product.genre ? product.genre.split(';').map((g: string) => g.trim()) : [];
       const matchesGenre = selectedGenres.length === 0 || 
-        selectedGenres.some(sg => pGenres.includes(sg));
+        selectedGenres.some((sg: string) => pGenres.includes(sg));
 
       // 3. Grade filter (Exact mapping from Suite)
       const matchesGrade = selectedGrades.length === 0 || 

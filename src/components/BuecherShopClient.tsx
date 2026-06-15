@@ -18,7 +18,7 @@ export default function BuecherShopClient({ initialProducts }: { initialProducts
     initialProducts.forEach(p => {
       // product.genre maps to what was historically called topic
       if (p.genre && p.genre.trim() !== '' && p.genre !== 'Ohne Genre') {
-        p.genre.split(';').forEach(g => {
+        p.genre.split(';').forEach((g: string) => {
           if (g.trim()) genres.add(g.trim());
         });
       }
@@ -50,8 +50,8 @@ export default function BuecherShopClient({ initialProducts }: { initialProducts
         product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.author.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const pGenres = product.genre ? product.genre.split(';').map(g => g.trim()) : [];
-      const matchesGenre = selectedGenres.length === 0 || selectedGenres.some(sg => pGenres.includes(sg));
+      const pGenres = product.genre ? product.genre.split(';').map((g: string) => g.trim()) : [];
+      const matchesGenre = selectedGenres.length === 0 || selectedGenres.some((sg: string) => pGenres.includes(sg));
       const matchesAuthor = selectedAuthors.length === 0 || selectedAuthors.some(a => product.author.includes(a));
 
       return matchesSearch && matchesGenre && matchesAuthor;
