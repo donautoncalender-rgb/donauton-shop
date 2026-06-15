@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '../../context/CartContext';
 import Link from 'next/link';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
@@ -8,6 +8,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shippingZones = [] }: { paypalClientId: string | null, turnstileSiteKey: string | null, shippingZones?: any[] }) {
   const { items, cartTotal, clearCart } = useCart();
+  const paypalOrderIdRef = useRef<string | null>(null);
   
   // Dynamic Shipping Logic
   const hasOnlyDigitalItems = items.length > 0 && items.every(item => item.variant === 'Digital');
@@ -422,16 +423,112 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
                     }
                     return actions.resolve();
                   }}
-                  createOrder={(data, actions) => {
-                    return actions.order.create({
-                      intent: "CAPTURE",
-                      purchase_units: [{ amount: { currency_code: "EUR", value: grandTotal.toFixed(2) } }]
-                    });
+                  createOrder={async (data, actions) => {
+                    try {
+                      // 1. Create a pending order on the backend first to get the sequential order number
+                      const response = await fetch('/api/checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          formData,
+                          items: items.map((item: any) => ({
+                            ...item,
+                            attendeeNames: attendeeNames[item.id] || []
+                          })),
+                          totals: { subtotal: cartTotal, shipping: shippingCost, total: grandTotal },
+                          paymentStatus: 'pending'
+                        })
+                      });
+
+                      const resData = await response.json();
+                      if (!resData.success) {
+                        alert(resData.error || 'Fehler beim Vorbereiten der PayPal-Zahlung');
+                        throw new Error(resData.error || 'Failed to create order');
+                      }
+
+                      // Save order ID for the onApprove callback
+                      paypalOrderIdRef.current = resData.orderId;
+
+                      // 2. Map items for PayPal payload
+                      const paypalItems = items.map((item: any) => {
+                        const cleanPrice = parseFloat(item.price).toFixed(2);
+                        const cleanQuantity = parseInt(item.quantity).toString();
+                        return {
+                          name: item.title + (item.variant && item.variant !== 'Digital' ? ` (${item.variant})` : ''),
+                          unit_amount: {
+                            currency_code: 'EUR',
+                            value: cleanPrice
+                          },
+                          quantity: cleanQuantity,
+                          category: (item.variant === 'Digital' ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS') as 'DIGITAL_GOODS' | 'PHYSICAL_GOODS'
+                        };
+                      });
+
+                      // 3. Create the PayPal order with detailed breakdown and items
+                      return actions.order.create({
+                        intent: 'CAPTURE',
+                        purchase_units: [{
+                          invoice_id: resData.orderNumber,
+                          custom_id: resData.orderId,
+                          amount: {
+                            currency_code: 'EUR',
+                            value: grandTotal.toFixed(2),
+                            breakdown: {
+                              item_total: {
+                                currency_code: 'EUR',
+                                value: cartTotal.toFixed(2)
+                              },
+                              shipping: {
+                                currency_code: 'EUR',
+                                value: shippingCost.toFixed(2)
+                              }
+                            }
+                          },
+                          items: paypalItems
+                        }]
+                      });
+                    } catch (error) {
+                      console.error('PayPal createOrder error:', error);
+                      throw error;
+                    }
                   }}
                   onApprove={async (data, actions) => {
                     if (actions.order) {
-                      const details = await actions.order.capture();
-                      await handleSubmit(undefined, 'paid');
+                      setLoading(true);
+                      try {
+                        const details = await actions.order.capture();
+                        const orderId = paypalOrderIdRef.current;
+                        
+                        if (!orderId) {
+                          alert('Fehler: Keine zugehörige Bestellungs-ID gefunden.');
+                          setLoading(false);
+                          return;
+                        }
+
+                        // Call the confirm API to finalize the order and trigger ERP sync
+                        const confirmRes = await fetch('/api/checkout/confirm', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            orderId,
+                            formData
+                          })
+                        });
+
+                        const confirmData = await confirmRes.json();
+                        if (confirmData.success) {
+                          setSuccess(true);
+                          setOrderDetails(confirmData);
+                          clearCart();
+                        } else {
+                          alert((confirmData.error || 'Fehler bei der Bestellungsbestätigung') + (confirmData.details ? '\nDetails: ' + confirmData.details : ''));
+                        }
+                      } catch (captureError: any) {
+                        console.error('PayPal capture error:', captureError);
+                        alert('Zahlung konnte nicht erfasst werden: ' + captureError.message);
+                      } finally {
+                        setLoading(false);
+                      }
                     }
                   }}
                   onError={(err) => {
@@ -455,7 +552,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
           )}
 
           <div style={{ fontSize: '0.8rem', color: 'var(--text-light)', textAlign: 'center', marginTop: '1rem' }}>
-            Mit der Bestellung stimmen Sie unseren AGB und Datenschutzbestimmungen zu.
+            Mit der Bestellung stimmen Sie unseren <Link href="/agb" target="_blank" style={{ textDecoration: 'underline', color: 'inherit' }}>AGB</Link> und <Link href="/datenschutz" target="_blank" style={{ textDecoration: 'underline', color: 'inherit' }}>Datenschutzbestimmungen</Link> zu.
           </div>
         </div>
 
