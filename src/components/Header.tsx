@@ -351,33 +351,58 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
         @keyframes searchSpin {
            to { transform: rotate(360deg); }
         }
-        .musikwelt-btn {
-           display: inline-flex;
-           align-items: center;
-           gap: 6px;
-           background-color: transparent;
-           color: var(--primary);
-           border: 1.5px solid var(--accent);
-           padding: 0.4rem 1rem;
-           border-radius: 30px;
-           font-size: 0.8rem;
-           font-weight: 700;
-           text-decoration: none;
-           transition: all 0.3s ease;
-           white-space: nowrap;
-           margin-right: 0.5rem;
-        }
-        .musikwelt-btn:hover {
-           background-color: var(--accent);
-           color: white !important;
-           box-shadow: 0 4px 15px rgba(205, 23, 25, 0.2);
-           transform: translateY(-1px);
-        }
-        @media (max-width: 900px) {
-           .musikwelt-btn {
-              display: none;
-           }
-        }
+         .musikwelt-btn {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--accent);
+            padding: 0.25rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            line-height: 1.1;
+            text-align: center;
+            margin-right: 0.2rem;
+         }
+         .musikwelt-btn span:first-child {
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+            margin-bottom: 1px;
+         }
+         .musikwelt-btn:hover {
+            background-color: var(--accent);
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(205, 23, 25, 0.15);
+            transform: translateY(-1px);
+         }
+         @media (max-width: 900px) {
+            .musikwelt-btn {
+               display: none;
+            }
+         }
+         
+         /* Bring icons closer together */
+         .header-actions {
+            gap: 0.8rem !important;
+         }
+         
+         /* Prevent navigation links from being squeezed at medium widths */
+         @media (max-width: 1200px) {
+            .nav-links {
+               gap: 0.8rem !important;
+            }
+            .nav-link {
+               font-size: 0.8rem !important;
+            }
+         }
       `}} />
       <header className="header">
         <div className="container header-content">
@@ -540,7 +565,8 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
             rel="noopener noreferrer" 
             className="musikwelt-btn"
           >
-            DONAUTON Musikwelt
+            <span>DONAUTON</span>
+            <span>Musikwelt</span>
           </a>
           <Link href="/merkliste" className="icon-btn" aria-label="Merkliste" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
