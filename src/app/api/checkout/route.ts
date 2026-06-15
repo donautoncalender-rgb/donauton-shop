@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '../../../lib/prisma';
 import { syncOrderDetails } from './sync';
 
+export const maxDuration = 60; // Erlaubt bis zu 60 Sekunden Laufzeit auf Vercel (Pro Plan)
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -47,7 +49,8 @@ export async function POST(request: Request) {
     // Calculate subtotal from items to prevent tampering
     let calculatedSubtotal = 0;
     const orderItems = items.map((item: any) => {
-      const price = parseFloat(item.price);
+      let price = parseFloat(item.price);
+      if (isNaN(price)) price = 0;
       calculatedSubtotal += price * parseInt(item.quantity);
       
       return {

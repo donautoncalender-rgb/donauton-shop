@@ -386,7 +386,13 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
                     <div style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.3rem' }}>Verlag: {item.publisher}</div>
                   )}
                   <div style={{ color: 'var(--text-light)', fontSize: '0.85rem' }}>{item.variant}</div>
-                  <div style={{ fontWeight: 600, marginTop: '4px' }}>{(item.price * item.quantity).toFixed(2).replace('.', ',')} €</div>
+                  <div style={{ fontWeight: 600, marginTop: '4px' }}>
+                    {(() => {
+                      const p = parseFloat(item.price as any);
+                      const validPrice = isNaN(p) ? 0 : p;
+                      return validPrice === 0 ? "Kostenlos" : (validPrice * item.quantity).toFixed(2).replace('.', ',') + " €";
+                    })()}
+                  </div>
                 </div>
               </div>
             ))}

@@ -86,7 +86,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setItems([]);
   };
 
-  const cartTotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const cartTotal = items.reduce((total, item) => {
+    const p = parseFloat(item.price as any);
+    return total + (isNaN(p) ? 0 : p) * item.quantity;
+  }, 0);
   const cartCount = items.reduce((count, item) => count + item.quantity, 0);
 
   return (
