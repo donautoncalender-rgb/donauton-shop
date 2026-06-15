@@ -19,7 +19,9 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
     const genres = new Set<string>();
     initialProducts.forEach(p => {
       if (p.genre && p.genre.trim() !== '' && p.genre !== 'Ohne Genre' && p.genre !== 'Audio CD') {
-        genres.add(p.genre.trim());
+        p.genre.split(';').forEach(g => {
+          if (g.trim()) genres.add(g.trim());
+        });
       }
     });
     // Add default if needed, or just let it naturally discover what was imported
@@ -50,7 +52,8 @@ export default function CDsShopClient({ initialProducts }: { initialProducts: an
         product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.artist.toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesGenre = selectedGenres.length === 0 || selectedGenres.includes(product.genre);
+      const pGenres = product.genre ? product.genre.split(';').map(g => g.trim()) : [];
+      const matchesGenre = selectedGenres.length === 0 || selectedGenres.some(sg => pGenres.includes(sg));
       const matchesArtist = selectedArtists.length === 0 || selectedArtists.some(a => product.artist.includes(a));
 
       return matchesSearch && matchesGenre && matchesArtist;
