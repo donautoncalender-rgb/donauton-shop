@@ -139,6 +139,35 @@ async function saveSettings(formData: FormData) {
   const turnstileSiteKey = formData.get('turnstileSiteKey') as string;
   const turnstileSecretKey = formData.get('turnstileSecretKey') as string;
 
+  // Social Media Links
+  const socialFacebook = formData.get('socialFacebook') as string | null;
+  const socialInstagram = formData.get('socialInstagram') as string | null;
+  const socialYoutube = formData.get('socialYoutube') as string | null;
+
+  if (socialFacebook != null) {
+    await prisma.shopSetting.upsert({
+      where: { key: 'social_facebook' },
+      update: { value: socialFacebook },
+      create: { key: 'social_facebook', value: socialFacebook }
+    });
+  }
+  
+  if (socialInstagram != null) {
+    await prisma.shopSetting.upsert({
+      where: { key: 'social_instagram' },
+      update: { value: socialInstagram },
+      create: { key: 'social_instagram', value: socialInstagram }
+    });
+  }
+
+  if (socialYoutube != null) {
+    await prisma.shopSetting.upsert({
+      where: { key: 'social_youtube' },
+      update: { value: socialYoutube },
+      create: { key: 'social_youtube', value: socialYoutube }
+    });
+  }
+
   if (turnstileSiteKey != null) {
     await prisma.shopSetting.upsert({
       where: { key: 'turnstile_site_key' },
