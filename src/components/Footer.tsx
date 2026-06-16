@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import NewsletterForm from './NewsletterForm';
 
 export default function Footer() {
   return (
@@ -41,10 +42,7 @@ export default function Footer() {
             <p style={{ color: '#a0a0a0', marginBottom: '1rem', fontSize: '0.9rem' }}>
               Erhalte Neuigkeiten zu unseren Autor*innen und neuen Publikationen direkt ins Postfach!
             </p>
-            <form className="newsletter-form">
-              <input type="email" placeholder="Deine E-Mail-Adresse" className="newsletter-input" required />
-              <button type="submit" className="newsletter-btn">Abonnieren</button>
-            </form>
+            <NewsletterForm />
             <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
               {/* Social Icons Placeholder */}
               <a href="#" style={{ color: 'white' }}><svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
