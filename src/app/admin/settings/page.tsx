@@ -620,6 +620,30 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           <button type="submit" className="admin-btn" style={{ marginTop: '1.5rem', background: '#ea580c' }}>Spam-Schutz Speichern</button>
         </form>
       </div>
+      <div className="admin-card" style={{ marginTop: '2rem' }}>
+        <h3 className="admin-card-title">📱 Social Media Links</h3>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1.5rem' }}>
+          Diese Links erscheinen als klickbare Icons unten im Footer deines Shops. Wenn du ein Feld leer lässt, wird das jeweilige Icon ausgeblendet.
+        </p>
+
+        <form action={saveSettings}>
+          <div style={{ padding: '1.5rem', backgroundColor: '#f0f9ff', borderRadius: '8px', border: '1px solid #bae6fd' }}>
+            <div className="admin-form-group">
+              <label className="admin-label">Facebook URL</label>
+              <input name="socialFacebook" type="url" className="admin-input" placeholder="https://facebook.com/..." defaultValue={settings['social_facebook'] || ''} />
+            </div>
+            <div className="admin-form-group">
+              <label className="admin-label">Instagram URL</label>
+              <input name="socialInstagram" type="url" className="admin-input" placeholder="https://instagram.com/..." defaultValue={settings['social_instagram'] || ''} />
+            </div>
+            <div className="admin-form-group" style={{ marginBottom: 0 }}>
+              <label className="admin-label">YouTube URL</label>
+              <input name="socialYoutube" type="url" className="admin-input" placeholder="https://youtube.com/..." defaultValue={settings['social_youtube'] || ''} />
+            </div>
+          </div>
+          <button type="submit" className="admin-btn" style={{ marginTop: '1.5rem', background: '#0284c7' }}>Social Links speichern</button>
+        </form>
+      </div>
     </>
   );
 }
