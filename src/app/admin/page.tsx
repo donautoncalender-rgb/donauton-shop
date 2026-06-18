@@ -66,7 +66,7 @@ export default async function AdminDashboard() {
           <div style={{ fontSize: '0.9rem', color: '#701a75', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
             Die grafische Auswertung deiner Shop-Besucher (Seitenaufrufe, beliebte Seiten, Herkunft) findest du in deinem Vercel Web Analytics Dashboard (100% DSGVO-konform ohne Cookies).
           </div>
-          <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ display: 'inline-block', backgroundColor: '#a21caf', border: 'none', padding: '0.6rem 1rem', fontSize: '0.9rem', color: 'white', textDecoration: 'none', borderRadius: '4px', textAlign: 'center' }}>
+          <a href="https://vercel.com/lukas-bruckmeyers-projects/donauton-shop/analytics" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ display: 'inline-block', backgroundColor: '#a21caf', border: 'none', padding: '0.6rem 1rem', fontSize: '0.9rem', color: 'white', textDecoration: 'none', borderRadius: '4px', textAlign: 'center' }}>
             Traffic & Analytics öffnen
           </a>
         </div>
