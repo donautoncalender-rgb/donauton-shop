@@ -112,7 +112,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
     );
 
     return (
-      <Link href={`/${getProductRoute(product.category)}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <Link href={`/${getProductRoute(product.category)}/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="product-card-list">
           {/* LEFT: IMAGE */}
           <div className="product-card-list-img">
@@ -264,7 +264,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         </svg>
       </button>
 
-      <Link href={`/${getProductRoute(product.category)}/${product.id}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <Link href={`/${getProductRoute(product.category)}/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <div className="product-image-container">
           {product.badge && <span className="product-badge">{product.badge}</span>}
           <img src={product.image} alt={product.title} className="product-image" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />

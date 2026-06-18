@@ -3,20 +3,19 @@ import Link from 'next/link';
 import AudioPreviewModal from '../../../components/AudioPreviewModal';
 import ScorePreviewModal from '../../../components/ScorePreviewModal';
 import AddToCartButton from '../../../components/AddToCartButton';
+import ProductBuyBox from '../../../components/ProductBuyBox';
 import ActionButtons from '../../../components/ActionButtons';
 import ProductGallery from '../../../components/ProductGallery';
 import ProductDetailsList from '../../../components/ProductDetailsList';
 import MiniProductSlider from '../../../components/MiniProductSlider';
-import SimpleBuyBox from '../../../components/SimpleBuyBox';
 import GpsrSection from '../../../components/GpsrSection';
-import TracklistPlayer from '../../../components/TracklistPlayer';
 import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id }
+    where: { slug: resolvedParams.slug }
   });
 
   if (!product) {
@@ -46,10 +45,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id }
+    where: { slug: resolvedParams.slug }
   });
 
   if (!product) {
@@ -97,7 +96,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
     "description": product.description?.replace(/<[^>]*>?/gm, '') || `DONAUTON ${product.category} - ${product.title}`,
     "offers": {
       "@type": "Offer",
-      "url": `https://donauton-shop.vercel.app/${product.category.toLowerCase()}/${product.id}`,
+      "url": `https://donauton-shop.vercel.app/${product.category.toLowerCase()}/${product.slug}`,
       "priceCurrency": "EUR",
       "price": product.price.replace(' €', '').replace('.', '').replace(',', '.'),
       "itemCondition": "https://schema.org/NewCondition",
@@ -129,7 +128,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             <div style={{ fontSize: '16pt', fontWeight: 'bold', marginTop: '10px' }}>Preis: {product.price}</div>
           </div>
           <div style={{ marginBottom: '20px' }}>
-             <ProductDetailsList detailsJson={product.detailsJson} category={product.category} genre={product.genre} sku={product.sku} />
+             <ProductDetailsList detailsJson={product.detailsJson} category={product.category} genre={product.genre} sku={product.sku} partsListJson={product.partsListJson} />
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
             <div style={{ width: '250px', flexShrink: 0 }}>
@@ -148,7 +147,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
          ----------------------------- */}
       <div className="screen-only">
       {/* Breadcrumb */}
-      <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
+      <div className="breadcrumb-container no-print" style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
         <Link href="/">Startseite</Link> &rsaquo; <Link href={`/${product.category.toLowerCase()}`}>{product.category}</Link> &rsaquo; <span style={{ color: 'var(--text)', fontWeight: 600 }}>{title}</span>
       </div>
 
@@ -182,7 +181,6 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           <div>
             <h3 style={{ fontSize: '1.2rem', marginBottom: '0.8rem', fontWeight: 800 }}>Informationen zum Produkt</h3>
             <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#333' }} dangerouslySetInnerHTML={{ __html: product.description || 'Keine Beschreibung verfügbar.' }} />
-            <TracklistPlayer tracksJson={product.trackListJson} />
             <GpsrSection publisher={product.publisher} />
           </div>
         </div>
@@ -213,32 +211,61 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               );
             })()}
             
-            {(product.composer || product.artist || product.author) && (
-              <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span>von <strong>{product.composer || product.artist || product.author}</strong></span>
+            {(product.composer || product.artist || product.author || (product.publisher && product.publisher !== 'Donauton')) && (
+              <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                {product.composer || product.artist || product.author ? (
+                  <span>von <strong>{product.composer || product.artist || product.author}</strong></span>
+                ) : null}
+                {product.publisher && product.publisher !== 'Donauton' && (
+                  <Link href={`/noten?reset=true&besetzung=&genre=&q=&publisher=${encodeURIComponent(product.publisher)}`} passHref>
+                    <span style={{ 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      padding: '4px 8px', 
+                      background: 'rgba(0,0,0,0.05)', 
+                      borderRadius: '4px', 
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: 'var(--accent)',
+                      border: '1px solid rgba(0,0,0,0.1)',
+                      cursor: 'pointer'
+                    }}>
+                      Verlag: {product.publisher}
+                    </span>
+                  </Link>
+                )}
               </div>
             )}
             
+            <div className="product-price-print" style={{ display: 'none' }}>
+              <strong>Preis: {product.price}</strong>
+            </div>
+
             {/* Dynamic Product Details */}
             <ProductDetailsList 
               detailsJson={product.detailsJson} 
               category={product.category} 
               genre={product.genre} 
               sku={product.sku} 
+              partsListJson={product.partsListJson}
             />
           </div>
 
-          {/* BUY BOX */}
-          <SimpleBuyBox 
-            product={{
-              id: product.id,
+          <div className="buy-box-container no-print">
+            <ProductBuyBox product={{
+              id: product.id.toString(),
               title: product.title,
               price: product.price,
               image: image,
               stockStatus: product.stockStatus,
+              hasDigitalDownload: product.hasDigitalDownload,
+              digitalPrice: product.digitalPrice,
+              publisher: product.publisher,
+              variantsJson: product.variantsJson,
+              sku: product.sku,
               category: product.category
-            }}
-          />
+            }} />
+          </div>
 
         </div>
       </div>

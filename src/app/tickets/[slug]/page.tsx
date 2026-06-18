@@ -1,54 +1,31 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import AudioPreviewModal from '../../../components/AudioPreviewModal';
 import ScorePreviewModal from '../../../components/ScorePreviewModal';
 import AddToCartButton from '../../../components/AddToCartButton';
-import ProductBuyBox from '../../../components/ProductBuyBox';
 import ActionButtons from '../../../components/ActionButtons';
 import ProductGallery from '../../../components/ProductGallery';
-import ProductDetailsList from '../../../components/ProductDetailsList';
-import MiniProductSlider from '../../../components/MiniProductSlider';
+import SimpleBuyBox from '../../../components/SimpleBuyBox';
 import GpsrSection from '../../../components/GpsrSection';
+import ProductDetailsList from '../../../components/ProductDetailsList';
 import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id }
+    where: { slug: resolvedParams.slug }
   });
 
-  if (!product) {
-    return { title: 'Produkt nicht gefunden | DONAUTON' };
-  }
-
-  const title = `${product.title} - ${product.category} kaufen | DONAUTON`;
-  const description = product.description 
-    ? product.description.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'
-    : `Entdecken Sie ${product.title} im DONAUTON Shop.`;
-    
   return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: product.imageUrl ? [product.imageUrl] : [],
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: product.imageUrl ? [product.imageUrl] : [],
-    }
+    title: product?.title || 'Produkt',
   };
 }
 
-export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id }
+    where: { slug: resolvedParams.slug }
   });
 
   if (!product) {
@@ -58,63 +35,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
   const title = product.title;
   const image = product.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80';
 
-  let relatedProductsRaw = await prisma.product.findMany({
-    where: {
-      category: product.category,
-      id: { not: product.id },
-      ...(product.genre && product.genre !== 'Ohne Genre' ? { genre: product.genre } : {})
-    },
-    take: 10
-  });
-
-  if (relatedProductsRaw.length < 4) {
-    const moreProducts = await prisma.product.findMany({
-      where: {
-        category: product.category,
-        id: { not: product.id, notIn: relatedProductsRaw.map(p => p.id) }
-      },
-      take: 10 - relatedProductsRaw.length
-    });
-    relatedProductsRaw = [...relatedProductsRaw, ...moreProducts];
-  }
-
-  const sliderProducts = relatedProductsRaw.map(p => ({
-    id: p.id,
-    title: p.title,
-    image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80',
-    price: p.price,
-    genre: p.genre,
-    type: p.category,
-    badge: p.badge || undefined
-  }));
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.title,
-    "image": image,
-    "description": product.description?.replace(/<[^>]*>?/gm, '') || `DONAUTON ${product.category} - ${product.title}`,
-    "offers": {
-      "@type": "Offer",
-      "url": `https://donauton-shop.vercel.app/${product.category.toLowerCase()}/${product.id}`,
-      "priceCurrency": "EUR",
-      "price": product.price.replace(' €', '').replace('.', '').replace(',', '.'),
-      "itemCondition": "https://schema.org/NewCondition",
-      "availability": product.stockStatus === 'instock' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      "seller": {
-        "@type": "Organization",
-        "name": "DONAUTON"
-      }
-    }
-  };
-
   return (
     <div className="container page-container">
-      {/* JSON-LD Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       {/* -----------------------------
           PRINT-ONLY, DEDICATED LAYOUT 
          ----------------------------- */}
@@ -128,7 +50,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             <div style={{ fontSize: '16pt', fontWeight: 'bold', marginTop: '10px' }}>Preis: {product.price}</div>
           </div>
           <div style={{ marginBottom: '20px' }}>
-             <ProductDetailsList detailsJson={product.detailsJson} category={product.category} genre={product.genre} sku={product.sku} partsListJson={product.partsListJson} />
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '10pt', color: '#333' }}>
+              <li><strong>Kategorie:</strong> {product.category} {product.genre ? `- ${product.genre}` : ''}</li>
+              {product.sku && <li><strong>Artikelnummer:</strong> {product.sku}</li>}
+            </ul>
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
             <div style={{ width: '250px', flexShrink: 0 }}>
@@ -146,8 +71,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           SCREEN-ONLY LAYOUT 
          ----------------------------- */}
       <div className="screen-only">
-      {/* Breadcrumb */}
-      <div className="breadcrumb-container no-print" style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
+        {/* Breadcrumb */}
+      <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
         <Link href="/">Startseite</Link> &rsaquo; <Link href={`/${product.category.toLowerCase()}`}>{product.category}</Link> &rsaquo; <span style={{ color: 'var(--text)', fontWeight: 600 }}>{title}</span>
       </div>
 
@@ -160,12 +85,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             <ProductGallery 
               altTitle={title}
               badge={product.badge || undefined}
-              images={
-                [
-                  image,
-                  ...(product.galleryImages ? JSON.parse(product.galleryImages) : [])
-                ]
-              }
+              images={[image]}
             />
           </div>
 
@@ -211,77 +131,38 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               );
             })()}
             
-            {(product.composer || product.artist || product.author || (product.publisher && product.publisher !== 'Donauton')) && (
-              <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                {product.composer || product.artist || product.author ? (
-                  <span>von <strong>{product.composer || product.artist || product.author}</strong></span>
-                ) : null}
-                {product.publisher && product.publisher !== 'Donauton' && (
-                  <Link href={`/noten?reset=true&besetzung=&genre=&q=&publisher=${encodeURIComponent(product.publisher)}`} passHref>
-                    <span style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      padding: '4px 8px', 
-                      background: 'rgba(0,0,0,0.05)', 
-                      borderRadius: '4px', 
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: 'var(--accent)',
-                      border: '1px solid rgba(0,0,0,0.1)',
-                      cursor: 'pointer'
-                    }}>
-                      Verlag: {product.publisher}
-                    </span>
-                  </Link>
-                )}
+            {(product.composer || product.artist || product.author) && (
+              <div style={{ fontSize: '1.1rem', color: '#555', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <span>von <strong>{product.composer || product.artist || product.author}</strong></span>
               </div>
             )}
             
-            <div className="product-price-print" style={{ display: 'none' }}>
-              <strong>Preis: {product.price}</strong>
-            </div>
-
             {/* Dynamic Product Details */}
             <ProductDetailsList 
               detailsJson={product.detailsJson} 
               category={product.category} 
               genre={product.genre} 
               sku={product.sku} 
-              partsListJson={product.partsListJson}
             />
           </div>
 
-          <div className="buy-box-container no-print">
-            <ProductBuyBox product={{
-              id: product.id.toString(),
+          {/* BUY BOX */}
+          <SimpleBuyBox 
+            product={{
+              id: product.id,
               title: product.title,
               price: product.price,
               image: image,
               stockStatus: product.stockStatus,
-              hasDigitalDownload: product.hasDigitalDownload,
-              digitalPrice: product.digitalPrice,
-              publisher: product.publisher,
-              variantsJson: product.variantsJson,
-              sku: product.sku,
+              isTicket: true,
               category: product.category
-            }} />
-          </div>
-
-        </div>
-      </div>
-      
-      {/* RELATED PRODUCTS */}
-      {sliderProducts.length > 0 && (
-        <div className="no-print" style={{ marginTop: '5rem' }}>
-          <MiniProductSlider 
-            title="Ähnliche Artikel" 
-            linkAll={`/${product.category.toLowerCase()}`} 
-            products={sliderProducts} 
+            }}
+            selectedVariant="Digital"
           />
-        </div>
-      )}
 
+        </div>
       </div>
+     </div>
     </div>
   );
 }

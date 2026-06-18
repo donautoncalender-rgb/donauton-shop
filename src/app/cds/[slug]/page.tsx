@@ -1,19 +1,55 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import AudioPreviewModal from '../../../components/AudioPreviewModal';
 import ScorePreviewModal from '../../../components/ScorePreviewModal';
 import AddToCartButton from '../../../components/AddToCartButton';
 import ActionButtons from '../../../components/ActionButtons';
 import ProductGallery from '../../../components/ProductGallery';
+import ProductDetailsList from '../../../components/ProductDetailsList';
+import MiniProductSlider from '../../../components/MiniProductSlider';
 import SimpleBuyBox from '../../../components/SimpleBuyBox';
 import GpsrSection from '../../../components/GpsrSection';
-import ProductDetailsList from '../../../components/ProductDetailsList';
+import TracklistPlayer from '../../../components/TracklistPlayer';
 import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 
-export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id }
+    where: { slug: resolvedParams.slug }
+  });
+
+  if (!product) {
+    return { title: 'Produkt nicht gefunden | DONAUTON' };
+  }
+
+  const title = `${product.title} - ${product.category} kaufen | DONAUTON`;
+  const description = product.description 
+    ? product.description.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...'
+    : `Entdecken Sie ${product.title} im DONAUTON Shop.`;
+    
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: product.imageUrl ? [product.imageUrl] : [],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: product.imageUrl ? [product.imageUrl] : [],
+    }
+  };
+}
+
+export default async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const product = await prisma.product.findUnique({
+    where: { slug: resolvedParams.slug }
   });
 
   if (!product) {
@@ -23,8 +59,63 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
   const title = product.title;
   const image = product.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80';
 
+  let relatedProductsRaw = await prisma.product.findMany({
+    where: {
+      category: product.category,
+      id: { not: product.id },
+      ...(product.genre && product.genre !== 'Ohne Genre' ? { genre: product.genre } : {})
+    },
+    take: 10
+  });
+
+  if (relatedProductsRaw.length < 4) {
+    const moreProducts = await prisma.product.findMany({
+      where: {
+        category: product.category,
+        id: { not: product.id, notIn: relatedProductsRaw.map(p => p.id) }
+      },
+      take: 10 - relatedProductsRaw.length
+    });
+    relatedProductsRaw = [...relatedProductsRaw, ...moreProducts];
+  }
+
+  const sliderProducts = relatedProductsRaw.map(p => ({
+    id: p.id,
+    title: p.title,
+    image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80',
+    price: p.price,
+    genre: p.genre,
+    type: p.category,
+    badge: p.badge || undefined
+  }));
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.title,
+    "image": image,
+    "description": product.description?.replace(/<[^>]*>?/gm, '') || `DONAUTON ${product.category} - ${product.title}`,
+    "offers": {
+      "@type": "Offer",
+      "url": `https://donauton-shop.vercel.app/${product.category.toLowerCase()}/${product.slug}`,
+      "priceCurrency": "EUR",
+      "price": product.price.replace(' €', '').replace('.', '').replace(',', '.'),
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": product.stockStatus === 'instock' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "DONAUTON"
+      }
+    }
+  };
+
   return (
     <div className="container page-container">
+      {/* JSON-LD Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* -----------------------------
           PRINT-ONLY, DEDICATED LAYOUT 
          ----------------------------- */}
@@ -38,10 +129,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             <div style={{ fontSize: '16pt', fontWeight: 'bold', marginTop: '10px' }}>Preis: {product.price}</div>
           </div>
           <div style={{ marginBottom: '20px' }}>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '10pt', color: '#333' }}>
-              <li><strong>Kategorie:</strong> {product.category} {product.genre ? `- ${product.genre}` : ''}</li>
-              {product.sku && <li><strong>Artikelnummer:</strong> {product.sku}</li>}
-            </ul>
+             <ProductDetailsList detailsJson={product.detailsJson} category={product.category} genre={product.genre} sku={product.sku} />
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
             <div style={{ width: '250px', flexShrink: 0 }}>
@@ -59,7 +147,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           SCREEN-ONLY LAYOUT 
          ----------------------------- */}
       <div className="screen-only">
-        {/* Breadcrumb */}
+      {/* Breadcrumb */}
       <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
         <Link href="/">Startseite</Link> &rsaquo; <Link href={`/${product.category.toLowerCase()}`}>{product.category}</Link> &rsaquo; <span style={{ color: 'var(--text)', fontWeight: 600 }}>{title}</span>
       </div>
@@ -73,7 +161,12 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
             <ProductGallery 
               altTitle={title}
               badge={product.badge || undefined}
-              images={[image]}
+              images={
+                [
+                  image,
+                  ...(product.galleryImages ? JSON.parse(product.galleryImages) : [])
+                ]
+              }
             />
           </div>
 
@@ -89,6 +182,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           <div>
             <h3 style={{ fontSize: '1.2rem', marginBottom: '0.8rem', fontWeight: 800 }}>Informationen zum Produkt</h3>
             <div style={{ fontSize: '0.95rem', lineHeight: 1.5, color: '#333' }} dangerouslySetInnerHTML={{ __html: product.description || 'Keine Beschreibung verfügbar.' }} />
+            <TracklistPlayer tracksJson={product.trackListJson} />
             <GpsrSection publisher={product.publisher} />
           </div>
         </div>
@@ -142,15 +236,25 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
               price: product.price,
               image: image,
               stockStatus: product.stockStatus,
-              isTicket: true,
               category: product.category
             }}
-            selectedVariant="Digital"
           />
 
         </div>
       </div>
-     </div>
+      
+      {/* RELATED PRODUCTS */}
+      {sliderProducts.length > 0 && (
+        <div className="no-print" style={{ marginTop: '5rem' }}>
+          <MiniProductSlider 
+            title="Ähnliche Artikel" 
+            linkAll={`/${product.category.toLowerCase()}`} 
+            products={sliderProducts} 
+          />
+        </div>
+      )}
+
+      </div>
     </div>
   );
 }

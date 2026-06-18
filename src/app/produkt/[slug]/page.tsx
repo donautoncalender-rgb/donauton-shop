@@ -9,17 +9,26 @@ export default async function LegacyProductRedirect({ params }: { params: Promis
   });
 
   if (!product) {
-    // Old WooCommerce slugs often appended "-von-composer" or "-donauton-verlag".
-    // We try to match the first 2-3 significant words of the slug.
-    const words = resolvedParams.slug.split('-').filter(w => w !== 'von' && w !== 'der' && w.length > 2).slice(0, 3);
-    if (words.length > 0) {
-      product = await prisma.product.findFirst({
-        where: {
-          AND: words.map(w => ({
-            slug: { contains: w }
-          }))
-        }
-      });
+    const parts = resolvedParams.slug.split('-');
+    
+    // Try matching the first 4 words
+    if (!product && parts.length >= 4) {
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 4).join('-') } } });
+    }
+    
+    // Try matching the first 3 words
+    if (!product && parts.length >= 3) {
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 3).join('-') } } });
+    }
+    
+    // Try matching the first 2 words
+    if (!product && parts.length >= 2) {
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 2).join('-') } } });
+    }
+    
+    // Try matching just the first word (if it's long enough to avoid false positives)
+    if (!product && parts.length >= 1 && parts[0].length > 3) {
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts[0] } } });
     }
   }
 
@@ -34,5 +43,5 @@ export default async function LegacyProductRedirect({ params }: { params: Promis
   else if (c.includes('merch')) catPath = 'merch';
   else if (c.includes('ticket')) catPath = 'tickets';
 
-  permanentRedirect(`/${catPath}/${product.id}`);
+  permanentRedirect(`/${catPath}/${product.slug}`);
 }

@@ -49,7 +49,7 @@ export default function MiniProductSlider({ title, linkAll, products }: { title:
           {products.map((product) => {
             const pType = product.type || 'noten';
             return (
-              <Link href={`/${pType.toLowerCase()}/${product.id}`} key={product.id} className="product-card" style={{ flex: '0 0 auto', width: '230px', textDecoration: 'none', color: 'inherit', scrollSnapAlign: 'center' }}>
+              <Link href={`/${pType.toLowerCase()}/${product.slug}`} key={product.id} className="product-card" style={{ flex: '0 0 auto', width: '230px', textDecoration: 'none', color: 'inherit', scrollSnapAlign: 'center' }}>
                 <div className="product-image-container" style={{ 
                   aspectRatio: '1/1', 
                   padding: '1.2rem',

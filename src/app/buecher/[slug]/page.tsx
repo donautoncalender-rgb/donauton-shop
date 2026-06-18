@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import AudioPreviewModal from '../../../components/AudioPreviewModal';
 import ScorePreviewModal from '../../../components/ScorePreviewModal';
-import MerchBuyBox from '../../../components/MerchBuyBox';
+import SimpleBuyBox from '../../../components/SimpleBuyBox';
 import ActionButtons from '../../../components/ActionButtons';
 import ProductGallery from '../../../components/ProductGallery';
 import ProductDetailsList from '../../../components/ProductDetailsList';
@@ -11,12 +11,10 @@ import GpsrSection from '../../../components/GpsrSection';
 import { prisma } from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';
-
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id }
+    where: { slug: resolvedParams.slug }
   });
 
   if (!product) {
@@ -46,10 +44,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function ProductDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id }
+    where: { slug: resolvedParams.slug }
   });
 
   if (!product) {
@@ -97,7 +95,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
     "description": product.description?.replace(/<[^>]*>?/gm, '') || `DONAUTON ${product.category} - ${product.title}`,
     "offers": {
       "@type": "Offer",
-      "url": `https://donauton-shop.vercel.app/${product.category.toLowerCase()}/${product.id}`,
+      "url": `https://donauton-shop.vercel.app/${product.category.toLowerCase()}/${product.slug}`,
       "priceCurrency": "EUR",
       "price": product.price.replace(' €', '').replace('.', '').replace(',', '.'),
       "itemCondition": "https://schema.org/NewCondition",
@@ -147,7 +145,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           SCREEN-ONLY LAYOUT 
          ----------------------------- */}
       <div className="screen-only">
-        {/* Breadcrumb */}
+      {/* Breadcrumb */}
       <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>
         <Link href="/">Startseite</Link> &rsaquo; <Link href={`/${product.category.toLowerCase()}`}>{product.category}</Link> &rsaquo; <span style={{ color: 'var(--text)', fontWeight: 600 }}>{title}</span>
       </div>
@@ -228,18 +226,15 @@ export default async function ProductDetail({ params }: { params: Promise<{ id: 
           </div>
 
           {/* BUY BOX */}
-          <MerchBuyBox 
+          <SimpleBuyBox 
             product={{
               id: product.id,
               title: product.title,
               price: product.price,
               image: image,
               stockStatus: product.stockStatus,
-              sizes: product.sizes ? JSON.parse(product.sizes) : [],
-              colors: product.colors ? JSON.parse(product.colors) : [],
-              variantsJson: product.variantsJson,
               category: product.category
-            }} 
+            }}
           />
 
         </div>
