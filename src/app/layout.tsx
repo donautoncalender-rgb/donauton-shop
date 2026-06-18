@@ -10,6 +10,7 @@ import CartDrawer from '../components/CartDrawer';
 import CookieBanner from '../components/CookieBanner';
 import { prisma } from '../lib/prisma';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/react';
 
 export async function generateMetadata(): Promise<Metadata> {
   let faviconUrl = '/favicon.ico';
@@ -139,6 +140,7 @@ export default async function RootLayout({
             </div>
             <CookieBanner />
             <Toaster position="bottom-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
+            <Analytics />
           </CartProvider>
         </WishlistProvider>
       </body>
