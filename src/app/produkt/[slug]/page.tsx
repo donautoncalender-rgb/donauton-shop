@@ -10,25 +10,27 @@ export default async function LegacyProductRedirect({ params }: { params: Promis
 
   if (!product) {
     const parts = resolvedParams.slug.split('-');
+    // 'Noten' comes after 'CDs' alphabetically. So ordering by category 'desc' prioritizes Noten.
+    const orderBy: any = { category: 'desc' };
     
     // Try matching the first 4 words
     if (!product && parts.length >= 4) {
-      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 4).join('-') } } });
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 4).join('-') } }, orderBy });
     }
     
     // Try matching the first 3 words
     if (!product && parts.length >= 3) {
-      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 3).join('-') } } });
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 3).join('-') } }, orderBy });
     }
     
     // Try matching the first 2 words
     if (!product && parts.length >= 2) {
-      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 2).join('-') } } });
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts.slice(0, 2).join('-') } }, orderBy });
     }
     
     // Try matching just the first word (if it's long enough to avoid false positives)
     if (!product && parts.length >= 1 && parts[0].length > 3) {
-      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts[0] } } });
+      product = await prisma.product.findFirst({ where: { slug: { startsWith: parts[0] } }, orderBy });
     }
   }
 
