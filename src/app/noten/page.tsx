@@ -53,6 +53,7 @@ export default async function Notenfinder() {
     grade: p.grade || '',
     duration: p.duration || '',
     price: p.price,
+    discountPercent: p.discountPercent || 0,
     badge: p.badge || '',
     description: p.description || '',
     sku: p.sku || '',

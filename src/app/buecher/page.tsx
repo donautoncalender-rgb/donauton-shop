@@ -25,6 +25,7 @@ export default async function BuecherPage() {
     title: p.title,
     author: p.author || p.composer || '',
     price: p.price,
+    discountPercent: p.discountPercent || 0,
     badge: p.badge || '',
     description: p.description || '',
     sku: p.sku || '',

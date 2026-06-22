@@ -15,6 +15,7 @@ export default async function TicketsPage() {
     location: p.author || 'Shop', // fallback location
     date: 'Demnächst',
     price: p.price,
+    discountPercent: p.discountPercent || 0,
     badge: p.badge || '',
     description: p.description || '',
     sku: p.sku || '',

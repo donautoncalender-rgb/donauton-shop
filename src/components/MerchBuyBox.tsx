@@ -14,6 +14,7 @@ interface MerchBuyBoxProps {
     colors: string[];
     variantsJson?: string | null;
     category?: string | null;
+    discountPercent?: number;
   };
 }
 
@@ -75,7 +76,18 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
   }
 
   // Active price, stock and SKU
-  const currentPrice = selectedVariantOpt ? selectedVariantOpt.price : product.price;
+  const rawPriceStr = selectedVariantOpt ? selectedVariantOpt.price : product.price;
+  const cleanPrice = rawPriceStr.replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, '');
+  let originalPrice = parseFloat(cleanPrice);
+  if (isNaN(originalPrice)) originalPrice = 0;
+  
+  const discountPercent = product.discountPercent || 0;
+  const discountedPrice = discountPercent > 0 
+    ? originalPrice * (1 - discountPercent / 100) 
+    : originalPrice;
+    
+  const discountedPriceStr = discountedPrice.toFixed(2).replace('.', ',');
+  const currentPrice = discountedPrice.toFixed(2).replace('.', ',') + " €";
   const currentStockStatus = selectedVariantOpt ? selectedVariantOpt.stockStatus : product.stockStatus;
   const cartSku = selectedVariantOpt ? selectedVariantOpt.sku : undefined;
 
@@ -182,9 +194,19 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
     <div style={{ background: '#f5f5f5', border: '1px solid #e1e1e1', borderRadius: '4px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
       
       {/* Product Price Display */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '2.8rem', fontWeight: 900, color: '#111', lineHeight: 1 }}>
-          {currentPrice.replace(' €', '')} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginBottom: '1rem' }}>
+        {discountPercent > 0 && originalPrice > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '1.2rem' }}>
+              {originalPrice.toFixed(2).replace('.', ',')} €
+            </span>
+            <span style={{ background: 'var(--accent)', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+              -{discountPercent}%
+            </span>
+          </div>
+        )}
+        <div style={{ fontSize: '2.8rem', fontWeight: 900, color: discountPercent > 0 ? 'var(--accent)' : '#111', lineHeight: 1 }}>
+          {discountedPriceStr} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
         </div>
       </div>
       

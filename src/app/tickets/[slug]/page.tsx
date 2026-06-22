@@ -155,7 +155,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               image: image,
               stockStatus: product.stockStatus,
               isTicket: true,
-              category: product.category
+              category: product.category,
+              discountPercent: product.discountPercent || 0
             }}
             selectedVariant="Digital"
           />

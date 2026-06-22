@@ -16,6 +16,7 @@ interface ProductBuyBoxProps {
     variantsJson?: string | null;
     sku?: string | null;
     category?: string | null;
+    discountPercent?: number;
   };
 }
 
@@ -43,17 +44,30 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
   // Convert string price to number for physical safely
   const cleanPhysPrice = (selectedOption.price || '0').toString().toLowerCase().replace('kostenlos', '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, '');
-  let physicalPrice = parseFloat(cleanPhysPrice);
-  if (isNaN(physicalPrice)) physicalPrice = 0;
+  let physicalOriginalPrice = parseFloat(cleanPhysPrice);
+  if (isNaN(physicalOriginalPrice)) physicalOriginalPrice = 0;
+
+  const optionDiscountPercent = selectedOption.discountPercent !== undefined 
+    ? selectedOption.discountPercent 
+    : (product.discountPercent || 0);
+
+  const physicalPrice = optionDiscountPercent > 0 
+    ? physicalOriginalPrice * (1 - optionDiscountPercent / 100) 
+    : physicalOriginalPrice;
   
-  let digitalPriceVal = 0;
+  let digitalOriginalPrice = 0;
   if (product.digitalPrice !== null && product.digitalPrice !== undefined) {
-      digitalPriceVal = product.digitalPrice;
+      digitalOriginalPrice = product.digitalPrice;
   } else {
       const cleanDigPrice = (product.price || '0').toString().toLowerCase().replace('kostenlos', '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, '');
-      digitalPriceVal = parseFloat(cleanDigPrice);
-      if (isNaN(digitalPriceVal)) digitalPriceVal = 0;
+      digitalOriginalPrice = parseFloat(cleanDigPrice);
+      if (isNaN(digitalOriginalPrice)) digitalOriginalPrice = 0;
   }
+
+  const parentDiscountPercent = product.discountPercent || 0;
+  const digitalPriceVal = parentDiscountPercent > 0 
+    ? digitalOriginalPrice * (1 - parentDiscountPercent / 100) 
+    : digitalOriginalPrice;
 
   const isDigitalOnly = product.hasDigitalDownload && physicalPrice === 0;
 
@@ -129,17 +143,36 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
               cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' 
             }}
           >
-            {options.map((opt: any) => (
-              <option key={opt.id} value={opt.id} style={{ fontFamily: 'inherit' }}>
-                {opt.title} ({opt.price})
-              </option>
-            ))}
+            {options.map((opt: any) => {
+              const optDiscount = opt.discountPercent !== undefined ? opt.discountPercent : (product.discountPercent || 0);
+              const optCleanPrice = (opt.price || '0').toString().toLowerCase().replace('kostenlos', '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, '');
+              const optOriginal = parseFloat(optCleanPrice);
+              const optDiscounted = optDiscount > 0 && !isNaN(optOriginal) ? optOriginal * (1 - optDiscount / 100) : optOriginal;
+              const optPriceStr = optDiscount > 0 && !isNaN(optOriginal) 
+                ? `${optDiscounted.toFixed(2).replace('.', ',')} € (statt ${opt.price})` 
+                : opt.price;
+              return (
+                <option key={opt.id} value={opt.id} style={{ fontFamily: 'inherit' }}>
+                  {opt.title} ({optPriceStr})
+                </option>
+              );
+            })}
           </select>
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '2.8rem', fontWeight: 900, color: '#111', lineHeight: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginBottom: '1rem' }}>
+        {((variant === 'Physisch' ? optionDiscountPercent : parentDiscountPercent) > 0) && currentPrice > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '1.2rem' }}>
+              {(variant === 'Physisch' ? physicalOriginalPrice : digitalOriginalPrice).toFixed(2).replace('.', ',')} €
+            </span>
+            <span style={{ background: 'var(--accent)', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+              -{variant === 'Physisch' ? optionDiscountPercent : parentDiscountPercent}%
+            </span>
+          </div>
+        )}
+        <div style={{ fontSize: '2.8rem', fontWeight: 900, color: ((variant === 'Physisch' ? optionDiscountPercent : parentDiscountPercent) > 0) ? 'var(--accent)' : '#111', lineHeight: 1 }}>
           {currentPrice === 0 ? "Kostenlos" : (
              <>{currentPriceStr} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span></>
           )}

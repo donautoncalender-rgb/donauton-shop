@@ -46,18 +46,62 @@ export async function POST(request: Request) {
         console.error("Failed to fetch order sequence from ERP:", seqError);
     }
 
+    // Fetch all products from DB to perform secure total recalculation and prevent price tampering
+    const productIds = items.map((item: any) => item.id).filter(Boolean) as string[];
+    const dbProducts = await prisma.product.findMany({
+      where: { id: { in: productIds } }
+    });
+    const dbProductsMap = new Map(dbProducts.map(p => [p.id, p]));
+
     // Calculate subtotal from items to prevent tampering
     let calculatedSubtotal = 0;
     const orderItems = items.map((item: any) => {
-      let price = parseFloat(item.price);
-      if (isNaN(price)) price = 0;
-      calculatedSubtotal += price * parseInt(item.quantity);
+      const dbProduct = item.id ? dbProductsMap.get(item.id) : null;
+      let finalPrice = parseFloat(item.price); // default fallback
+
+      if (dbProduct) {
+        if (item.variant === 'Digital') {
+          let basePriceFloat = dbProduct.digitalPrice !== null 
+            ? dbProduct.digitalPrice 
+            : parseFloat((dbProduct.price || '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, ''));
+          if (isNaN(basePriceFloat)) basePriceFloat = 0;
+          const discountPercent = dbProduct.discountPercent || 0;
+          finalPrice = discountPercent > 0 ? basePriceFloat * (1 - discountPercent / 100) : basePriceFloat;
+        } else if (dbProduct.variantsJson) {
+          try {
+            const variantsList = JSON.parse(dbProduct.variantsJson);
+            const matchedVariant = variantsList.find((v: any) => 
+              v.title === item.variant || 
+              (v.sku && v.sku === item.sku) ||
+              v.id === item.variant
+            );
+            if (matchedVariant) {
+              const vBasePriceFloat = parseFloat((matchedVariant.price || '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, ''));
+              const vDiscountPercent = matchedVariant.discountPercent !== undefined ? matchedVariant.discountPercent : dbProduct.discountPercent;
+              finalPrice = vDiscountPercent > 0 && !isNaN(vBasePriceFloat) ? vBasePriceFloat * (1 - vDiscountPercent / 100) : vBasePriceFloat;
+            } else {
+              const parentBase = parseFloat((dbProduct.price || '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, ''));
+              const parentDiscount = dbProduct.discountPercent || 0;
+              finalPrice = parentDiscount > 0 && !isNaN(parentBase) ? parentBase * (1 - parentDiscount / 100) : parentBase;
+            }
+          } catch (e) {
+            console.error("Error parsing variantsJson in checkout for product " + dbProduct.id, e);
+          }
+        } else {
+          const basePriceFloat = parseFloat((dbProduct.price || '0').replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, ''));
+          const discountPercent = dbProduct.discountPercent || 0;
+          finalPrice = discountPercent > 0 && !isNaN(basePriceFloat) ? basePriceFloat * (1 - discountPercent / 100) : basePriceFloat;
+        }
+      }
+
+      const itemPrice = isNaN(finalPrice) ? 0 : finalPrice;
+      calculatedSubtotal += itemPrice * parseInt(item.quantity);
       
       return {
         productId: item.id || null,
         title: item.title,
         variant: item.variant || null,
-        price: price,
+        price: itemPrice,
         quantity: parseInt(item.quantity),
         attendeeNames: item.attendeeNames ? JSON.stringify(item.attendeeNames) : null,
         sku: item.sku || null

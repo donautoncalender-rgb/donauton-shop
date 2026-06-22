@@ -35,6 +35,7 @@ export default async function Home() {
       title: p.title,
       type: urlType,
       price: p.price,
+      discountPercent: p.discountPercent || 0,
       image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=565&fit=crop&q=80',
       badge: p.badge || '',
       slug: p.slug,

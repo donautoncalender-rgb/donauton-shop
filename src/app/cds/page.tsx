@@ -31,6 +31,7 @@ export default async function CDsShop() {
     title: p.title,
     artist: p.artist || p.composer || '',
     price: p.price,
+    discountPercent: p.discountPercent || 0,
     badge: p.badge || '',
     description: p.description || '',
     sku: p.sku || '',

@@ -236,9 +236,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               price: product.price,
               image: image,
               stockStatus: product.stockStatus,
-              category: product.category
+              category: product.category,
+              discountPercent: product.discountPercent || 0
             }}
-          />
+            selectedVariant="CD"/>
 
         </div>
       </div>

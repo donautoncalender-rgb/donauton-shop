@@ -25,6 +25,7 @@ export default async function MerchPage() {
     type: p.genre || 'Accessoires',
     title: p.title,
     price: p.price,
+    discountPercent: p.discountPercent || 0,
     badge: p.badge || '',
     description: p.description || '',
     sku: p.sku || '',

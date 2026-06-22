@@ -36,6 +36,7 @@ export default async function SuchePage({ searchParams }: SearchPageProps) {
     slug: p.slug,
     category: p.category || 'Noten',
     price: p.price,
+    discountPercent: p.discountPercent || 0,
     image: p.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80',
     composer: p.composer || p.artist || '',
     artist: p.artist || p.composer || '',

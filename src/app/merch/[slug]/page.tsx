@@ -238,7 +238,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               sizes: product.sizes ? JSON.parse(product.sizes) : [],
               colors: product.colors ? JSON.parse(product.colors) : [],
               variantsJson: product.variantsJson,
-              category: product.category
+              category: product.category,
+              discountPercent: product.discountPercent || 0
             }} 
           />
 

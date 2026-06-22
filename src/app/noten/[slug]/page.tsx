@@ -263,7 +263,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               publisher: product.publisher,
               variantsJson: product.variantsJson,
               sku: product.sku,
-              category: product.category
+              category: product.category,
+              discountPercent: product.discountPercent || 0
             }} />
           </div>
 

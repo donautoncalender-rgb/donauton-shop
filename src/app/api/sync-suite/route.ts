@@ -143,6 +143,7 @@ export async function GET() {
           stockStatus: totalStock > 0 ? 'instock' : 'outofstock',
           hasDigitalDownload: Boolean(v.has_digital_download),
           digitalPrice: v.digital_price_gross ? parseFloat(v.digital_price_gross) : null,
+          discountPercent: v.discount_percent || 0,
         };
       });
 
@@ -252,6 +253,7 @@ export async function GET() {
           pdfPreview: pdfPreview,
           hasDigitalDownload: Boolean(work.has_digital_download),
           digitalPrice: work.digital_price_gross ? parseFloat(work.digital_price_gross) : null,
+          discountPercent: work.discount_percent || 0,
           detailsJson: detailsJson,
           publisher: work.partner_name || "Donauton",
           instrumentation: work.instrumentation || null,
@@ -283,6 +285,7 @@ export async function GET() {
           pdfPreview: pdfPreview,
           hasDigitalDownload: Boolean(work.has_digital_download),
           digitalPrice: work.digital_price_gross ? parseFloat(work.digital_price_gross) : null,
+          discountPercent: work.discount_percent || 0,
           detailsJson: detailsJson,
           publisher: work.partner_name || "Donauton",
           instrumentation: work.instrumentation || null,

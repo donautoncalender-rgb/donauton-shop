@@ -67,7 +67,8 @@ model Product {
   
   hasDigitalDownload Boolean @default(false)
   digitalPrice       Float?
-  
+  discountPercent    Int      @default(0)
+
   // Specific metadata (often extracted from Woo attributes)
   composer    String?
   grade       String?

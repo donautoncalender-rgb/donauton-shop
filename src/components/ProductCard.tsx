@@ -26,6 +26,17 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const isList = viewMode === 'list';
   const isMerked = isInWishlist(product.id.toString());
 
+  const discountPercent = product.discountPercent || 0;
+  const originalPriceFloat = parseFloat(product.price.replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, ''));
+  const hasValidPrice = !isNaN(originalPriceFloat) && originalPriceFloat > 0;
+  const discountedPriceFloat = discountPercent > 0 && hasValidPrice
+    ? originalPriceFloat * (1 - discountPercent / 100)
+    : originalPriceFloat;
+
+  const discountedPriceStr = hasValidPrice
+    ? discountedPriceFloat.toFixed(2).replace('.', ',') + " €"
+    : product.price;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -33,7 +44,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
     addToCart({
       id: product.id.toString(),
       title: product.title,
-      price: parseFloat(product.price.replace(',', '.')),
+      price: discountedPriceFloat,
       quantity: 1,
       variant: isTicket ? 'Digital' : 'Gedruckte Ausgabe',
       image: product.image,
@@ -115,8 +126,13 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
       <Link href={`/${getProductRoute(product.category)}/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="product-card-list">
           {/* LEFT: IMAGE */}
-          <div className="product-card-list-img">
+          <div className="product-card-list-img" style={{ position: 'relative' }}>
             {product.badge && <span className="product-badge" style={{ position: 'absolute', top: 0, left: 0, zIndex: 2 }}>{product.badge}</span>}
+            {discountPercent > 0 && (
+              <span className="product-badge" style={{ position: 'absolute', top: 0, right: 0, left: 'auto', background: 'var(--accent)', color: 'white', zIndex: 2 }}>
+                -{discountPercent}%
+              </span>
+            )}
             <img src={product.image} alt={product.title} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
           </div>
 
@@ -186,7 +202,18 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                 <circle cx="9" cy="21" r="1.5"></circle><circle cx="20" cy="21" r="1.5"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
               </svg>
-              <span style={{ fontSize: '1.15rem', fontWeight: 800 }}>{product.price}</span>
+              <span style={{ fontSize: '1.15rem', fontWeight: 800, display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.1 }}>
+                {discountPercent > 0 && hasValidPrice ? (
+                  <>
+                    <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500 }}>
+                      {product.price}
+                    </span>
+                    <span>{discountedPriceStr}</span>
+                  </>
+                ) : (
+                  product.price
+                )}
+              </span>
             </button>
 
             {/* Secondary Buttons stacked tight */}
@@ -265,8 +292,13 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
       </button>
 
       <Link href={`/${getProductRoute(product.category)}/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <div className="product-image-container">
+        <div className="product-image-container" style={{ position: 'relative' }}>
           {product.badge && <span className="product-badge">{product.badge}</span>}
+          {discountPercent > 0 && (
+            <span className="product-badge" style={{ position: 'absolute', top: '10px', left: '10px', background: 'var(--accent)', color: 'white', zIndex: 2 }}>
+              -{discountPercent}%
+            </span>
+          )}
           <img src={product.image} alt={product.title} className="product-image" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         
@@ -307,7 +339,20 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
       </Link>
       
       <div className="product-bottom" style={{ padding: '0 1.5rem 1.5rem', marginTop: 'auto' }}>
-        <div className="product-price">{product.price}</div>
+        <div className="product-price" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {discountPercent > 0 && hasValidPrice ? (
+            <>
+              <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '0.9rem', fontWeight: 500 }}>
+                {product.price}
+              </span>
+              <span style={{ color: 'var(--accent)', fontWeight: 800 }}>
+                {discountedPriceStr}
+              </span>
+            </>
+          ) : (
+            product.price
+          )}
+        </div>
         <button 
           onClick={handleAddToCart}
           style={{ 

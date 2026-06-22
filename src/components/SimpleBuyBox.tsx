@@ -12,6 +12,7 @@ interface SimpleBuyBoxProps {
     stockStatus: string;
     isTicket?: boolean;
     category?: string | null;
+    discountPercent?: number;
   };
   selectedVariant?: string;
 }
@@ -19,12 +20,33 @@ interface SimpleBuyBoxProps {
 export default function SimpleBuyBox({ product, selectedVariant }: SimpleBuyBoxProps) {
   const [quantity, setQuantity] = useState<number>(1);
 
+  const cleanPrice = product.price.replace(' €', '').replace(',', '.').replace(/[^0-9.-]/g, '');
+  let originalPrice = parseFloat(cleanPrice);
+  if (isNaN(originalPrice)) originalPrice = 0;
+  
+  const discountPercent = product.discountPercent || 0;
+  const discountedPrice = discountPercent > 0 
+    ? originalPrice * (1 - discountPercent / 100) 
+    : originalPrice;
+    
+  const discountedPriceStr = discountedPrice.toFixed(2).replace('.', ',');
+
   return (
     <div style={{ background: '#f5f5f5', border: '1px solid #e1e1e1', borderRadius: '4px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-        <div style={{ fontSize: '2.8rem', fontWeight: 900, color: '#111', lineHeight: 1 }}>
-          {product.price.replace(' €', '')} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginBottom: '1rem' }}>
+        {discountPercent > 0 && originalPrice > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ textDecoration: 'line-through', color: '#888', fontSize: '1.2rem' }}>
+              {originalPrice.toFixed(2).replace('.', ',')} €
+            </span>
+            <span style={{ background: 'var(--accent)', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase' }}>
+              -{discountPercent}%
+            </span>
+          </div>
+        )}
+        <div style={{ fontSize: '2.8rem', fontWeight: 900, color: discountPercent > 0 ? 'var(--accent)' : '#111', lineHeight: 1 }}>
+          {discountedPriceStr} <span style={{ fontSize: '1.8rem', verticalAlign: 'top' }}>€</span>
         </div>
       </div>
       
@@ -88,7 +110,7 @@ export default function SimpleBuyBox({ product, selectedVariant }: SimpleBuyBoxP
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
-         <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: product.price, image: product.image, category: product.isTicket ? 'Tickets' : product.category }} selectedVariant={selectedVariant} quantity={quantity} />
+         <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: discountedPrice.toFixed(2).replace('.', ',') + " €", image: product.image, category: product.isTicket ? 'Tickets' : product.category }} selectedVariant={selectedVariant} quantity={quantity} />
       </div>
 
       {/* Guarantees */}
