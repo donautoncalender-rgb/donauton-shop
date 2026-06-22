@@ -43,14 +43,6 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
   const [existingAccountWarning, setExistingAccountWarning] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-  const handleDemoLoading = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 10000);
-  };
-
   const [attendeeNames, setAttendeeNames] = useState<Record<string, string[]>>({});
   const ticketItems = items.filter((item: any) => 
     item.category === 'Tickets' || 
@@ -582,9 +574,6 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
 
           <div style={{ fontSize: '0.8rem', color: 'var(--text-light)', textAlign: 'center', marginTop: '1rem' }}>
             Mit der Bestellung stimmen Sie unseren <Link href="/agb" target="_blank" style={{ textDecoration: 'underline', color: 'inherit' }}>AGB</Link> und <Link href="/datenschutz" target="_blank" style={{ textDecoration: 'underline', color: 'inherit' }}>Datenschutzbestimmungen</Link> zu.
-            <div style={{ marginTop: '0.5rem', opacity: 0.5 }}>
-              <button type="button" onClick={handleDemoLoading} style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer', fontSize: '0.8rem' }}>Lade-Animation testen (10s)</button>
-            </div>
           </div>
         </div>
 
