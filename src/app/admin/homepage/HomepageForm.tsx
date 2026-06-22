@@ -9,8 +9,8 @@ import SpinningNoteButton from '../../../components/SpinningNoteButton';
 
 export default function HomepageForm({ settings }: { settings: Record<string, string> }) {
   const [isPending, setIsPending] = useState(false);
-  const [activeSlide, setActiveSlide] = useState(1);
-  
+  const [activeSlide, setActiveSlide] = useState(0);
+
   // Manage state for the 4 selected icons
   const [uspIcons, setUspIcons] = useState<Record<number, string>>({
     1: settings['home_usp1_icon'] || 'CheckCircle2',
@@ -18,6 +18,50 @@ export default function HomepageForm({ settings }: { settings: Record<string, st
     3: settings['home_usp3_icon'] || 'Truck',
     4: settings['home_usp4_icon'] || 'Download'
   });
+
+  // 1. DYNAMIC HERO SLIDER STATE
+  const [slides, setSlides] = useState<any[]>(() => {
+    if (settings['hero_slides_data']) {
+      try { return JSON.parse(settings['hero_slides_data']); } catch(e) {}
+    }
+    return [1, 2, 3].map(num => ({
+      id: Date.now().toString() + num,
+      image: settings[`home_slider_${num}_img`] || '',
+      tagline: settings[`home_slider_${num}_tagline`] || (num === 1 ? 'DAS GANZE SORTIMENT' : num === 2 ? 'FACHLITERATUR' : 'NUR FÜR KURZE ZEIT'),
+      title: settings[`home_slider_${num}_title`] || (num === 1 ? 'Die größte' : num === 2 ? 'Spannende' : 'Exklusiver'),
+      subtitle: settings[`home_slider_${num}_subtitle`] || (num === 1 ? 'Notenauswahl' : num === 2 ? 'Unterrichtswerke' : 'Merchandise'),
+      text: settings[`home_slider_${num}_text`] || (num === 1 ? 'Tausende Werke für Blasorchester warten.' : num === 2 ? 'Stöbere jetzt in unserer riesigen Auswahl an Musikliteratur.' : 'Zeige Flagge mit den brandneuen Donauton Accessoires.'),
+      link: settings[`home_slider_${num}_link`] || (num === 1 ? '/noten' : num === 2 ? '/buecher' : '/merch'),
+      btnText: settings[`home_slider_${num}_btn`] || (num === 1 ? 'Zu den Noten' : num === 2 ? 'Zum Buch-Katalog' : 'Kollektion ansehen'),
+      isPromotion: false,
+      validFrom: '',
+      validUntil: ''
+    }));
+  });
+
+  const handleAddSlide = () => {
+    setSlides([...slides, {
+      id: Date.now().toString(),
+      image: '', tagline: 'NEUES HIGHLIGHT', title: 'Neuer', subtitle: 'Titel', text: 'Kurze Beschreibung...', link: '/noten', btnText: 'Jetzt ansehen',
+      isPromotion: false, validFrom: '', validUntil: ''
+    }]);
+    setActiveSlide(slides.length); // switch to the new slide
+  };
+
+  const handleRemoveSlide = (indexToRemove: number) => {
+    if (slides.length <= 1) {
+      toast.error('Es muss mindestens ein Slide übrig bleiben!');
+      return;
+    }
+    setSlides(slides.filter((_, i) => i !== indexToRemove));
+    setActiveSlide(0);
+  };
+
+  const handleSlideChange = (index: number, field: string, value: any) => {
+    const newSlides = [...slides];
+    newSlides[index][field] = value;
+    setSlides(newSlides);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,60 +80,94 @@ export default function HomepageForm({ settings }: { settings: Record<string, st
   return (
     <form onSubmit={handleSubmit}>
       
-      {/* 1. HERO SLIDER (3 SLIDES) */}
+      {/* 1. HERO SLIDER (DYNAMIC) */}
       <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '12px', padding: '2rem', marginBottom: '2rem', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
-        <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-          <span style={{ background: 'var(--primary)', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>1</span>
-          Der Große Hero-Slider (Oben)
+        <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <span style={{ background: 'var(--primary)', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>1</span>
+            Der Große Hero-Slider (Oben)
+          </div>
+          <button type="button" onClick={handleAddSlide} className="btn" style={{ fontSize: '0.9rem', padding: '0.5rem 1rem' }}>+ Neuen Slide hinzufügen</button>
         </h3>
         
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', background: '#f1f5f9', padding: '0.4rem', borderRadius: '8px', width: 'fit-content' }}>
-          {[1, 2, 3].map(num => (
+        {/* Helper to tell backend how many slides there are */}
+        <input type="hidden" name="slide_count" value={slides.length} />
+
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', background: '#f1f5f9', padding: '0.4rem', borderRadius: '8px', width: '100%', overflowX: 'auto' }}>
+          {slides.map((slide, index) => (
             <button 
-              key={num} 
+              key={slide.id} 
               type="button" 
-              onClick={() => setActiveSlide(num)}
-              style={{ padding: '0.6rem 1.5rem', borderRadius: '6px', border: 'none', background: activeSlide === num ? 'white' : 'transparent', fontWeight: 700, cursor: 'pointer', boxShadow: activeSlide === num ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
+              onClick={() => setActiveSlide(index)}
+              style={{ padding: '0.6rem 1.5rem', borderRadius: '6px', border: 'none', background: activeSlide === index ? 'white' : 'transparent', fontWeight: 700, cursor: 'pointer', boxShadow: activeSlide === index ? '0 2px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
             >
-              Slide {num}
+              Slide {index + 1} {slide.isPromotion ? '🎟️' : ''}
             </button>
           ))}
         </div>
 
-        {[1, 2, 3].map(num => (
-          <div key={num} style={{ display: activeSlide === num ? 'block' : 'none' }}>
+        {slides.map((slide, index) => (
+          <div key={slide.id} style={{ display: activeSlide === index ? 'block' : 'none' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+               <button type="button" onClick={() => handleRemoveSlide(index)} style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>🗑 Slide löschen</button>
+            </div>
+
+            {/* Promotion Toggle */}
+            <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--bg)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, cursor: 'pointer' }}>
+                <input type="checkbox" name={`slide_${index}_isPromotion`} checked={slide.isPromotion} onChange={(e) => handleSlideChange(index, 'isPromotion', e.target.checked)} style={{ width: '18px', height: '18px' }} />
+                Aktionsslider (Zeitgesteuert)
+              </label>
+              <p style={{ margin: '0.5rem 0 0 1.5rem', fontSize: '0.9rem', color: 'var(--text-light)' }}>Wenn aktiv, wird der Slider nur in dem unten angegebenen Zeitraum auf der Startseite angezeigt.</p>
+              
+              {slide.isPromotion && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem', marginLeft: '1.5rem' }}>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.3rem' }}>Gültig von</label>
+                    <input type="date" name={`slide_${index}_validFrom`} value={slide.validFrom} onChange={(e) => handleSlideChange(index, 'validFrom', e.target.value)} style={{ width: '100%', padding: '0.6rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.3rem' }}>Gültig bis</label>
+                    <input type="date" name={`slide_${index}_validUntil`} value={slide.validUntil} onChange={(e) => handleSlideChange(index, 'validUntil', e.target.value)} style={{ width: '100%', padding: '0.6rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div style={{ marginBottom: '2rem' }}>
-              <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Hintergrundbild Slide {num}</label>
+              <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem' }}>Hintergrundbild Slide {index + 1}</label>
               <ImagePicker 
-                currentUrl={settings[`home_slider_${num}_img`] || ''} 
-                name={`home_slider_${num}_img`} 
+                currentUrl={slide.image || ''} 
+                name={`slide_${index}_img`} 
               />
+              {/* Fallback hidden input to preserve existing image if picker doesn't change it */}
+              <input type="hidden" name={`slide_${index}_image_existing`} value={slide.image || ''} />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               <div>
                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Schlagwort (Tagline)</label>
-                <input type="text" name={`home_slider_${num}_tagline`} defaultValue={settings[`home_slider_${num}_tagline`] || (num === 1 ? 'DAS GANZE SORTIMENT' : num === 2 ? 'FACHLITERATUR' : 'NUR FÜR KURZE ZEIT')} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                <input type="text" name={`slide_${index}_tagline`} value={slide.tagline} onChange={(e) => handleSlideChange(index, 'tagline', e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
               </div>
               <div>
                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Haupt-Titel</label>
-                <input type="text" name={`home_slider_${num}_title`} defaultValue={settings[`home_slider_${num}_title`] || (num === 1 ? 'Die größte' : num === 2 ? 'Spannende' : 'Exklusiver')} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                <input type="text" name={`slide_${index}_title`} value={slide.title} onChange={(e) => handleSlideChange(index, 'title', e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
               </div>
               <div>
                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Unter-Titel (Heller)</label>
-                <input type="text" name={`home_slider_${num}_subtitle`} defaultValue={settings[`home_slider_${num}_subtitle`] || (num === 1 ? 'Notenauswahl' : num === 2 ? 'Unterrichtswerke' : 'Merchandise')} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                <input type="text" name={`slide_${index}_subtitle`} value={slide.subtitle} onChange={(e) => handleSlideChange(index, 'subtitle', e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
               </div>
               <div>
                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Beschreibungstext</label>
-                <input type="text" name={`home_slider_${num}_text`} defaultValue={settings[`home_slider_${num}_text`] || (num === 1 ? 'Tausende Werke für Blasorchester warten.' : num === 2 ? 'Stöbere jetzt in unserer riesigen Auswahl an Musikliteratur.' : 'Zeige Flagge mit den brandneuen Donauton Accessoires.')} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                <input type="text" name={`slide_${index}_text`} value={slide.text} onChange={(e) => handleSlideChange(index, 'text', e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
               </div>
               <div>
                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Button Text</label>
-                <input type="text" name={`home_slider_${num}_btn`} defaultValue={settings[`home_slider_${num}_btn`] || (num === 1 ? 'Zu den Noten' : num === 2 ? 'Zum Buch-Katalog' : 'Kollektion ansehen')} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                <input type="text" name={`slide_${index}_btnText`} value={slide.btnText} onChange={(e) => handleSlideChange(index, 'btnText', e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
               </div>
               <div>
                 <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>Button Ziel-Link</label>
-                <input type="text" name={`home_slider_${num}_link`} defaultValue={settings[`home_slider_${num}_link`] || (num === 1 ? '/noten' : num === 2 ? '/buecher' : '/merch')} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
+                <input type="text" name={`slide_${index}_link`} value={slide.link} onChange={(e) => handleSlideChange(index, 'link', e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border)', borderRadius: '6px' }} />
               </div>
             </div>
           </div>

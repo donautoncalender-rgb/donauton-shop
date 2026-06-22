@@ -52,38 +52,58 @@ export default async function Home() {
   const highlightProduct = productsDb.length > 0 ? productsDb[dayOfYear % productsDb.length] : null;
 
   // Dynamische Slides für Hero Categories
-  const heroSlides = [
-    {
-      id: 1,
-      image: s['home_slider_1_img'] || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=1600&q=80',
-      tagline: s['home_slider_1_tagline'] || 'DAS GANZE SORTIMENT',
-      title: s['home_slider_1_title'] || 'Die größte',
-      subtitle: s['home_slider_1_subtitle'] || 'Notenauswahl',
-      text: s['home_slider_1_text'] || 'Tausende Werke für Blasorchester und kleine Ensembles warten auf dich.',
-      link: s['home_slider_1_link'] || '/noten',
-      btnText: s['home_slider_1_btn'] || 'Zu den Noten'
-    },
-    {
-      id: 2,
-      image: s['home_slider_2_img'] || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=1600&q=80',
-      tagline: s['home_slider_2_tagline'] || 'FACHLITERATUR',
-      title: s['home_slider_2_title'] || 'Spannende',
-      subtitle: s['home_slider_2_subtitle'] || 'Unterrichtswerke',
-      text: s['home_slider_2_text'] || 'Stöbere jetzt in unserer riesigen Auswahl an Musikliteratur und Lehrwerken.',
-      link: s['home_slider_2_link'] || '/noten',
-      btnText: s['home_slider_2_btn'] || 'Bücher entdecken'
-    },
-    {
-      id: 3,
-      image: s['home_slider_3_img'] || 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=1600&q=80',
-      tagline: s['home_slider_3_tagline'] || 'AUDIO PRODUKTE',
-      title: s['home_slider_3_title'] || 'Hunderte CDs',
-      subtitle: s['home_slider_3_subtitle'] || '& Audio-Tracks',
-      text: s['home_slider_3_text'] || 'Entdecke die ganze Welt der böhmischen und modernen Blasmusik auf CD oder per Download.',
-      link: s['home_slider_3_link'] || '/cds',
-      btnText: s['home_slider_3_btn'] || 'Zum Audio-Shop'
+  let heroSlides: any[] = [];
+  if (s['hero_slides_data']) {
+    try {
+      const parsed = JSON.parse(s['hero_slides_data']);
+      const nowStr = new Date().toISOString().split('T')[0]; // e.g. "2026-06-22"
+      heroSlides = parsed.filter((slide: any) => {
+        if (!slide.isPromotion) return true;
+        // Check date range
+        if (slide.validFrom && slide.validFrom > nowStr) return false;
+        if (slide.validUntil && slide.validUntil < nowStr) return false;
+        return true;
+      });
+    } catch(e) {
+      console.error("Failed to parse hero_slides_data", e);
     }
-  ];
+  }
+
+  // Fallback, falls JSON nicht existiert oder leer ist
+  if (!heroSlides || heroSlides.length === 0) {
+    heroSlides = [
+      {
+        id: 1,
+        image: s['home_slider_1_img'] || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=1600&q=80',
+        tagline: s['home_slider_1_tagline'] || 'DAS GANZE SORTIMENT',
+        title: s['home_slider_1_title'] || 'Die größte',
+        subtitle: s['home_slider_1_subtitle'] || 'Notenauswahl',
+        text: s['home_slider_1_text'] || 'Tausende Werke für Blasorchester und kleine Ensembles warten auf dich.',
+        link: s['home_slider_1_link'] || '/noten',
+        btnText: s['home_slider_1_btn'] || 'Zu den Noten'
+      },
+      {
+        id: 2,
+        image: s['home_slider_2_img'] || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=1600&q=80',
+        tagline: s['home_slider_2_tagline'] || 'FACHLITERATUR',
+        title: s['home_slider_2_title'] || 'Spannende',
+        subtitle: s['home_slider_2_subtitle'] || 'Unterrichtswerke',
+        text: s['home_slider_2_text'] || 'Stöbere jetzt in unserer riesigen Auswahl an Musikliteratur und Lehrwerken.',
+        link: s['home_slider_2_link'] || '/noten',
+        btnText: s['home_slider_2_btn'] || 'Bücher entdecken'
+      },
+      {
+        id: 3,
+        image: s['home_slider_3_img'] || 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=1600&q=80',
+        tagline: s['home_slider_3_tagline'] || 'AUDIO PRODUKTE',
+        title: s['home_slider_3_title'] || 'Hunderte CDs',
+        subtitle: s['home_slider_3_subtitle'] || '& Audio-Tracks',
+        text: s['home_slider_3_text'] || 'Entdecke die ganze Welt der böhmischen und modernen Blasmusik auf CD oder per Download.',
+        link: s['home_slider_3_link'] || '/cds',
+        btnText: s['home_slider_3_btn'] || 'Zum Audio-Shop'
+      }
+    ];
+  }
 
   // Helper to get products for slider
   const getProductsForSlider = (slider: any) => {
