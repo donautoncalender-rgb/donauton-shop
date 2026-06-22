@@ -66,7 +66,7 @@ export default function CheckoutLoadingOverlay({ isVisible, logoUrl }: { isVisib
       
       <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center' }}>
         {logoUrl ? (
-          <img src={logoUrl} alt="Shop Logo" style={{ height: '90px', maxWidth: '300px', objectFit: 'contain', animation: 'pulseLogo 2s ease-in-out infinite' }} />
+          <img src={logoUrl} alt="Shop Logo" style={{ height: '140px', maxWidth: '400px', objectFit: 'contain', animation: 'pulseLogo 2s ease-in-out infinite' }} />
         ) : (
           <div style={{ color: 'var(--primary)', animation: 'spinNoteFast 1.5s linear infinite' }}>
             <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor">
