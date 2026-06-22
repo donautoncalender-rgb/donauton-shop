@@ -7,7 +7,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { Turnstile } from '@marsidev/react-turnstile';
 import CheckoutLoadingOverlay from '../../components/CheckoutLoadingOverlay';
 
-export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shippingZones = [] }: { paypalClientId: string | null, turnstileSiteKey: string | null, shippingZones?: any[] }) {
+export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shippingZones = [], logoUrl }: { paypalClientId: string | null, turnstileSiteKey: string | null, shippingZones?: any[], logoUrl?: string | null }) {
   const { items, cartTotal, clearCart } = useCart();
   const paypalOrderIdRef = useRef<string | null>(null);
   
@@ -197,7 +197,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
 
   return (
     <div className="container page-container animate-fade-in" style={{ padding: '4rem 2rem' }}>
-      <CheckoutLoadingOverlay isVisible={loading} />
+      <CheckoutLoadingOverlay isVisible={loading} logoUrl={logoUrl} />
       <h1 className="page-title" style={{ fontSize: '2.5rem', marginBottom: '3rem' }}>Kasse</h1>
 
       <form className="checkout-layout" onSubmit={handleSubmit}>

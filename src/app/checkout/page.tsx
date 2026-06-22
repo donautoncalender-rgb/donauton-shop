@@ -4,7 +4,7 @@ import CheckoutClient from './CheckoutClient';
 export default async function CheckoutPage() {
   const settingsRecords = await prisma.shopSetting.findMany({
     where: {
-      key: { in: ['paypal_client_id', 'turnstile_site_key', 'shipping_zones'] }
+      key: { in: ['paypal_client_id', 'turnstile_site_key', 'shipping_zones', 'logo_url'] }
     }
   });
 
@@ -24,5 +24,7 @@ export default async function CheckoutPage() {
     console.error("Failed to parse shipping zones", e);
   }
 
-  return <CheckoutClient paypalClientId={paypalClientId} turnstileSiteKey={turnstileSiteKey} shippingZones={shippingZones} />;
+  const logoUrl = settings['logo_url'] || null;
+
+  return <CheckoutClient paypalClientId={paypalClientId} turnstileSiteKey={turnstileSiteKey} shippingZones={shippingZones} logoUrl={logoUrl} />;
 }
