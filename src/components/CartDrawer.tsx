@@ -3,11 +3,9 @@
 import React, { useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import Link from 'next/link';
-import { useLanguage } from '../lib/LanguageContext';
 
 export default function CartDrawer() {
   const { isCartOpen, closeCart, items, cartTotal, removeFromCart, updateQuantity } = useCart();
-  const { t } = useLanguage();
 
   // Prevent background scrolling when cart is open (optional, sometimes desired)
   useEffect(() => {
@@ -49,7 +47,7 @@ export default function CartDrawer() {
       >
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem', borderBottom: '1px solid var(--border)' }}>
-          <h2 style={{ fontSize: '1.5rem', margin: 0 }}>{t('cart_title')}</h2>
+          <h2 style={{ fontSize: '1.5rem', margin: 0 }}>Dein Warenkorb</h2>
           <button 
             onClick={closeCart}
             style={{
@@ -68,13 +66,13 @@ export default function CartDrawer() {
               <svg width="48" height="48" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '1rem', opacity: 0.5 }}>
                 <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
               </svg>
-              <p>{t('cart_empty')}</p>
+              <p>Dein Warenkorb ist noch leer.</p>
               <button 
                 onClick={closeCart}
                 className="btn btn-secondary"
                 style={{ marginTop: '1.5rem' }}
               >
-                {t('cart_continue')}
+                Weiter shoppen
               </button>
             </div>
           ) : (
@@ -124,14 +122,14 @@ export default function CartDrawer() {
         {items.length > 0 && (
           <div style={{ padding: '1.5rem', borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '1.2rem', fontWeight: 700 }}>
-              <span>{t('cart_subtotal')}</span>
+              <span>Zwischensumme</span>
               <span>{cartTotal.toFixed(2).replace('.', ',')} €</span>
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-light)', marginBottom: '1.5rem' }}>
               Steuern und Versandkosten werden an der Kasse berechnet.
             </p>
             <Link href="/checkout" className="btn btn-primary" style={{ width: '100%', padding: '1.2rem', display: 'flex', justifyContent: 'center', textDecoration: 'none' }} onClick={closeCart}>
-              {t('cart_checkout').toUpperCase()}
+              ZUR KASSE
             </Link>
           </div>
         )}

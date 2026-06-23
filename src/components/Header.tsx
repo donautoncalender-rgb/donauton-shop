@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { useLanguage } from '../lib/LanguageContext';
 
 interface HeaderProps {
   shopTitle?: string;
@@ -17,7 +16,6 @@ interface HeaderProps {
 export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, composers }: HeaderProps) {
   const { toggleCart, cartCount } = useCart();
   const { wishlistCount } = useWishlist();
-  const { t, language, setLanguage } = useLanguage();
   const [customerLink, setCustomerLink] = useState("/login-customer");
   const router = useRouter();
 
@@ -426,7 +424,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
           <nav className="nav-links">
             <div className="nav-item-dropdown">
               <Link href="/noten?reset=true" className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                {t('nav_noten')}
+                Noten
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
               </Link>
               
@@ -460,16 +458,16 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
                 </div>
               )}
             </div>
-            <Link href="/cds" className="nav-link">{t('nav_cds')}</Link>
-            <Link href="/merch" className="nav-link">{t('nav_merch')}</Link>
-            <Link href="/buecher" className="nav-link">{t('nav_buecher')}</Link>
-            <Link href="/tickets" className="nav-link">{t('nav_tickets')}</Link>
+            <Link href="/cds" className="nav-link">CDs & Audio</Link>
+          <Link href="/merch" className="nav-link">Merchandise</Link>
+          <Link href="/buecher" className="nav-link">Bücher</Link>
+          <Link href="/tickets" className="nav-link">Tickets</Link>
 
           {composers && composers.length > 0 && (
             <div className="nav-item-dropdown">
               <span className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', whiteSpace: 'normal', textAlign: 'center' }}>
                 <span style={{ display: 'inline-block', textAlign: 'center' }}>
-                  {t('nav_autoren')}
+                  Unsere Autor*innen
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: '4px', flexShrink: 0 }}><path d="M6 9l6 6 6-6"/></svg>
                 </span>
               </span>
@@ -491,7 +489,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
               <input 
                 type="text" 
                 className="global-search-input" 
-                placeholder={t('search_placeholder')} 
+                placeholder="Suchen..." 
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setIsOpen(true); }}
                 onFocus={() => setIsOpen(true)}
@@ -509,9 +507,9 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
               <div className="global-search-dropdown animate-fade-in">
                 <div className="search-dropdown-header">
                   <span>
-                    {suggestions.length === 0 ? t('search_empty') : 
-                     suggestions.length === 1 ? t('search_one') : 
-                     `${suggestions.length} ${t('search_many')}`}
+                    {suggestions.length === 0 ? "Keine Ergebnisse" : 
+                     suggestions.length === 1 ? "1 Suchvorschlag" : 
+                     `${suggestions.length} Suchvorschläge`}
                   </span>
                   <button 
                     onClick={() => setIsOpen(false)} 
@@ -524,7 +522,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
                 <div className="search-dropdown-results">
                   {suggestions.length === 0 ? (
                     <div style={{ padding: '1.5rem', textAlign: 'center', color: '#718096', fontSize: '0.85rem' }}>
-                      {t('search_not_found')}
+                      Keine passenden Produkte gefunden
                     </div>
                   ) : (
                     suggestions.map((p) => {
@@ -573,26 +571,13 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
                       className="search-dropdown-footer-link"
                       onClick={() => setIsOpen(false)}
                     >
-                      {t('search_all')} &rarr;
+                      Alle Ergebnisse anzeigen &rarr;
                     </Link>
                   </div>
                 )}
               </div>
             )}
           </div>
-          <button 
-            onClick={() => setLanguage(language === 'de' ? 'bar' : 'de')} 
-            style={{ 
-              background: 'transparent', border: '1px solid var(--border)', borderRadius: '20px', 
-              padding: '4px 10px', cursor: 'pointer', fontSize: '1.2rem', display: 'flex', alignItems: 'center', 
-              justifyContent: 'center', marginRight: '0.5rem', transition: 'all 0.2s'
-            }}
-            title={language === 'de' ? 'Auf Bayerisch umstellen' : 'Auf Hochdeutsch umstellen'}
-          >
-            <span style={{ transform: language === 'bar' ? 'scale(1.2)' : 'scale(1)' }}>
-              {language === 'bar' ? '🥨' : '☕'}
-            </span>
-          </button>
           <a 
             href="https://www.donauton.de" 
             target="_blank" 

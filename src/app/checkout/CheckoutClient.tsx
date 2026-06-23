@@ -6,11 +6,9 @@ import Link from 'next/link';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { Turnstile } from '@marsidev/react-turnstile';
 import CheckoutLoadingOverlay from '../../components/CheckoutLoadingOverlay';
-import { useLanguage } from '../../lib/LanguageContext';
 
 export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shippingZones = [], logoUrl }: { paypalClientId: string | null, turnstileSiteKey: string | null, shippingZones?: any[], logoUrl?: string | null }) {
   const { items, cartTotal, clearCart } = useCart();
-  const { t } = useLanguage();
   const paypalOrderIdRef = useRef<string | null>(null);
   
   // Dynamic Shipping Logic
@@ -197,14 +195,10 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
     );
   }
 
-  const labelStyle = { display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: '#4a5568' };
-  const inputStyle = { width: '100%', padding: '0.8rem', border: '1px solid #cbd5e0', borderRadius: '6px', fontSize: '1rem' };
-  const paymentBoxStyle = { display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', backgroundColor: 'white' };
-
   return (
     <div className="container page-container animate-fade-in" style={{ padding: '4rem 2rem' }}>
       <CheckoutLoadingOverlay isVisible={loading} logoUrl={logoUrl} />
-      <h1 className="page-title" style={{ fontSize: '2.5rem', marginBottom: '3rem' }}>{t('checkout_title')}</h1>
+      <h1 className="page-title" style={{ fontSize: '2.5rem', marginBottom: '3rem' }}>Kasse</h1>
 
       <form className="checkout-layout" onSubmit={handleSubmit}>
         
@@ -379,7 +373,7 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
 
         {/* Right Side: Order Summary */}
         <div style={{ backgroundColor: 'var(--surface)', padding: '2.5rem', borderRadius: '16px', border: '1px solid var(--border)', position: 'sticky', top: '100px' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '2rem' }}>{t('checkout_summary')}</h2>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '2rem' }}>Ihre Bestellung</h2>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
             {items.map((item: any) => (
