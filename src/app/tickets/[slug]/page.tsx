@@ -13,8 +13,13 @@ import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug: resolvedParams.slug }
+  const product = await prisma.product.findFirst({
+    where: { 
+      OR: [
+        { slug: resolvedParams.slug },
+        { id: resolvedParams.slug }
+      ]
+    }
   });
 
   return {
@@ -24,8 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductDetail({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug: resolvedParams.slug }
+  const product = await prisma.product.findFirst({
+    where: { 
+      OR: [
+        { slug: resolvedParams.slug },
+        { id: resolvedParams.slug }
+      ]
+    }
   });
 
   if (!product) {

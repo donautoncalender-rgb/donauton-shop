@@ -527,7 +527,7 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
                   ) : (
                     suggestions.map((p) => {
                       const imageSrc = p.imageUrl || 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=80&q=80';
-                      const linkHref = `/${getProductRoute(p.category)}/${p.id}`;
+                      const linkHref = `/${getProductRoute(p.category)}/${p.slug || p.id}`;
                       const artistOrComposer = p.composer || p.artist;
                       
                       let besetzung = null;
