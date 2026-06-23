@@ -80,6 +80,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const sliderProducts = relatedProductsRaw.map(p => ({
     id: p.id,
     title: p.title,
+    slug: p.slug,
     image: p.imageUrl || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?fit=crop&w=400&h=565&q=80',
     price: p.price,
     genre: p.genre,
