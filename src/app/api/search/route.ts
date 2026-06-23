@@ -33,7 +33,8 @@ export async function GET(request: Request) {
         imageUrl: true,
         description: true,
         composer: true,
-        artist: true
+        artist: true,
+        detailsJson: true
       }
     });
 

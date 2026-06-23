@@ -530,6 +530,15 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
                       const linkHref = `/${getProductRoute(p.category)}/${p.id}`;
                       const artistOrComposer = p.composer || p.artist;
                       
+                      let besetzung = null;
+                      if (p.detailsJson) {
+                        try {
+                          const details = JSON.parse(p.detailsJson);
+                          const besItem = details.find((d: any) => d.label === 'Besetzung');
+                          if (besItem) besetzung = besItem.value;
+                        } catch (e) {}
+                      }
+                      
                       return (
                         <Link 
                           key={p.id} 
@@ -539,7 +548,10 @@ export default function Header({ shopTitle = "DONAUTON.", logoUrl, taxonomy, com
                         >
                           <img src={imageSrc} alt={p.title} className="search-result-image" />
                           <div className="search-result-info">
-                            <span className="search-result-category">{p.category || 'Noten'}</span>
+                            <span className="search-result-category" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <span>{p.category || 'Noten'}</span>
+                              {besetzung && <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontSize: '0.65rem', color: '#64748b', fontWeight: 600, border: '1px solid #e2e8f0' }}>{besetzung}</span>}
+                            </span>
                             <h4 className="search-result-title">{p.title}</h4>
                             {artistOrComposer && (
                               <span className="search-result-meta">{artistOrComposer}</span>
