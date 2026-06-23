@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CartProvider } from '../context/CartContext';
 import { WishlistProvider } from '../context/WishlistContext';
+import { LanguageProvider } from '../lib/LanguageContext';
 import CartDrawer from '../components/CartDrawer';
 import CookieBanner from '../components/CookieBanner';
 import { prisma } from '../lib/prisma';
@@ -123,26 +124,28 @@ export default async function RootLayout({
         <link rel="icon" href={`${faviconUrl}?v=${Date.now()}`} sizes="any" />
       </head>
       <body>
-        <WishlistProvider>
-          <CartProvider>
-            {topBanner && (
-              <div className="announcement-banner">
-                {topBanner}
+        <LanguageProvider>
+          <WishlistProvider>
+            <CartProvider>
+              {topBanner && (
+                <div className="announcement-banner">
+                  {topBanner}
+                </div>
+              )}
+              <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} composers={publicComposers} />
+              <CartDrawer />
+              <div style={{ overflowX: 'hidden' }}>
+                <main style={{ minHeight: '100vh' }}>
+                  {children}
+                </main>
+                <Footer />
               </div>
-            )}
-            <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} composers={publicComposers} />
-            <CartDrawer />
-            <div style={{ overflowX: 'hidden' }}>
-              <main style={{ minHeight: '100vh' }}>
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <CookieBanner />
-            <Toaster position="bottom-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
-            <Analytics />
-          </CartProvider>
-        </WishlistProvider>
+              <CookieBanner />
+              <Toaster position="bottom-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
+              <Analytics />
+            </CartProvider>
+          </WishlistProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

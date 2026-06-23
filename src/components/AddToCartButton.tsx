@@ -2,6 +2,7 @@
 
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-hot-toast';
+import { useLanguage } from '../lib/LanguageContext';
 
 interface AddToCartButtonProps {
   product: {
@@ -20,6 +21,7 @@ interface AddToCartButtonProps {
 
 export default function AddToCartButton({ product, size = 'small', selectedVariant, quantity = 1 }: AddToCartButtonProps) {
   const { addToCart, toggleCart } = useCart();
+  const { t } = useLanguage();
   const isLarge = size === 'large';
 
   return (
@@ -82,7 +84,7 @@ export default function AddToCartButton({ product, size = 'small', selectedVaria
         <circle cx="20" cy="21" r="1"></circle>
         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
       </svg>
-      In den Warenkorb
+      {t('product_add_to_cart')}
     </button>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import AddToCartButton from './AddToCartButton';
+import { useLanguage } from '../lib/LanguageContext';
 
 interface ProductBuyBoxProps {
   product: {
@@ -23,6 +24,7 @@ interface ProductBuyBoxProps {
 export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
   const [variant, setVariant] = useState<'Physisch' | 'Digital'>('Physisch');
   const [quantity, setQuantity] = useState<number>(1);
+  const { t } = useLanguage();
 
   // Parse variants if category === 'Noten' and variantsJson exists
   const variants = product.variantsJson ? JSON.parse(product.variantsJson) : [];
@@ -105,7 +107,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
               boxShadow: variant === 'Physisch' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
             }}
           >
-            Gedruckte Ausgabe
+            {t('product_print')}
           </button>
           <button 
             onClick={() => setVariant('Digital')}
@@ -117,7 +119,7 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
               boxShadow: variant === 'Digital' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
             }}
           >
-            Digitaler Download (PDF)
+            {t('product_digital')}
           </button>
         </div>
       )}
