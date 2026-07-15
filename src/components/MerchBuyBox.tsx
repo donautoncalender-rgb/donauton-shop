@@ -15,6 +15,7 @@ interface MerchBuyBoxProps {
     variantsJson?: string | null;
     category?: string | null;
     discountPercent?: number;
+    badge?: string | null;
   };
 }
 
@@ -371,8 +372,26 @@ export default function MerchBuyBox({ product }: MerchBuyBoxProps) {
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
+         {product.badge === 'Ausverkauft' && (
+           <div style={{ 
+             background: '#ef4444', 
+             color: 'white', 
+             padding: '0.8rem', 
+             borderRadius: '6px', 
+             fontWeight: 800, 
+             fontSize: '0.95rem', 
+             textAlign: 'center', 
+             marginBottom: '1rem',
+             textTransform: 'uppercase',
+             letterSpacing: '1px',
+             boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)'
+           }}>
+             Ausverkauft
+           </div>
+         )}
          <AddToCartButton 
            size="large" 
+           disabled={product.badge === 'Ausverkauft'} 
            product={{ 
              id: product.id, 
              title: product.title, 

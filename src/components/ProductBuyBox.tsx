@@ -17,6 +17,7 @@ interface ProductBuyBoxProps {
     sku?: string | null;
     category?: string | null;
     discountPercent?: number;
+    badge?: string | null;
   };
 }
 
@@ -237,7 +238,30 @@ export default function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
-          <AddToCartButton size="large" product={{ id: product.id, title: cartTitle, price: currentPriceStr, image: product.image, publisher: product.publisher || null, sku: cartSku, category: product.category }} selectedVariant={variant} quantity={variant === 'Digital' ? 1 : quantity} />
+          {product.badge === 'Ausverkauft' && (
+            <div style={{ 
+              background: '#ef4444', 
+              color: 'white', 
+              padding: '0.8rem', 
+              borderRadius: '6px', 
+              fontWeight: 800, 
+              fontSize: '0.95rem', 
+              textAlign: 'center', 
+              marginBottom: '1rem',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)'
+            }}>
+              Ausverkauft
+            </div>
+          )}
+          <AddToCartButton 
+            size="large" 
+            disabled={product.badge === 'Ausverkauft'} 
+            product={{ id: product.id, title: cartTitle, price: currentPriceStr, image: product.image, publisher: product.publisher || null, sku: cartSku, category: product.category }} 
+            selectedVariant={variant} 
+            quantity={variant === 'Digital' ? 1 : quantity} 
+          />
       </div>
 
       {/* Guarantees */}

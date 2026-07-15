@@ -16,11 +16,36 @@ interface AddToCartButtonProps {
   size?: 'small' | 'large';
   selectedVariant?: string;
   quantity?: number;
+  disabled?: boolean;
 }
 
-export default function AddToCartButton({ product, size = 'small', selectedVariant, quantity = 1 }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, size = 'small', selectedVariant, quantity = 1, disabled }: AddToCartButtonProps) {
   const { addToCart, toggleCart } = useCart();
   const isLarge = size === 'large';
+
+  if (disabled) {
+    return (
+      <button 
+        disabled
+        style={{ 
+          background: '#cbd5e1', color: '#94a3b8', border: 'none', 
+          padding: isLarge ? '0.8rem 1.5rem' : '0.4rem 0.8rem', 
+          borderRadius: isLarge ? '6px' : '30px', 
+          display: 'flex', alignItems: 'center', justifyContent: 'center', 
+          gap: isLarge ? '0.5rem' : '0.4rem', 
+          fontWeight: isLarge ? 700 : 600, 
+          fontSize: isLarge ? '1rem' : '0.75rem', 
+          cursor: 'not-allowed', 
+          textTransform: 'uppercase',
+          width: isLarge ? '100%' : 'auto',
+          letterSpacing: isLarge ? '0.5px' : 'normal'
+        }}
+        aria-label="Ausverkauft"
+      >
+        Ausverkauft
+      </button>
+    );
+  }
 
   return (
     <button 

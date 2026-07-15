@@ -248,7 +248,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               image: image,
               stockStatus: product.stockStatus,
               category: product.category,
-              discountPercent: product.discountPercent || 0
+              discountPercent: product.discountPercent || 0,
+              badge: product.badge
             }}
             selectedVariant="CD"/>
 

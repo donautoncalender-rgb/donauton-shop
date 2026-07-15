@@ -13,6 +13,7 @@ interface SimpleBuyBoxProps {
     isTicket?: boolean;
     category?: string | null;
     discountPercent?: number;
+    badge?: string | null;
   };
   selectedVariant?: string;
 }
@@ -110,7 +111,24 @@ export default function SimpleBuyBox({ product, selectedVariant }: SimpleBuyBoxP
 
       {/* Huge Cart Button */}
       <div style={{ marginTop: '0.5rem', width: '100%' }}>
-         <AddToCartButton size="large" product={{ id: product.id, title: product.title, price: discountedPrice.toFixed(2).replace('.', ',') + " €", image: product.image, category: product.isTicket ? 'Tickets' : product.category }} selectedVariant={selectedVariant} quantity={quantity} />
+         {product.badge === 'Ausverkauft' && (
+           <div style={{ 
+             background: '#ef4444', 
+             color: 'white', 
+             padding: '0.8rem', 
+             borderRadius: '6px', 
+             fontWeight: 800, 
+             fontSize: '0.95rem', 
+             textAlign: 'center', 
+             marginBottom: '1rem',
+             textTransform: 'uppercase',
+             letterSpacing: '1px',
+             boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)'
+           }}>
+             Ausverkauft
+           </div>
+         )}
+         <AddToCartButton size="large" disabled={product.badge === 'Ausverkauft'} product={{ id: product.id, title: product.title, price: discountedPrice.toFixed(2).replace('.', ',') + " €", image: product.image, category: product.isTicket ? 'Tickets' : product.category }} selectedVariant={selectedVariant} quantity={quantity} />
       </div>
 
       {/* Guarantees */}
