@@ -182,36 +182,47 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
           <div className="product-card-list-actions">
               {/* Main Buy Button */}
             <button 
-              onClick={handleAddToCart}
+              onClick={product.badge === 'Ausverkauft' ? undefined : handleAddToCart}
+              disabled={product.badge === 'Ausverkauft'}
               style={{
                 width: '100%',
-                backgroundColor: 'var(--accent)',
-                color: 'white',
+                backgroundColor: product.badge === 'Ausverkauft' ? '#cbd5e1' : 'var(--accent)',
+                color: product.badge === 'Ausverkauft' ? '#94a3b8' : 'white',
                 border: 'none',
                 padding: '1rem 1.2rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '15px',
-                cursor: 'pointer',
+                cursor: product.badge === 'Ausverkauft' ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.2s'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--accent-hover)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--accent)'}
+              onMouseEnter={(e) => {
+                if (product.badge !== 'Ausverkauft') {
+                  e.currentTarget.style.backgroundColor = 'var(--accent-hover)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (product.badge !== 'Ausverkauft') {
+                  e.currentTarget.style.backgroundColor = 'var(--accent)';
+                }
+              }}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1.5"></circle><circle cx="20" cy="21" r="1.5"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
               </svg>
               <span style={{ fontSize: '1.15rem', fontWeight: 800, display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.1 }}>
-                {discountPercent > 0 && hasValidPrice ? (
-                  <>
-                    <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500 }}>
-                      {product.price}
-                    </span>
-                    <span>{discountedPriceStr}</span>
-                  </>
-                ) : (
-                  product.price
+                {product.badge === 'Ausverkauft' ? 'Ausverkauft' : (
+                  discountPercent > 0 && hasValidPrice ? (
+                    <>
+                      <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', fontWeight: 500 }}>
+                        {product.price}
+                      </span>
+                      <span>{discountedPriceStr}</span>
+                    </>
+                  ) : (
+                    product.price
+                  )
                 )}
               </span>
             </button>
@@ -354,10 +365,11 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
           )}
         </div>
         <button 
-          onClick={handleAddToCart}
+          onClick={product.badge === 'Ausverkauft' ? undefined : handleAddToCart}
+          disabled={product.badge === 'Ausverkauft'}
           style={{ 
-            background: 'var(--accent)', 
-            color: 'white', 
+            background: product.badge === 'Ausverkauft' ? '#cbd5e1' : 'var(--accent)', 
+            color: product.badge === 'Ausverkauft' ? '#94a3b8' : 'white', 
             border: 'none', 
             padding: '0.35rem 0.6rem', 
             borderRadius: '30px', 
@@ -366,19 +378,27 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
             gap: '0.3rem', 
             fontWeight: 600, 
             fontSize: '0.7rem', 
-            cursor: 'pointer', 
+            cursor: product.badge === 'Ausverkauft' ? 'not-allowed' : 'pointer', 
             transition: 'all 0.3s', 
             textTransform: 'uppercase' 
           }}
-          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--accent-hover)'}
-          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--accent)'}
-          aria-label="In den Warenkorb"
+          onMouseEnter={(e) => {
+            if (product.badge !== 'Ausverkauft') {
+              e.currentTarget.style.background = 'var(--accent-hover)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (product.badge !== 'Ausverkauft') {
+              e.currentTarget.style.background = 'var(--accent)';
+            }
+          }}
+          aria-label={product.badge === 'Ausverkauft' ? "Ausverkauft" : "In den Warenkorb"}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
           </svg>
-          In den Warenkorb
+          {product.badge === 'Ausverkauft' ? 'Ausverkauft' : 'In den Warenkorb'}
         </button>
       </div>
     </div>
