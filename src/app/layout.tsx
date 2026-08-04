@@ -125,12 +125,14 @@ export default async function RootLayout({
       <body>
         <WishlistProvider>
           <CartProvider>
-            {topBanner && (
-              <div className="announcement-banner">
-                {topBanner}
-              </div>
-            )}
-            <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} composers={publicComposers} />
+            <div style={{ position: 'sticky', top: 0, zIndex: 100, display: 'flex', flexDirection: 'column' }}>
+              {topBanner && (
+                <div className="announcement-banner">
+                  {topBanner}
+                </div>
+              )}
+              <Header shopTitle={shopTitle} logoUrl={logoUrl} taxonomy={notenTaxonomy} composers={publicComposers} />
+            </div>
             <CartDrawer />
             <div style={{ overflowX: 'hidden' }}>
               <main style={{ minHeight: '100vh' }}>
