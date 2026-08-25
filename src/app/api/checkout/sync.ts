@@ -36,13 +36,15 @@ export async function syncOrderDetails(
       const productIds = order.items.map((oi) => oi.productId).filter(Boolean) as string[];
       const dbProducts = await prisma.product.findMany({
         where: { id: { in: productIds } },
-        select: { id: true, sku: true, wooId: true, category: true },
+        select: { id: true, sku: true, wooId: true, category: true, variantsJson: true },
       });
       const skuMap: Record<string, string> = {};
       const categoryMap: Record<string, string> = {};
+      const productMap: Record<string, any> = {};
       dbProducts.forEach((p) => {
         skuMap[p.id] = p.sku || (p.wooId ? p.wooId.toString() : p.id);
         categoryMap[p.id] = p.category || 'Noten';
+        productMap[p.id] = p;
       });
 
       const erpPayload = {
@@ -73,8 +75,29 @@ export async function syncOrderDetails(
           const catLower = (category || 'Noten').toLowerCase();
           const taxRatePercent = (catLower === 'noten' || catLower === 'buecher' || catLower === 'bücher' || catLower === 'buch') ? 7 : 19;
           const divisor = 1 + (taxRatePercent / 100);
+          
+          let itemSku = (oi.productId && skuMap[oi.productId]) ? skuMap[oi.productId] : (oi.productId || '');
+          const product = oi.productId ? productMap[oi.productId] : null;
+          
+          if (product && product.variantsJson && oi.variant) {
+            try {
+              const variants = JSON.parse(product.variantsJson);
+              const matchedVariant = variants.find((v: any) => 
+                v.title === oi.variant || 
+                v.id === oi.variant ||
+                (v.sku && v.sku.toLowerCase() === oi.variant.toLowerCase()) ||
+                (oi.variant.includes(':') && v.title === oi.variant.split(':')[1].trim())
+              );
+              if (matchedVariant && matchedVariant.sku) {
+                itemSku = matchedVariant.sku;
+              }
+            } catch (e) {
+              console.error("Failed to map variant SKU in sync:", e);
+            }
+          }
+
           return {
-            sku: (oi.productId && skuMap[oi.productId]) ? skuMap[oi.productId] : (oi.productId || ''),
+            sku: itemSku,
             title: (oi.variant && oi.variant !== 'Digital') ? `${oi.title} - ${oi.variant.replace(/,\s*/g, ' - ')}` : oi.title,
             quantity: oi.quantity,
             unit_price_gross: oi.price,
