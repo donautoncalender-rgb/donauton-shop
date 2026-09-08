@@ -184,6 +184,20 @@ async function saveSettings(formData: FormData) {
     });
   }
 
+  const upsellActive = formData.get('checkoutUpsellActive') as string;
+  const upsellProductId = formData.get('checkoutUpsellProductId') as string;
+  const upsellText = formData.get('checkoutUpsellText') as string;
+
+  if (upsellActive != null) {
+    await prisma.shopSetting.upsert({ where: { key: 'checkout_upsell_active' }, update: { value: upsellActive }, create: { key: 'checkout_upsell_active', value: upsellActive } });
+  }
+  if (upsellProductId != null) {
+    await prisma.shopSetting.upsert({ where: { key: 'checkout_upsell_product_id' }, update: { value: upsellProductId }, create: { key: 'checkout_upsell_product_id', value: upsellProductId } });
+  }
+  if (upsellText != null) {
+    await prisma.shopSetting.upsert({ where: { key: 'checkout_upsell_text' }, update: { value: upsellText }, create: { key: 'checkout_upsell_text', value: upsellText } });
+  }
+
   // Handle Banner Uploads
   const handleBannerUpload = async (fileKey: string, dbKey: string) => {
     const file = formData.get(fileKey) as File | null;
@@ -245,6 +259,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const resolvedSearchParams = await searchParams;
   // Load current settings
   const settingsRecords = await prisma.shopSetting.findMany();
+  const allProducts = await prisma.product.findMany({ select: { id: true, title: true }, orderBy: { title: 'asc' } });
   
   // Transform to dict
   const settings = settingsRecords.reduce((acc, current) => {
@@ -642,6 +657,40 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             </div>
           </div>
           <button type="submit" className="admin-btn" style={{ marginTop: '1.5rem', background: '#0284c7' }}>Social Links speichern</button>
+        </form>
+      </div>
+      
+      <div className="admin-card" style={{ marginTop: '2rem' }}>
+        <h3 className="admin-card-title">🛒 Checkout Werbung (Order Bump)</h3>
+        <p style={{ fontSize: '0.875rem', color: '#64748b', marginBottom: '1.5rem' }}>
+          Hier kannst du ein Produkt auswählen, das Kunden während des Bezahlvorgangs im Kassenbereich als Zusatzangebot ("Order Bump") empfohlen wird.
+        </p>
+        <form action={saveSettings}>
+          <div style={{ padding: '1.5rem', backgroundColor: '#fef2f2', borderRadius: '8px', border: '1px solid #fca5a5' }}>
+            <div className="admin-form-group">
+              <label className="admin-label">Werbung aktivieren?</label>
+              <select name="checkoutUpsellActive" className="admin-input" defaultValue={settings['checkout_upsell_active'] || 'false'}>
+                <option value="false">Nein (Deaktiviert)</option>
+                <option value="true">Ja (Aktiviert)</option>
+              </select>
+            </div>
+            
+            <div className="admin-form-group">
+              <label className="admin-label">Artikel auswählen</label>
+              <select name="checkoutUpsellProductId" className="admin-input" defaultValue={settings['checkout_upsell_product_id'] || ''}>
+                <option value="">-- Bitte wählen --</option>
+                {allProducts.map(p => (
+                  <option key={p.id} value={p.id}>{p.title}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="admin-form-group" style={{ marginBottom: 0 }}>
+              <label className="admin-label">Werbetext / Pitch</label>
+              <input name="checkoutUpsellText" type="text" className="admin-input" placeholder="Sonderangebot hinzufügen: Lerne Klavierspielen..." defaultValue={settings['checkout_upsell_text'] || ''} />
+            </div>
+          </div>
+          <button type="submit" className="admin-btn" style={{ marginTop: '1.5rem', background: '#dc2626' }}>Checkout Werbung speichern</button>
         </form>
       </div>
     </>

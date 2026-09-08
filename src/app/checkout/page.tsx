@@ -4,7 +4,7 @@ import CheckoutClient from './CheckoutClient';
 export default async function CheckoutPage() {
   const settingsRecords = await prisma.shopSetting.findMany({
     where: {
-      key: { in: ['paypal_client_id', 'turnstile_site_key', 'shipping_zones', 'logo_url', 'newsletter_signet_url'] }
+      key: { in: ['paypal_client_id', 'turnstile_site_key', 'shipping_zones', 'logo_url', 'newsletter_signet_url', 'checkout_upsell_active', 'checkout_upsell_product_id', 'checkout_upsell_text'] }
     }
   });
 
@@ -27,5 +27,19 @@ export default async function CheckoutPage() {
   // Use the signet if available, otherwise fallback to the main logo
   const logoUrl = settings['newsletter_signet_url'] || settings['logo_url'] || null;
 
-  return <CheckoutClient paypalClientId={paypalClientId} turnstileSiteKey={turnstileSiteKey} shippingZones={shippingZones} logoUrl={logoUrl} />;
+  let upsellData = null;
+  if (settings['checkout_upsell_active'] === 'true' && settings['checkout_upsell_product_id']) {
+    const product = await prisma.product.findUnique({
+      where: { id: settings['checkout_upsell_product_id'] },
+      select: { id: true, title: true, price: true, image: true, sku: true, category: true, digitalPrice: true, variantsJson: true, discountPercent: true }
+    });
+    if (product) {
+      upsellData = {
+        product,
+        text: settings['checkout_upsell_text'] || 'Sonderangebot hinzufügen!'
+      };
+    }
+  }
+
+  return <CheckoutClient paypalClientId={paypalClientId} turnstileSiteKey={turnstileSiteKey} shippingZones={shippingZones} logoUrl={logoUrl} upsellData={upsellData} />;
 }

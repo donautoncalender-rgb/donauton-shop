@@ -7,8 +7,8 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { Turnstile } from '@marsidev/react-turnstile';
 import CheckoutLoadingOverlay from '../../components/CheckoutLoadingOverlay';
 
-export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shippingZones = [], logoUrl }: { paypalClientId: string | null, turnstileSiteKey: string | null, shippingZones?: any[], logoUrl?: string | null }) {
-  const { items, cartTotal, clearCart } = useCart();
+export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shippingZones = [], logoUrl, upsellData }: { paypalClientId: string | null, turnstileSiteKey: string | null, shippingZones?: any[], logoUrl?: string | null, upsellData?: any }) {
+  const { items, cartTotal, clearCart, addToCart } = useCart();
   const paypalOrderIdRef = useRef<string | null>(null);
   
   // Dynamic Shipping Logic
@@ -399,6 +399,35 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
               </div>
             ))}
           </div>
+
+          {upsellData && !items.some(i => i.id === upsellData.product.id.toString()) && (
+            <div style={{ padding: '1rem', border: '2px dashed #fca5a5', backgroundColor: '#fef2f2', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ width: '60px', height: '60px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, border: '1px solid #fee2e2' }}>
+                <img src={upsellData.product.image} alt={upsellData.product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#991b1b', marginBottom: '0.2rem' }}>Sonderangebot</div>
+                <div style={{ fontSize: '0.85rem', color: '#7f1d1d', marginBottom: '0.5rem', lineHeight: 1.3 }}>{upsellData.text}</div>
+                <button 
+                  type="button"
+                  onClick={() => addToCart({
+                    id: upsellData.product.id.toString(),
+                    title: upsellData.product.title,
+                    price: parseFloat(upsellData.product.price.replace(',', '.')),
+                    quantity: 1,
+                    variant: 'Standard',
+                    image: upsellData.product.image,
+                    sku: upsellData.product.sku || null,
+                    category: upsellData.product.category || null,
+                    publisher: null
+                  })}
+                  style={{ background: '#dc2626', color: 'white', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Für {upsellData.product.price} hinzufügen
+                </button>
+              </div>
+            </div>
+          )}
 
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-light)' }}>
