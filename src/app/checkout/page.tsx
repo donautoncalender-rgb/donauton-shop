@@ -31,11 +31,11 @@ export default async function CheckoutPage() {
   if (settings['checkout_upsell_active'] === 'true' && settings['checkout_upsell_product_id']) {
     const product = await prisma.product.findUnique({
       where: { id: settings['checkout_upsell_product_id'] },
-      select: { id: true, title: true, price: true, image: true, sku: true, category: true, digitalPrice: true, variantsJson: true, discountPercent: true }
+      select: { id: true, title: true, price: true, imageUrl: true, sku: true, category: true, digitalPrice: true, variantsJson: true, discountPercent: true }
     });
     if (product) {
       upsellData = {
-        product,
+        product: { ...product, image: product.imageUrl },
         text: settings['checkout_upsell_text'] || 'Sonderangebot hinzufügen!'
       };
     }
