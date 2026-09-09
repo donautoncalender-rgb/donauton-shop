@@ -81,12 +81,13 @@ export async function syncOrderDetails(
           
           if (product && product.variantsJson && oi.variant) {
             try {
+              const variantName = oi.variant;
               const variants = JSON.parse(product.variantsJson);
               const matchedVariant = variants.find((v: any) => 
-                v.title === oi.variant || 
-                v.id === oi.variant ||
-                (v.sku && v.sku.toLowerCase() === oi.variant.toLowerCase()) ||
-                (oi.variant.includes(':') && v.title === oi.variant.split(':')[1].trim())
+                v.title === variantName || 
+                v.id === variantName ||
+                (v.sku && v.sku.toLowerCase() === variantName.toLowerCase()) ||
+                (variantName.includes(':') && v.title === variantName.split(':')[1].trim())
               );
               if (matchedVariant && matchedVariant.sku) {
                 itemSku = matchedVariant.sku;

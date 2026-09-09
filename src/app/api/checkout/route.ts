@@ -51,12 +51,12 @@ export async function POST(request: Request) {
     const dbProducts = await prisma.product.findMany({
       where: { id: { in: productIds } }
     });
-    const dbProductsMap = new Map(dbProducts.map(p => [p.id, p]));
+    const dbProductsMap = new Map(dbProducts.map((p: any) => [p.id, p]));
 
     // Calculate subtotal from items to prevent tampering
     let calculatedSubtotal = 0;
     const orderItems = items.map((item: any) => {
-      const dbProduct = item.id ? dbProductsMap.get(item.id) : null;
+      const dbProduct: any = item.id ? dbProductsMap.get(item.id) : null;
       let finalPrice = parseFloat(item.price); // default fallback
 
       if (dbProduct) {
