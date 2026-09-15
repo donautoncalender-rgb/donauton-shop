@@ -118,6 +118,46 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
 
   const handleSubmit = async (e?: React.FormEvent, paymentStatus: string = 'pending') => {
     if (e) e.preventDefault();
+    
+    // --- Validation ---
+    const isInvalidText = (str: string) => {
+      const lower = str.toLowerCase().trim();
+      if (lower.length < 2) return true;
+      const fakeWords = ['test', 'asdf', 'qwert', '123', '1234', '12345', 'dummy', 'fake'];
+      if (fakeWords.includes(lower)) return true;
+      return false;
+    };
+
+    if (isInvalidText(formData.firstName) || isInvalidText(formData.lastName)) {
+      alert('Bitte gib einen gültigen Vor- und Nachnamen ein.');
+      return;
+    }
+    if (isInvalidText(formData.city)) {
+      alert('Bitte gib einen gültigen Ort ein.');
+      return;
+    }
+    if (formData.address.trim().length < 4 || formData.address.toLowerCase().includes('test')) {
+      alert('Bitte gib eine gültige Straße und Hausnummer ein.');
+      return;
+    }
+    
+    const zipClean = formData.zip.trim();
+    if (formData.country === 'DE' && !/^\d{5}$/.test(zipClean)) {
+      alert('Bitte gib eine gültige 5-stellige deutsche Postleitzahl ein.');
+      return;
+    } else if ((formData.country === 'AT' || formData.country === 'CH') && !/^\d{4}$/.test(zipClean)) {
+      alert('Bitte gib eine gültige 4-stellige Postleitzahl ein.');
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailLower = formData.email.toLowerCase().trim();
+    if (!emailRegex.test(emailLower) || emailLower.includes('test@') || emailLower.includes('fake@')) {
+      alert('Bitte gib eine gültige E-Mail-Adresse ein.');
+      return;
+    }
+    // ------------------
+
     if (formData.payment === 'PayPal' && paypalClientId && grandTotal > 0) return; // Prevent default submit for PayPal if total > 0
 
     if (formData.payment !== 'PayPal' && formData.createAccount && !isLoggedIn && !formData.password) {
