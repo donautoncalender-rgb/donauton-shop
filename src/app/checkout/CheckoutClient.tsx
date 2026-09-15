@@ -120,23 +120,25 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
     if (e) e.preventDefault();
     
     // --- Validation ---
-    const isInvalidText = (str: string) => {
+    const isExactFakeWord = (str: string) => {
       const lower = str.toLowerCase().trim();
       if (lower.length < 2) return true;
       const fakeWords = ['test', 'asdf', 'qwert', '123', '1234', '12345', 'dummy', 'fake'];
-      if (fakeWords.includes(lower)) return true;
-      return false;
+      return fakeWords.includes(lower);
     };
 
-    if (isInvalidText(formData.firstName) || isInvalidText(formData.lastName)) {
+    if (isExactFakeWord(formData.firstName) || isExactFakeWord(formData.lastName)) {
       alert('Bitte gib einen gültigen Vor- und Nachnamen ein.');
       return;
     }
-    if (isInvalidText(formData.city)) {
+    if (isExactFakeWord(formData.city)) {
       alert('Bitte gib einen gültigen Ort ein.');
       return;
     }
-    if (formData.address.trim().length < 4 || formData.address.toLowerCase().includes('test')) {
+    
+    // Address: check exact fake word or "test 1", "test 123", etc.
+    const addressLower = formData.address.toLowerCase().trim();
+    if (addressLower.length < 4 || isExactFakeWord(addressLower) || /^test\s*\d*$/.test(addressLower)) {
       alert('Bitte gib eine gültige Straße und Hausnummer ein.');
       return;
     }
@@ -152,7 +154,9 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const emailLower = formData.email.toLowerCase().trim();
-    if (!emailRegex.test(emailLower) || emailLower.includes('test@') || emailLower.includes('fake@')) {
+    // Check if the part before @ is exactly "test", "fake", etc.
+    const emailPrefix = emailLower.split('@')[0] || '';
+    if (!emailRegex.test(emailLower) || isExactFakeWord(emailPrefix)) {
       alert('Bitte gib eine gültige E-Mail-Adresse ein.');
       return;
     }
