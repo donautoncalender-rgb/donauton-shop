@@ -60,14 +60,14 @@ export async function syncOrderDetails(
             street: order.address,
             zip: order.zipCode,
             city: order.city,
-            country: 'DE',
+            country: (order.country || 'DE').toUpperCase(),
           },
           shipping: {
             company: order.companyName,
             street: order.address,
             zip: order.zipCode,
             city: order.city,
-            country: 'DE',
+            country: (order.country || 'DE').toUpperCase(),
           },
         },
         items: order.items.map((oi) => {

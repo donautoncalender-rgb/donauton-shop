@@ -145,10 +145,16 @@ export default function CheckoutClient({ paypalClientId, turnstileSiteKey, shipp
     
     const zipClean = formData.zip.trim();
     if (formData.country === 'DE' && !/^\d{5}$/.test(zipClean)) {
-      alert('Bitte gib eine gültige 5-stellige deutsche Postleitzahl ein.');
+      alert('Bitte gib eine gültige 5-stellige deutsche Postleitzahl ein. Wohnst du nicht in Deutschland? Dann wähle bitte dein Land aus.');
       return;
-    } else if ((formData.country === 'AT' || formData.country === 'CH') && !/^\d{4}$/.test(zipClean)) {
+    } else if (['AT', 'CH', 'BE', 'LU'].includes(formData.country) && !/^\d{4}$/.test(zipClean)) {
       alert('Bitte gib eine gültige 4-stellige Postleitzahl ein.');
+      return;
+    } else if (['FR', 'IT'].includes(formData.country) && !/^\d{5}$/.test(zipClean)) {
+      alert('Bitte gib eine gültige 5-stellige Postleitzahl ein.');
+      return;
+    } else if (formData.country === 'NL' && !/^\d{4}\s?[A-Za-z]{2}$/.test(zipClean)) {
+      alert('Bitte gib eine gültige niederländische Postleitzahl ein (z.B. 1234 AB).');
       return;
     }
 
