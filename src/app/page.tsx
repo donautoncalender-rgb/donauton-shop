@@ -126,6 +126,12 @@ export default async function Home() {
       if (bestsellers.length > 0) {
         filteredDb = bestsellers;
       }
+    } else if (slider.filterType === 'LATEST') {
+      filteredDb = filteredDb.sort((a, b) => {
+        const idA = a.wooId || parseInt(a.id.slice(0, 8), 16) || 0;
+        const idB = b.wooId || parseInt(b.id.slice(0, 8), 16) || 0;
+        return idB - idA;
+      });
     }
 
     // Default fallback to latest
