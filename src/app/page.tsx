@@ -128,9 +128,9 @@ export default async function Home() {
       }
     } else if (slider.filterType === 'LATEST') {
       filteredDb = filteredDb.sort((a, b) => {
-        const idA = a.wooId || parseInt(a.id.slice(0, 8), 16) || 0;
-        const idB = b.wooId || parseInt(b.id.slice(0, 8), 16) || 0;
-        return idB - idA;
+        const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return timeB - timeA;
       });
     }
 
